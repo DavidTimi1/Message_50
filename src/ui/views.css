@@ -1,0 +1,51 @@
+.view-container {
+    background-color: var(--prim-col);
+    left: 0px;
+    top: 0px;
+    transition: all 0.25s ease-out;
+    transform: translateX(0px);
+    opacity: 1;
+    position: fixed;
+    visibility: visible;
+    z-index: 50;
+
+    &.close {
+        transform: translateX(20%);
+        opacity: 0;
+        visibility: hidden;
+        z-index: -10;
+    }
+
+    .heading {
+        padding: 5px 20px;
+        background-color: var(--head-col);
+        border-bottom: 1px solid var(--head2-col);
+        box-shadow: 0 1px 3px black;
+    }
+}
+
+
+.interface {
+    background-color: var(--body-col);
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    transition: all 0.25s ease-out;
+    transform: translateY(0px);
+    opacity: 1;
+    position: fixed;
+    width: 100%;
+    visibility: visible;
+    z-index: 50;
+
+    &.close {
+        transform: translateY(10%);
+        opacity: 0;
+        visibility: hidden;
+        z-index: -1;
+    }
+
+    .content {
+        padding: 5px 0px;
+    }
+}

@@ -1,0 +1,158 @@
+.no-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    outline: none;
+}
+
+.head-btn {
+    color: var(--text-col);
+    font-weight: 700;
+    transition: all 0.25s ease;
+
+    &:hover {
+        background-color: var(--head2-col);
+    }
+
+    &:active {
+        background-color: var(--head3-col);
+    }
+}
+
+
+.body-btn {
+    color: var(--text-col);
+    font-weight: 700;
+    transition: all 0.25s ease;
+
+    &:hover {
+        background-color: var(--body2-col);
+    }
+
+    &:active {
+        background-color: var(--body3-col);
+    }
+}
+
+.b-but {
+    border-radius: 1rem;
+    color: var(--text-col);
+    padding: 10px;
+    font-weight: 700;
+    transition: all 0.25s ease;
+    background-color: inherit;
+
+    &.lg {
+        font-size: larger;
+    }
+
+    &:active {
+        color: var(--but-col);
+    }
+
+    &.bg-head-btn:hover {
+        background-color: var(--head2-col);
+    }
+
+    &.bg-head-btn:active {
+        background-color: var(--head3-col);
+    }
+    
+    &.bg-but-btn {
+        background-color: var(--but-col);
+        color: var(--text-col);
+
+        &:active, &:hover {
+            background-color: var(--but2-col)}
+    }
+
+    &.bg-body-btn:hover {
+        background-color: var(--body2-col);
+    }
+
+    &.bg-body-btn:active {
+        background-color: var(--body3-col);
+    }
+
+    &:disabled {
+        color: grey;
+    }
+
+    .dark-mode &:disabled {
+        color: #aaa;
+    }
+}
+
+.btn.btn-primary {
+    background-color: var(--but-col);
+    border-color: var(--but-col);
+
+    &:hover {
+        background-color: var(--but2-col);
+        border-color: var(--but2-col);
+    }
+}
+
+.btn.btn-outline-primary {
+    color: var(--but-col);
+    border-color: var(--but-col);
+
+    &:hover {
+        background-color: var(--but-col);
+        border-color: var(--but-col);
+        color: white;
+    }
+}
+
+.btn.btn-outline-secondary.mixed {
+    color: var(--but-col);
+}
+
+button:disabled:hover {
+    background-color: transparent;
+}
+
+button, [role=button], label, a {
+    cursor: pointer;
+}
+
+.form-buts {
+    margin: 0 10px;
+}
+
+.switch-btn {
+    border-radius: 1em;
+    width: 30px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    background-color: grey;
+    /* transform: translateY(-5px); */
+    float: right;
+
+    .thumb {
+        position: absolute;
+        width: 18px;
+        left: 0;
+        right: 50%;
+        background-color: grey;
+        border: 1px solid var(--body-col);
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: all .5s ease;
+    }
+
+    &.on {
+        background-color: var(--but-col);
+        
+        .thumb {
+            left: 50%;
+            right: 0;
+            background-color: var(--but-col);
+        }
+    }
+}

@@ -1,0 +1,86 @@
+.feed-zone {
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--body-col);
+    transition: all 0.2s ease-out;
+
+    &::backdrop {
+        backdrop-filter: blur(5px);
+        background-color: #80808050;
+    }
+    
+}
+
+.feedback-body {
+    overflow: hidden auto;
+    padding: 10px;
+
+    & select {
+        font-size: 15px;
+    }
+
+    & textarea {
+        margin: 20px auto;
+        font-size: 18px;
+    }
+
+    &.dragging::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 10px);
+        height: calc(100% - 10px);
+        background-color: #00000070;
+        border: 5px dashed grey;
+    }
+}
+
+.atth-view {
+    width: 200px;
+    height: 150px;
+    background-color: var(--body2-col);
+    flex: 0 0 auto;
+    padding: 10px;
+    border-radius: inherit;
+
+    & > label {
+        font-size: 100px;
+        line-height: 80px;
+        position: absolute;
+        text-align: center;
+        width: 80%;
+        height: 80%;
+        top: 50%;
+        left: 50%;
+        color: grey;
+        transform: translate(-50%, -50%);
+        border-radius: inherit;
+        border: 5px dashed grey;
+    }
+}
+
+.rating {
+    & input {
+        display: none;
+    }
+    
+    .fa-star {
+        color: grey;
+    }
+
+    .fa-star:checked, :not(.checked ~ .fa-star) {
+        color: var(--but-col);
+    }
+
+    &:hover .fa-star:not(:hover ~ *) {
+        text-shadow: 0 0 3px var(--text-col);
+    }
+}
+
+
+form label {
+    font-weight: 500;
+}

@@ -1,0 +1,10 @@
+{
+    "total": 246,
+    "order": "mb",
+    "details": {
+        "images": 0.3,
+        "videos": 0.45,
+        "audio": 0.08,
+        "files": 0.17
+    }
+}

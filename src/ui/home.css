@@ -1,0 +1,27 @@
+#home {
+    background-color: var(--prim-col);
+    
+    &::after {
+        content: '';
+        background-color: #00000000;
+        height: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+    }
+
+    &.veil::after {
+        background-color: #80808044;
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.filter-btn {
+    padding: 5px;
+
+    &:has([type=checkbox]){
+
+    }
+}
