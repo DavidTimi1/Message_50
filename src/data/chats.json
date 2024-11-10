@@ -1,0 +1,27 @@
+[
+    {
+        "id": 3,
+        "time": 1725142641588,
+        "name": "Jacob",
+        "handle": "@Jayjay",
+        "msg": "Hello bruvver",
+        "status": "s"
+    },
+    {
+        "id": 7,
+        "time": 1725142622810,
+        "name": "John",
+        "handle": "@J_ohn",
+        "msg": "Hello bruvver",
+        "status": "s"
+    },
+    {
+        "id": 30,
+        "time": 1725142599711,
+        "name": "John, Peace",
+        "handle": "multiple",
+        "msg": "Hello bruvver",
+        "status": "s",
+        "receivers": ["@J_ohn", "@Peace1"]
+    }
+]

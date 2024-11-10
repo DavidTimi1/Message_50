@@ -1,7 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Button, IconBut } from "./buttons";
-import { once, title, transitionEnd } from "./ui/helpers";
-import { ChatContext } from "./contexts";
+
+
+import { once, title, transitionEnd } from "../../../ui/helpers";
+import { ChatContext } from "../../contexts";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -27,10 +31,17 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
 
                     <div className="grow flex mid-align gap-2">
                         <label className="flex mid-align grow gap-1">
-                            <i className="fa-solid fa-magnifying-glass"></i>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
                             <input autoFocus autoComplete="on" className="search-box not-visible max" ref={inputRef} placeholder="Search..." />
                         </label>
-                        <IconBut className="fa-solid fa-xmark" onClick={clearInput} />
+
+                        <button onClick={clearInput}>
+                            <div className="abs btn-bg fw"></div>
+                            <FontAwesomeIcon icon={faXmark} />
+                            <span className="sr-only">
+                                close
+                            </span>
+                        </button>
                     </div>
                 </div>
 
@@ -46,9 +57,9 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
             <div className="custom-scroll">
                 <div>
                     <ChatUnsaved inputRef={inputRef} closeSearch={close} />
-                    <Button>
+                    <button>
                         Create New  Contact
-                    </Button>
+                    </button>
                 </div>
                 <div className="search-result results-contacts"></div>
                 <div className="search-result results-messages"></div>
