@@ -4,15 +4,15 @@ import wallpaper from './public/Nagi_8.jpg'
 
 import React, { useEffect, useState, useContext, useRef } from "react";
 
-import { runOnComplete, standardUnit } from './helpers.js';
+import { runOnComplete, standardUnit } from '../helpers';
 
-import { ChatContext } from './contexts.js';
-import { IconBut } from "./buttons";
+import { ChatContext } from '../contexts';
+import { IconBut } from "../buttons";
 import ProfilePic from "./contacts";
-import { on, once, sanitize, title, transitionEnd } from "./ui/helpers.js";
-import { IDBPromise, openTrans, DB } from './db.js';
-import { DevMode } from './App.js';
-import { BgImg, TimePast } from './more.js';
+import { on, once, sanitize, title, transitionEnd } from "../ui/helpers";
+import { IDBPromise, openTrans, DB } from '../db';
+import { DevMode } from '../App';
+import { BgImg, TimePast } from './more';
 
 
 

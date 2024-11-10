@@ -1,4 +1,4 @@
-import { on, once } from "./ui/helpers";
+import { on, once } from "../ui/helpers";
 
 
 export class TransferNotification {

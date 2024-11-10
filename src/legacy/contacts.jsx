@@ -1,13 +1,13 @@
 import userLogo from './user-icon.svg';
 
 import { useContext } from "react";
-import { UserContext } from "./contexts";
-import { IDBPromise, openTrans, DB } from './db';
+import { UserContext } from "../contexts";
+import { IDBPromise, openTrans, DB } from '../db';
 import { BgImg } from './more';
-import { sanitize } from './ui/helpers';
+import { sanitize } from '../ui/helpers';
 
 
-export default function ProfilePic({src, children}) {
+export default function ProfilePic({ src, children }) {
     const User = useContext(UserContext), userLogo = src || User.dp
 
     return (

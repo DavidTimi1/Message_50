@@ -1,0 +1,20 @@
+[
+    {
+        "id": 3,
+        "time": 1725142641588,
+        "textContent": "Hello bruvver",
+        "action": "sent"
+    },
+    {
+        "id": 7,
+        "time": 1725142622810,
+        "textContent": "Hello bruvver",
+        "action": "received"
+    },
+    {
+        "id": 30,
+        "time": 1725142599711,
+        "textContent": "Hello bruvver",
+        "action": "sent",
+    },
+]

@@ -3,9 +3,9 @@ import './ui/media.css';
 import { forwardRef, useContext, useEffect, useRef, useState } from "react";
 
 import { View, ViewHead } from "./views";
-import { IconBut } from "./buttons";
-import { $, once, title, transitionEnd } from './ui/helpers';
-import { ToggleOverlay } from './contexts';
+import { IconBut } from "../buttons";
+import { $, once, title, transitionEnd } from '../ui/helpers';
+import { ToggleOverlay } from '../contexts';
 
 
 const viewName = "Storage and Media";
@@ -21,7 +21,7 @@ export function Media({ open }) {
     const mediaHeading =
         <ViewHead>
             <IconBut className="fa-solid fa-angle-left lg" onClick={close} />
-            <div className="view-title grow gap-5 flex mid-align">
+            <div className="view-title grow gap-2 flex mid-align">
                 <span> {viewName} </span>
                 <i className="fa-solid fa-film"></i>
             </div>
@@ -45,7 +45,7 @@ export function Media({ open }) {
             <div className='max flex-col'>
                 <div className="grow">
                     <div className='max' ref={heighter}>
-                        <div className='flex max side-scroll hid-scroll' style={{display: "none"}}>
+                        <div className='flex max side-scroll hid-scroll' style={{ display: "none" }}>
 
                             {/* if not active ...  show nothing
                             After activating, load resources,
@@ -115,7 +115,7 @@ export function Media({ open }) {
         return observer
     }
 
-    function adjustHeight(){
+    function adjustHeight() {
         const el = heighter.current, h = el.clientHeight, child = $("q.side-scroll", el);
         child.style.height = `${h}px`;
         child.style.display = '';
@@ -142,8 +142,8 @@ const Details = forwardRef((props, ref) => {
             <div className='max custom-scroll pad' style={{ overflow: "hidden auto" }}>
                 <div className="storage-brief">
                     <div className="fw">
-                        <div className="fw flex" style={{alignItems: "baseline", color: "var(--tert-col)" }}>
-                            <span style={{ fontSize: "50px"}}>
+                        <div className="fw flex" style={{ alignItems: "baseline", color: "var(--tert-col)" }}>
+                            <span style={{ fontSize: "50px" }}>
                                 55
                             </span>
                             <small>GB</small>
@@ -162,15 +162,15 @@ const Details = forwardRef((props, ref) => {
                 <div>
                     {images.length ?
                         <div className="images-brief fw view-link" data-href="#img-slide">
-                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("images")}> 
+                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("images")}>
                                 <div className="vlt fw"> Photos </div>
                                 <small className='flex mid-align gap-3'>
-                                    <span>{  }</span>
+                                    <span>{ }</span>
                                     <i className="fa-solid fa-angle-right"></i>
                                 </small>
                             </button>
                             <div className="vl-items-cont max gap-3">
-                                { images.length > 5 &&
+                                {images.length > 5 &&
                                     <div className="view-all">
                                         <span className="abs-mid"> {`${images.length - 4}+`} </span>
                                     </div>
@@ -184,15 +184,15 @@ const Details = forwardRef((props, ref) => {
 
                     {videos.length ?
                         <div className="videos-brief fw view-link" data-href="#vid-slide">
-                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("videos")}> 
+                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("videos")}>
                                 <div className="vlt fw"> Videos </div>
                                 <small className='flex mid-align gap-3'>
-                                    <span>{  }</span>
+                                    <span>{ }</span>
                                     <i className="fa-solid fa-angle-right"></i>
                                 </small>
                             </button>
                             <div className="vl-items-cont max gap-3">
-                                { videos.length > 5 &&
+                                {videos.length > 5 &&
                                     <div className="view-all">
                                         <span className="abs-mid"> {`${videos.length - 4}+`} </span>
                                     </div>
@@ -206,15 +206,15 @@ const Details = forwardRef((props, ref) => {
 
                     {audios.length ?
                         <div className="audios-brief fw view-link" data-href="#aud-slide">
-                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("audios")}> 
+                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("audios")}>
                                 <div className="vlt fw"> Audios </div>
                                 <small className='flex mid-align gap-3'>
-                                    <span>{  }</span>
+                                    <span>{ }</span>
                                     <i className="fa-solid fa-angle-right"></i>
                                 </small>
                             </button>
                             <div className="vl-items-cont max gap-3">
-                                { audios.length > 5 &&
+                                {audios.length > 5 &&
                                     <div className="view-all">
                                         <span className="abs-mid"> {`${audios.length - 4}+`} </span>
                                     </div>
@@ -228,15 +228,15 @@ const Details = forwardRef((props, ref) => {
 
                     {others.length ?
                         <div className="others-brief fw view-link" data-href="#oth-slide">
-                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("others")}> 
+                            <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("others")}>
                                 <div className="vlt fw"> Others </div>
                                 <small className='flex mid-align gap-3'>
-                                    <span>{  }</span>
+                                    <span>{ }</span>
                                     <i className="fa-solid fa-angle-right"></i>
                                 </small>
                             </button>
                             <div className="vl-items-cont max gap-3">
-                                { others.length > 5 &&
+                                {others.length > 5 &&
                                     <div className="view-all">
                                         <span className="abs-mid"> {`${others.length - 4}+`} </span>
                                     </div>
@@ -267,7 +267,7 @@ const ImagesList = forwardRef((props, ref) => {
     return (
         <div className="media-view max" data-section="images" ref={ref}>
             <div className='max custom-scroll' style={{ overflow: "hidden auto" }}>
-                <div className='max flex even-space gap-2' style={{flexWrap: "wrap"}}>
+                <div className='max flex even-space gap-2' style={{ flexWrap: "wrap" }}>
                     {images.map(img => {
                         return (
                             <div key={img.id} className="media-grid-item br-5">{img.src}</div>
@@ -293,7 +293,7 @@ const VideosList = forwardRef((props, ref) => {
     return (
         <div className="media-view max" data-section="videos" ref={ref}>
             <div className='max custom-scroll' style={{ overflow: "hidden auto" }}>
-                <div className='max flex even-space gap-2' style={{flexWrap: "wrap"}}>
+                <div className='max flex even-space gap-2' style={{ flexWrap: "wrap" }}>
                     {videos.map(vid => {
                         return (
                             <div key={vid.id} className="media-grid-item br-5">{vid.src}</div>
@@ -317,7 +317,7 @@ const AudiosList = forwardRef((props, ref) => {
     return (
         <div className="media-view max" data-section="audios" ref={ref}>
             <div className='max custom-scroll' style={{ overflow: "hidden auto" }}>
-                <div className='max flex even-space gap-2' style={{flexWrap: "wrap"}}>
+                <div className='max flex even-space gap-2' style={{ flexWrap: "wrap" }}>
                     {audios.map(aud => {
                         return (
                             <div key={aud.id} className="media-grid-item br-5">{aud.src}</div>
@@ -343,11 +343,11 @@ const OthersList = forwardRef((props, ref) => {
                 <div className='fw'>
                     {
                         others.map(oth => {
-                            const {fileSize, fileExt, name} = oth;
+                            const { fileSize, fileExt, name } = oth;
 
                             return (
-                                <div key={oth.id} className="fw br-5" style={{backgroundColor: "var(--sec-col)"}}>
-                                    <div className="fw flex mid-align gap-2" style={{padding: "5px"}}>
+                                <div key={oth.id} className="fw br-5" style={{ backgroundColor: "var(--sec-col)" }}>
+                                    <div className="fw flex mid-align gap-2" style={{ padding: "5px" }}>
                                         <div>
                                             <i className="fa-solid fa-file fa-lg" aria-hidden="true"></i>
                                         </div>

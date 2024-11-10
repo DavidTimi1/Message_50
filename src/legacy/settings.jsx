@@ -2,12 +2,12 @@ import './ui/settings.css';
 
 import { useContext, useEffect, useRef, useState } from "react";
 
-import { ToggleOverlay, UserContext } from './contexts.js'
-import { Button, IconBut } from "./buttons";
-import ProfilePic from './contacts.js';
-import { BgImg } from './more.js';
+import { ToggleOverlay, UserContext } from '../contexts'
+import { Button, IconBut } from "../buttons";
+import ProfilePic from './contacts';
+import { BgImg } from './more';
 import { View, ViewHead } from "./views";
-import { once, transitionEnd } from './ui/helpers.js';
+import { once, transitionEnd } from '../ui/helpers';
 
 
 const viewName = "Settings";
@@ -28,7 +28,7 @@ export default function Settings({ open }) {
                         <span className="sr-only"> Close </span>
                     </IconBut>
                 </div>
-                <div className="grow flex mid-align" style={{justifyContent: "space-between"}}>
+                <div className="grow flex mid-align" style={{ justifyContent: "space-between" }}>
                     <div className="grow flex mid-align gap-1">
                         <i className="fa-solid fa-gear"></i>
                         <span> {viewName} </span>

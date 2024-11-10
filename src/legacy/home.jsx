@@ -3,9 +3,9 @@ import './ui/home.css';
 
 import { useContext, useState } from 'react';
 import MsgInterface from './messaging';
-import { Button, IconBut } from './buttons';
+import { Button, IconBut } from '../buttons';
 import ProfilePic from './contacts';
-import { ToggleOverlay } from './contexts';
+import { ToggleOverlay } from '../contexts';
 import SearchWindow from './search';
 
 const searchFilters = {
@@ -73,7 +73,7 @@ function Header({ startSearch }) {
                     <div className="main-heading">
                         <div className='flex gap-2 mid-align'>
                             <button className="no-btn" type="button" onClick={openNavBar}>
-                                <div className='dp-img' style={{ backgroundColor: "grey", width: "35px"}}>
+                                <div className='dp-img' style={{ backgroundColor: "grey", width: "35px" }}>
                                     <ProfilePic />
                                 </div>
                                 <span className="fa-stack fa-1x hide no-wifi-icon abs">

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Button, IconBut } from "./buttons";
+import { Button, IconBut } from "../buttons";
 import ProfilePic from "./contacts";
-import { on, once, transitionEnd } from "./ui/helpers";
+import { on, once, transitionEnd } from "../ui/helpers";
 
 
 export function Slides({ children, show, closePopUp }) {
