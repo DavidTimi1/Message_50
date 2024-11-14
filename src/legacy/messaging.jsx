@@ -500,7 +500,7 @@ function MsgLink({ id }) {
                 status ?
                     <button className="no-btn fw" style={{ overflow: "hidden" }}>
                         <small className="fw flex-col msg-reply gap-1">
-                            <div className="crop-excess" style={{ color: "var(--but-col)" }}>
+                            <div className="crop-excess" style={{ color: "var(--btn-col)" }}>
                                 {status.name}
                             </div>
                             <div className="crop-excess" style={{ color: "var(--grey)" }}>

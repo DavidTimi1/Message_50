@@ -1,4 +1,5 @@
 import './ui/pallete.css';
+import './ui/views.css';
 import './ui/App.css';
 
 import userDp from './public/Nagi_0.jpg';
@@ -134,25 +135,6 @@ export const Msg50 = () => {
 // }
 
 
-
-
-const app = {
-	// prevFocus: {},
-	activeView: null,
-	defaultView: null,
-	views: ["chats", "contacts", "media", "notifications", "settings"],
-
-	changeActive(view) {
-		// close all open overlays
-		//   appHistory.backToBase();
-
-		//
-		this.activeView.classList.add('close-view');
-
-		dispatchEvent(new Event(view + '-view'));
-	},
-
-}
 
 
 export const USERDATA = await fetch("/api/user")

@@ -28,7 +28,7 @@
     top: 0px;
     transition: all 0.2s ease-in;
 
-    > .content {
+    >.content {
         background-color: inherit;
     }
 
@@ -39,7 +39,7 @@
         box-shadow: 0 1px 3px black;
         color: var(--text-col);
         padding: 5px 10px;
-        transition: left 0.5 ease-in-out; 
+        transition: left 0.5 ease-in-out;
 
         .user-pic {
             aspect-ratio: 1/1;
@@ -65,13 +65,13 @@
             overflow: hidden;
             padding-right: 5px;
         }
-    
+
         .msg-cont {
             display: block;
             position: relative;
             margin-top: 0.5px;
             user-select: none;
-            
+
             &.selected:after {
                 background-color: #ff800055;
                 content: '';
@@ -86,6 +86,7 @@
                 transform: translate(-5px, 10px) scale(0.7);
                 opacity: 0;
             }
+
             &.r-cont.adding {
                 transform: translate(5px, 10px) scale(0.7);
                 opacity: 0;
@@ -114,15 +115,15 @@
             width: calc(100% + 5px);
         }
 
-        
+
         .reply-cont,
         .msg-atth {
             border-radius: 0.5rem;
             min-width: 50vw;
-            
+
             .msg-reply {
                 padding: 5px 10px;
-                border-left: .3rem solid var(--but-col);
+                border-left: .3rem solid var(--btn-col);
             }
 
             /* .received & {
@@ -141,7 +142,7 @@
 }
 
 .msg-atth {
-    & > * {
+    &>* {
         max-width: 100%;
     }
 
@@ -157,7 +158,7 @@
         top: -5px;
         position: absolute;
 
-        & > [role=button] {
+        &>[role=button] {
             padding: 10px;
         }
     }
@@ -180,10 +181,12 @@
         .dark-mode & {
             background-color: #103157;
         }
+
         :not(.dark-mode) & {
             background-color: #eee;
         }
     }
+
     .sent & {
         background-color: #178fd7;
     }
@@ -209,13 +212,13 @@
 .audio-cont {
 
     .p-but {
-        background-color: var(--but-col);
+        background-color: var(--btn-col);
         margin: 10px;
         color: white;
         padding: 3px 0;
         border-radius: 50%;
     }
-    
+
     .aud-dets {
         word-spacing: 2px;
         font-weight: 600;
@@ -231,7 +234,7 @@
 
 
 .r-cont {
-    > .flex-col {
+    >.flex-col {
         --bg: var(--sec-col);
         align-items: flex-start;
         justify-content: left;
@@ -241,9 +244,9 @@
         color: var(--text-col);
         margin-left: 15px;
     }
-    
+
     &:first-child,
-    :not(.r-cont) + & {
+    :not(.r-cont)+& {
         margin-top: 5px !important;
 
         .message-item {
@@ -280,19 +283,19 @@
 }
 
 .s-cont {
-    > .flex-col {
-        --bg:  var(--tert-col);
+    >.flex-col {
+        --bg: var(--tert-col);
         align-items: flex-end;
         justify-content: right;
     }
-    
+
     .message-item {
         color: var(--text-col);
         margin-right: 15px;
     }
 
     &:first-child,
-    :not(.s-cont) + & {
+    :not(.s-cont)+& {
         margin-top: 5px !important;
 
         .message-item {
@@ -335,13 +338,13 @@
     margin-bottom: 5px;
     box-shadow: -10px 0 10px black;
 
-    
+
     .uploaded-file {
         display: grid;
         grid-template-columns: max-content auto;
         margin: 0px 5px;
         padding: 5px;
-        border: 2px solid var(--but-col);
+        border: 2px solid var(--btn-col);
         border-radius: 10px;
 
         * {
@@ -352,7 +355,7 @@
     .opts {
         align-items: baseline;
         background-color: var(--head-col);
-        border-bottom: 2px solid var(--but-col);
+        border-bottom: 2px solid var(--btn-col);
         bottom: calc(100% + 10px);
         flex-wrap: wrap;
         height: max-content;
@@ -371,7 +374,7 @@
                 transform: scale(0.8) translateY(10px);
             }
         }
-    
+
         label {
             transform: scale(1) translateY(0px);
             transition: all .2s .1s cubic-bezier(0.175, 0.885, 0.5, 1.5);
@@ -387,7 +390,7 @@
 
     .act-icon {
         box-shadow: 1px 1px 5px #222;
-        
+
         &:hover {
             box-shadow: inset 0px -2px 5px #222;
         }
@@ -406,8 +409,8 @@
         text-align: center;
         border-radius: 20px;
 
-        & label[role=button]:hover{
-            color: var(--but-col);
+        & label[role=button]:hover {
+            color: var(--btn-col);
             transform: scale(1.5);
             text-shadow: 0 0 3px black;
             margin: 15px;

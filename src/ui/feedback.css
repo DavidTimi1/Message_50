@@ -10,7 +10,7 @@
         backdrop-filter: blur(5px);
         background-color: #80808050;
     }
-    
+
 }
 
 .feedback-body {
@@ -46,7 +46,7 @@
     padding: 10px;
     border-radius: inherit;
 
-    & > label {
+    &>label {
         font-size: 100px;
         line-height: 80px;
         position: absolute;
@@ -66,13 +66,14 @@
     & input {
         display: none;
     }
-    
+
     .fa-star {
         color: grey;
     }
 
-    .fa-star:checked, :not(.checked ~ .fa-star) {
-        color: var(--but-col);
+    .fa-star:checked,
+    :not(.checked ~ .fa-star) {
+        color: var(--btn-col);
     }
 
     &:hover .fa-star:not(:hover ~ *) {

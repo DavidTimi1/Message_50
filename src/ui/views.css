@@ -31,21 +31,22 @@
     left: 0px;
     top: 0px;
     transition: all 0.25s ease-out;
-    transform: translateY(0px);
+    transform: translate(0px, 0px);
     opacity: 1;
     position: fixed;
     width: 100%;
     visibility: visible;
     z-index: 50;
 
+
     &.close {
-        transform: translateY(10%);
+        transform: translate(0px, 10%);
         opacity: 0;
         visibility: hidden;
         z-index: -1;
-    }
 
-    .content {
-        padding: 5px 0px;
+        &.trans-right {
+            transform: translate(10%, 0px);
+        }
     }
 }

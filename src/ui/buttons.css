@@ -49,7 +49,7 @@
     }
 
     &:active {
-        color: var(--but-col);
+        color: var(--btn-col);
     }
 
     &.bg-head-btn:hover {
@@ -59,13 +59,15 @@
     &.bg-head-btn:active {
         background-color: var(--head3-col);
     }
-    
+
     &.bg-but-btn {
-        background-color: var(--but-col);
+        background-color: var(--btn-col);
         color: var(--text-col);
 
-        &:active, &:hover {
-            background-color: var(--but2-col)}
+        &:active,
+        &:hover {
+            background-color: var(--btn2-col)
+        }
     }
 
     &.bg-body-btn:hover {
@@ -77,44 +79,43 @@
     }
 
     &:disabled {
-        color: grey;
-    }
-
-    .dark-mode &:disabled {
-        color: #aaa;
+        color: light-dark( grey, #aaa );
     }
 }
 
 .btn.btn-primary {
-    background-color: var(--but-col);
-    border-color: var(--but-col);
+    background-color: var(--btn-col);
+    border-color: var(--btn-col);
 
     &:hover {
-        background-color: var(--but2-col);
-        border-color: var(--but2-col);
+        background-color: var(--btn2-col);
+        border-color: var(--btn2-col);
     }
 }
 
 .btn.btn-outline-primary {
-    color: var(--but-col);
-    border-color: var(--but-col);
+    color: var(--btn-col);
+    border-color: var(--btn-col);
 
     &:hover {
-        background-color: var(--but-col);
-        border-color: var(--but-col);
+        background-color: var(--btn-col);
+        border-color: var(--btn-col);
         color: white;
     }
 }
 
 .btn.btn-outline-secondary.mixed {
-    color: var(--but-col);
+    color: var(--btn-col);
 }
 
 button:disabled:hover {
     background-color: transparent;
 }
 
-button, [role=button], label, a {
+button,
+[role=button],
+label,
+a {
     cursor: pointer;
 }
 
@@ -147,12 +148,12 @@ button, [role=button], label, a {
     }
 
     &.on {
-        background-color: var(--but-col);
-        
+        background-color: var(--btn-col);
+
         .thumb {
             left: 50%;
             right: 0;
-            background-color: var(--but-col);
+            background-color: var(--btn-col);
         }
     }
 }

@@ -38,6 +38,10 @@ export const Msg50App = () => {
 	function toggleMessaging(handle, id) {
 		setChatting(handle);
 		jumpTo(id);
+
+        if (handle){
+            return <Navigate to='/' />
+        }
 	}
 
 	function toggleOverlay(name, value) {

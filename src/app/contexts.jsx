@@ -5,6 +5,4 @@ export const ThemeContext = createContext(null);
 
 export const ChatContext = createContext(null);
 
-export const UserContext = createContext(null);
-
 export const ToggleOverlay = createContext(null);

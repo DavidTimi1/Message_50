@@ -16,7 +16,7 @@ export function NavBar({ open }) {
     const toggleOverlay = useContext(ToggleOverlay);
 
     useEffect(() => {
-        let t_id =  open && setTimeout(() => mainRef.current.classList.remove("close"));
+        let t_id = open && setTimeout(() => mainRef.current.classList.remove("close"));
 
         return () => {
             t_id && clearTimeout(t_id);
@@ -28,7 +28,7 @@ export function NavBar({ open }) {
         <aside className="side-wrapper mega-max close" ref={mainRef} onClick={close}>
             <div className="side-bar fw">
                 <div className="content custom-scroll max">
-                    <div className='flex-col fw' style={{ overflow: "hidden auto" }}>
+                    <div className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw">
                             <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }}>
                                 <div className='dp-img'>
@@ -54,42 +54,37 @@ export function NavBar({ open }) {
                         <NavItem href="/app/settings" icon={faGears}>
                             Settings
                         </NavItem>
-                    </div>
-                    <div>
-                        <footer className="small text-center text-muted">
-                            <div className='flex-col mid-align fw'>
-                                {/* Button for comments */}
-                                <button className="no-btn fw" onClick={openFeedback}>
-                                    <div className="flex fw">
-                                        <FontAwesomeIcon icon={faComments} size="lg" />
-                                        <div className="grow">Feedback</div>
-                                    </div>
-                                </button>
-
-                                {/* More actions at navbar */}
-                                <div className='flex fw mid-align even-space' style={{flexWrap: "wrap"}}>
+                        <div style={{marginTop: "auto"}}>
+                            <button className="no-btn nav-link fw" onClick={openFeedback}>
+                                <div className="flex fw mid-align gap-2">
+                                    <FontAwesomeIcon icon={faComments} />
+                                    <span>Feedback</span>
+                                </div>
+                            </button>
+                            <div className="nav-link fw">
+                                <div className='flex fw mid-align even-space' style={{ flexWrap: "wrap" }}>
                                     <button>
-                                        <FontAwesomeIcon icon={faBoltLightning} size="lg" />
+                                        <FontAwesomeIcon icon={faBoltLightning} size="xl" />
                                         <span className="sr-only">
                                             Upgrade to plus
                                         </span>
                                     </button>
-                                    
+
                                     <button onClick={changeTheme}>
-                                        <FontAwesomeIcon icon={faSun} className="sun" size="lg" />
-                                        <FontAwesomeIcon icon={faMoon} className="moon" size="lg" />
+                                        <FontAwesomeIcon icon={faSun} className="sun" size="xl" />
+                                        <FontAwesomeIcon icon={faMoon} className="moon" size="xl" />
                                         <span className="sr-only">
                                             Switch theme
                                         </span>
                                     </button>
                                 </div>
                             </div>
-                        </footer>
+                        </div>
                     </div>
                 </div>
                 <div className='abs' style={{ right: "10px", top: "10px" }}>
                     <button onClick={close}>
-                        <FontAwesomeIcon icon={faXmark} size="lg" />
+                        <FontAwesomeIcon icon={faXmark} />
                         <span className="sr-only"> Close </span>
                     </button>
                 </div>
@@ -103,7 +98,7 @@ export function NavBar({ open }) {
         mainRef.current.classList.add("close");
     }
 
-    function openFeedback(){
+    function openFeedback() {
         toggleOverlay("feedback", true)
     }
 }
