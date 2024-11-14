@@ -14,12 +14,12 @@ export const Header = ({ startSearch }) => {
             <div className="main-heading mob">
                 <div className='flex gap-2 mid-align'>
                     <button className="no-btn" type="button" onClick={openNavBar}>
-                        <div className='dp-img' style={{ backgroundColor: "grey", width: "35px"}}>
+                        <div className='dp-img' style={{ backgroundColor: "grey", width: "35px" }}>
                             {/* profile pic */}
                         </div>
                         <span className="no-wifi-icon abs">
-                            <FontAwesomeIcon icon={faWifi} size="lg" />
-                            <span className="abs-mid" style={{textShadow: "0 0 2px white"}}>
+                            <FontAwesomeIcon icon={faWifi} />
+                            <span className="abs-mid" style={{ textShadow: "0 0 2px white" }}>
                                 <FontAwesomeIcon icon={faXmark} color="red" />
                             </span>
                         </span>
@@ -28,7 +28,7 @@ export const Header = ({ startSearch }) => {
                         <h4 className='hero-txt'> Message50 </h4>
                         <button onClick={startSearch}>
                             <div className="flex mid-align gap-2">
-                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                                <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" />
                                 <span className='sr-only'>
                                     Search
                                 </span>

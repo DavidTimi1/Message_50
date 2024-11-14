@@ -1,0 +1,37 @@
+#chats {
+
+.chat-list {
+    box-sizing: border-box;
+    overflow: hidden auto;
+    scroll-behavior: smooth;
+
+    .user {
+        font-size: 120%;
+        font-weight: 500;
+    }
+
+    .chat-cont {
+
+        > :first-child {
+            background-color: red;
+            left: 50%;
+            top: 50%;
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+        }
+
+        > :nth-child(2) {
+            background-color: var(--body-col);
+        }
+    }
+    
+    .chat-cont:hover {
+        cursor: pointer;
+
+        & > *:nth-child(2) {
+            background-color: var(--body2-col);
+        }
+    }
+
+}
+}

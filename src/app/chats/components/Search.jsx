@@ -3,17 +3,19 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import { once, title, transitionEnd } from "../../../ui/helpers";
 import { ChatContext } from "../../contexts";
+import { IconBtn } from "../../components/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 
 
 export default function SearchWindow({ show, closeSearch, initFilters }) {
-    const [filters, setFilters] = useState(initFilters);
+    const filters = initFilters ?? [];
     const inputRef = useRef(null), myRef = useRef(null);
 
-    const filterKeys = Object.keys(filters);
+    const only = filters.includes("only") && filters.length === 2;
+
 
     useEffect(() => {
         let t_id = show && setTimeout(() => myRef.current.classList.remove("close"), 50)
@@ -24,15 +26,21 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
 
     return (
         show &&
-        <div className="interface close" ref={myRef}>
+        <div className="interface close search" ref={myRef}>
             <div className="fw flex-col mid-align">
                 <div className="header fw flex mid-align gap-2">
-                    <IconBut className="fa-solid fa-angle-left" onClick={close} />
+                    <IconBtn icon={faAngleLeft} onClick={close}>
+                        close search
+                    </IconBtn>
 
                     <div className="grow flex mid-align gap-2">
-                        <label className="flex mid-align grow gap-1">
+                        <label className="flex mid-align grow gap-1 br-1 nv-input">
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            <input autoFocus autoComplete="on" className="search-box not-visible max" ref={inputRef} placeholder="Search..." />
+
+                            <input autoFocus autoComplete="on" 
+                                className="search-box not-visible max" ref={inputRef} 
+                                placeholder={`Search ${only? filters[0] : ''}...`} 
+                            />
                         </label>
 
                         <button onClick={clearInput}>
@@ -47,8 +55,10 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
 
                 <div className="filters-list flex mid-align" style={{ flexWrap: "wrap" }}>
                     {
-                        filterKeys.map(filter =>
-                            <FilterButton key={filter} id={filter} state={filters[filter]} />
+                        !only && (
+                            Object.keys(searchFilters).map(filter =>
+                                <FilterButton key={filter} id={filter} state={filters.includes(filter)} />
+                            )
                         )
                     }
                 </div>
@@ -72,14 +82,6 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
         inputRef.current.value = '';
     }
 
-    function FilterButton({ id, state }) {
-        return (
-            <label className="flex mid-align filter-btn">
-                <input type="checkbox" className="" defaultChecked={state} />
-                <span>{title(id)}</span>
-            </label>
-        )
-    }
 
     function close() {
         const el = myRef.current;
@@ -89,7 +91,17 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
 }
 
 
-function ChatUnsaved({ searchBoxRef, closeSearch }) {
+const FilterButton = ({ id, state }) => {
+    return (
+        <label className="flex mid-align filter-btn">
+            <input type="checkbox" className="" defaultChecked={state} />
+            <span>{title(id)}</span>
+        </label>
+    )
+}
+
+
+const ChatUnsaved = ({ searchBoxRef, closeSearch }) => {
     const diaRef = useRef(null), inputRef = useRef(null);
     const [token, setToken] = useState('');
     const message = useContext(ChatContext).set;
@@ -143,4 +155,17 @@ async function getDetails(id) {
     return fetch("/users/" + id)
         .then(res => res.json())
     // show not found error
+}
+
+
+
+const searchFilters = {
+    unread: true,
+    contacts: true,
+    messages: true,
+    media: false,
+    images: false,
+    videos: false,
+    audios: false,
+    files: false
 }

@@ -1,0 +1,13 @@
+#chats {
+    background-color: var(--body-col);
+    color: var(--text-col);
+
+
+    .search {
+
+        .header {
+            padding: 10px;
+        }
+        
+    }
+}

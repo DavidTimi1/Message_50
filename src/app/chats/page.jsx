@@ -8,14 +8,15 @@ import { SideShelf } from './components/SideShelf';
 import { Header } from './components/Header';
 import { ChatList } from './components/ChatList';
 import SearchWindow from './components/Search';
+import MsgInterface from './components/Messaging';
 
 
-export const ChatsPage = () => {
-    const [search, setSearch] = useState({ on: false, filters: searchFilters || {} });
+export const ChatsPage = ({viewMsg}) => {
+    const [search, setSearch] = useState({ on: false });
     const initFilters = search.filters;
 
     return (
-        <div id="chats max">
+        <div id="chats" className='max'>
             {/* <div className="abs-mid">
                 <p className="fs-1 fw-1000"> 
                     Welcome to Chats | Message50 
@@ -36,6 +37,8 @@ export const ChatsPage = () => {
                 </div>
             </div>
 
+            <MsgInterface viewMsg={viewMsg} />
+
             <SearchWindow initFilters={initFilters} show={search.on} closeSearch={() => setSearch({ on: false })} />
                 
             <SideShelf searchContacts={searchContacts} />
@@ -43,19 +46,9 @@ export const ChatsPage = () => {
     )
     
     function searchContacts() {
-        setSearch({ on: true, filters: ["contacts"] })
+        setSearch({ 
+            on: true, 
+            filters: ["contacts", "only"]
+        });
     }
-}
-
-
-
-const searchFilters = {
-    unread: true,
-    contacts: true,
-    messages: true,
-    media: false,
-    images: false,
-    videos: false,
-    audios: false,
-    files: false
 }

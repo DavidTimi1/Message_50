@@ -1,0 +1,70 @@
+.sideshelf {
+    backdrop-filter: blur(2px);
+    bottom: 20px;
+    padding: 10px;
+    right: 20px;
+
+    
+    > button {
+        border-radius: 50%;
+        padding: 0;
+
+        .bg {
+            aspect-ratio: 1/1;
+            background-color: var(--btn-col);
+            border-radius: 50%;
+            padding: 20px;
+        }
+
+        &:hover .bg {
+            background-color: var(--btn2-col);
+        }
+    }
+
+}
+
+.chatlist {
+    box-sizing: border-box;
+    overflow: hidden auto;
+    padding-top: 0px;
+    scroll-behavior: smooth;
+    top: 0px;
+    width: 100%;
+
+    .user {
+        font-size: 120%;
+        font-weight: 500;
+    }
+
+    .chatbg {
+        left: 50%;
+        top: 50%;
+        width: calc(100% - 2px);
+        height: calc(100% - 2px);
+    }
+
+}
+
+
+.msging {
+
+    .heading {
+        background-color: var(--body-col);
+        border-bottom: 1px solid var(--sec-col);
+        box-shadow: 0 1px 2px black;
+        color: var(--text-col);
+        padding: 5px 15px;
+    }
+
+
+    .content {
+        padding: 10px;
+        overflow: hidden auto;
+        scroll-behavior: smooth;
+
+        &.blockscroll {
+            overflow: hidden;
+            padding-right: 5px;
+        }
+    }
+}

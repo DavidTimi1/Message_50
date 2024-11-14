@@ -1,3 +1,5 @@
+import './ChatList.css';
+
 import { useContext, useState } from 'react'
 
 import { ChatContext } from '../../contexts';
@@ -46,13 +48,13 @@ const ChatItem = ({data, Message}) => {
     const {id, time, name, handle, msg, status} = data;
 
     return (
-        <div className='chat-cont br-5'>
-            <div className='chat-bg abs-mid br-5' style={{backgroundColor: "red"}}>
+        <div className='chat-cont br-1'>
+            <div className='abs-mid br-1 max'>
                 <div className='fw flex mid-align' style={{justifyContent: "space-between", padding: "10px 5px"}}>
-
+                    
                 </div>
             </div>
-            <div className='max mid-align flex gap-2 br-5' style={{backgroundColor: "var(--prim-col)", padding: "10px 5px"}} onClick={handleClick}>
+            <div className='max mid-align flex gap-2 br-1' style={{padding: "10px 5px"}} onClick={handleClick}>
                 <div className='dp-img'>
                     
                 </div>
@@ -76,13 +78,13 @@ const ChatItem = ({data, Message}) => {
 
 
     function handleClick(e){
-        // e.stopPropagation();
+        e.stopPropagation();
 
         Message(handle)
     }
 }
 
-export function TimePast({ time }) {
+function TimePast({ time }) {
     const [value, setValue] = useState(timePast(time));
 
     setTimeout(() => setValue(timePast(time)), 60000);
