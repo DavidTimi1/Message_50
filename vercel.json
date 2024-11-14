@@ -2,5 +2,8 @@
     "rewrites": [
         { "source": "/(.*)", "destination": "/"}
     ],
-    "target": "chrome99"
+    
+    "engines": {
+        "node": "16.x"
+    }
 }

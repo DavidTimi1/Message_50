@@ -134,21 +134,16 @@ export const Msg50 = () => {
 // 	}
 // }
 
-async function getUserData(){
-
-	return (
-		await fetch("/api/user")
-			.then(res => res.json())
-			.then(json => json)
-			.catch(err => {
-				console.error(err)
-				return { error: true }
-		})
-	)
-}
 
 
-export const USERDATA = getUserData();
+
+export const USERDATA = await fetch("/api/user")
+	.then(res => res.json())
+	.then(json => json)
+	.catch(err => {
+		console.error(err)
+		return { error: true }
+})
 
 
 export const userDevData = {
