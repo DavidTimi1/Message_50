@@ -145,7 +145,7 @@ fetch("/api/user")
 	})
 	.catch(err => {
 		console.error(err)
-		return { error: true }
+		USERDATA = { error: true }
 })
 
 
