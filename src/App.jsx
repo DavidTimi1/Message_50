@@ -136,10 +136,13 @@ export const Msg50 = () => {
 
 
 
+let USERDATA;
 
-export const USERDATA = await fetch("/api/user")
+fetch("/api/user")
 	.then(res => res.json())
-	.then(json => json)
+	.then(json => {
+		USERDATA = json;
+	})
 	.catch(err => {
 		console.error(err)
 		return { error: true }
