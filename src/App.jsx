@@ -26,7 +26,7 @@ export const DevMode = true;
 
 export const Msg50 = () => {
 	const [userData, setUserData] = useState(USERDATA);
-	const userErr = userData.error;
+	const userErr = userData?.error;
 	
 	useEffect(() => {
 		let ignore = false;
