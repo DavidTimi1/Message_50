@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { ChatContext, ToggleOverlay } from './contexts';
-import { NavBar } from "./components/navbar";
+import { NavBar } from "./components/Navbar";
 import { ChatsPage } from "./chats/page";
 import { MediaPage } from "./media/page";
 import { NotificationsPage } from "./notifications/page";
