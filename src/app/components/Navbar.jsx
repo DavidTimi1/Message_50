@@ -8,6 +8,7 @@ import { once, transitionEnd } from "../../utils";
 import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
+import { IconBtn } from "./Button";
 
 
 export function NavBar({ open }) {
@@ -61,32 +62,36 @@ export function NavBar({ open }) {
                                     <span>Feedback</span>
                                 </div>
                             </button>
-                            <div className="nav-link fw">
+                            <div className="fw">
                                 <div className='flex fw mid-align even-space' style={{ flexWrap: "wrap" }}>
-                                    <button>
-                                        <FontAwesomeIcon icon={faBoltLightning} size="xl" />
-                                        <span className="sr-only">
-                                            Upgrade to plus
-                                        </span>
-                                    </button>
+                                    <IconBtn icon={faBoltLightning} onClick={close}>
+                                        Upgrade to plus
+                                    </IconBtn>
 
-                                    <button onClick={changeTheme}>
-                                        <FontAwesomeIcon icon={faSun} className="sun" size="xl" />
-                                        <FontAwesomeIcon icon={faMoon} className="moon" size="xl" />
-                                        <span className="sr-only">
-                                            Switch theme
-                                        </span>
-                                    </button>
+                                    <label onClick={ e => {
+                                        e.stopPropagation();
+                                        changeTheme();
+                                    }}>
+                                        <div className="sun">
+                                            <IconBtn icon={faSun}>
+                                                Switch to dark theme
+                                            </IconBtn>
+                                        </div>
+                                        <div className="moon">
+                                            <IconBtn icon={faMoon}>
+                                                Switch to light theme
+                                            </IconBtn>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className='abs' style={{ right: "10px", top: "10px" }}>
-                    <button onClick={close}>
-                        <FontAwesomeIcon icon={faXmark} />
-                        <span className="sr-only"> Close </span>
-                    </button>
+                    <IconBtn icon={faXmark} onClick={close}>
+                        Close
+                    </IconBtn>
                 </div>
             </div>
         </aside>

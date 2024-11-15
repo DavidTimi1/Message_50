@@ -152,15 +152,15 @@
 }
 
 .msgcont .timestamp {
-    color: grey;
-    text-shadow: 0 0 5px black;
+    color: var(--text2-col);
+    text-shadow: 0 1 1px var(--text-col);
     letter-spacing: 1px;
 }
 
 
 .r-cont {
     >.flex-col {
-        --bg: var(--sec-col);
+        --bg: light-dark(#aaa, #444);
         align-items: flex-start;
         justify-content: left;
     }
@@ -209,7 +209,7 @@
 
 .s-cont {
     >.flex-col {
-        --bg: var(--tert-col);
+        --bg: var(--btn-col);
         align-items: flex-end;
         justify-content: right;
     }

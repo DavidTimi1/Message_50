@@ -6,7 +6,7 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 import { ChatContext } from '../../contexts';
 import { IconBtn } from "../../components/Button";
 
-import { on, once, title, transitionEnd, runOnComplete, standardUnit } from "../../../utils";
+import { on, once, title, transitionEnd, runOnComplete, standardUnit, int } from "../../../utils";
 import { IDBPromise, openTrans, DB } from '../../../db';
 import { DevMode } from '../../../App';
 
@@ -25,9 +25,7 @@ export default function MsgInterface({ viewMsg }) {
     const mainRef = useRef(null);
     const chatContext = useContext(ChatContext), chatting = chatContext.cur;
 
-    const online = true;
-
-    const select = state?.selected, selecting = select?.length > 0 //, options = state.opts;
+    const select = state?.selected;
 
 
     useEffect(() => {
@@ -44,46 +42,12 @@ export default function MsgInterface({ viewMsg }) {
         chatting &&
         <div id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef} >
             <div className="max flex-col">
-                <div className={`${styles.heading} fw flex mid-align gap-2`}>
-                    {
-                        selecting ?
-                            <>
-                                <IconBtn icon={faXmark} onClick={clearSelection}>
-                                    Clear Selection
-                                </IconBtn>
-                                <div className="flex fw mid-align grow">
-                                    <div className="fh grow">
-                                        <span> {select.length} </span>
-                                        <small>selected</small>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <IconBtn icon={faCopy} />
-                                        <IconBtn icon={faShare} />
-                                        <IconBtn icon={faTrash} />
-                                        <IconBtn icon={faCircleInfo} />
-                                    </div>
-                                </div>
-                            </>
-                            :
-                            <>
-                                <IconBtn icon={faAngleLeft} onClick={close}>
-                                    Back
-                                </IconBtn>
-                                <div className="flex-col fw mid-align grow gap-1" style={{ justifyContent: "center" }}>
-                                    <div className="dp-img" style={{width: "40px"}}>
-                                    </div>
+                <Heading
+                    clearSelection={clearSelection}
+                    closeMsging={close}
+                    selected={select}
+                />
 
-                                    <div className="flex gap-2" style={{ justifyContent: "space-between" }}>
-                                        <div className="fs-3 fw-800"> {chatting && title(chatting)} </div>
-                                        <small style={{ color: online ? "green" : "grey" }}> 
-                                            {online ? "Online" : online} 
-                                        </small>
-                                    </div>
-                                </div>
-                            </>
-
-                    }
-                </div>
                 <div className="fw grow flex-col">
                     <div className='abs max'>
                     </div>
@@ -91,7 +55,7 @@ export default function MsgInterface({ viewMsg }) {
                         <MsgList
                             replyTo={replyTo}
                             toggleSelect={toggleSelection}
-                            selected={state?.selected?.slice() ?? []}
+                            selected={select ?? []}
                             viewMsg={viewMsg}
                         />
                     }
@@ -101,7 +65,6 @@ export default function MsgInterface({ viewMsg }) {
                         <Footer reply={reply} previewFile={previewFile} />
                     </div>
                 </div>
-
 
             </div>
         </div>
@@ -116,22 +79,28 @@ export default function MsgInterface({ viewMsg }) {
     }
 
     function toggleSelection(id) {
-        let curSelection = state?.selected?.slice() ?? [];
+        if (!id) return 
+
+        id = int(id);
+        let curSelection = select ?? [];
         curSelection.length === 0 && navigator.vibrate(100);
 
-        if (curSelection.includes(id)) {
-            let index = curSelection.indexOf(id);
+        setState( prevState => {
+            const selections = prevState?.selected?.slice?.() ?? [];
+            const index = selections.indexOf(id);
 
-            setState({
-                ...state,
-                selected: curSelection.splice(index, 1)
+            if (index > -1) {
+                selections.splice(index, 1);
+
+            } else {
+                selections.push(id)
+            }
+
+            return ({
+                ...prevState,
+                selected: selections
             })
-            return
-        }
 
-        setState({
-            ...state,
-            selected: curSelection.push(id)
         })
 
     }
@@ -165,6 +134,58 @@ export default function MsgInterface({ viewMsg }) {
 }
 
 
+const Heading = ({selected, clearSelection, closeMsging}) => {
+    const chatContext = useContext(ChatContext), chatting = chatContext.cur;
+    const selecting = selected?.length, online = true; // options = state.opts
+
+    return (
+        <div className={`${styles.heading}`}>
+            <div className={selecting && "disappear"}>
+                <div className="fw flex mid-align gap-2 flex">
+                    <IconBtn icon={faAngleLeft} onClick={closeMsging}>
+                        Back
+                    </IconBtn>
+                    <div className="flex-col fw mid-align grow gap-1" style={{ justifyContent: "center" }}>
+                        <div className="dp-img" style={{width: "40px"}}>
+                        </div>
+
+                        <div className="flex gap-2" style={{ justifyContent: "space-between" }}>
+                            <div className="fs-3 fw-800"> {chatting && title(chatting)} </div>
+                            <small style={{ color: online ? "green" : "grey" }}> 
+                                {online ? "Online" : online} 
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {
+                selecting ?
+                    <div className='abs-mid-y fw flex mid-align gap-2'>
+                        <IconBtn icon={faXmark} onClick={clearSelection}>
+                            Clear Selection
+                        </IconBtn>
+                        <div className="flex fw mid-align grow">
+                            <div className="fh grow">
+                                <span> {selecting} </span>
+                                <small> Selected </small>
+                            </div>
+                            <div className="flex gap-2">
+                                <IconBtn icon={faCopy} />
+                                <IconBtn icon={faShare} />
+                                <IconBtn icon={faTrash} />
+                                <IconBtn icon={faCircleInfo} />
+                            </div>
+                        </div>
+                    </div>
+                : 
+                    <></>
+            }
+        </div>
+    )
+}
+
+
 function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
     const [msgList, setMsgList] = useState(DevMode ? devMsgs : []);
     const listElem = useRef();
@@ -179,10 +200,15 @@ function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
     })
 
     return (
-        <div className={`${styles.content} msglist fw grow custom-scroll`} ref={listElem}>
+        <div className={`${styles.content} msglist fw grow custom-scroll`} 
+            onContextMenu={handleContextMenu}
+            onClick={handleClick}
+            ref={listElem}
+        >
             {
                 msgList.map(msg => {
                     let select = selected.includes(msg.id);
+                    console.log(select, msg.id, selected);
 
                     return (
                         <MsgItem
@@ -199,6 +225,27 @@ function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
 
         </div>
     )
+
+    function handleContextMenu(e){
+        const {target} = e;
+        e.preventDefault();
+
+        const el = target.closest(".msgcont"), id = el?.dataset?.id;
+
+        if (id){
+            toggleSelect(id)            
+        }
+    }
+
+    function handleClick(e){
+        const {target} = e;
+
+        const el = target.closest(".msgcont"), id = el?.dataset?.id;
+
+        if (id){
+            selectOn && toggleSelect(id)            
+        }
+    }
 
 
     function blockUp(bool) {

@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faPlus, faWifi, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { IconBtn } from "../../components/Button";
 
 
 export const Header = ({ startSearch }) => {
@@ -26,14 +27,9 @@ export const Header = ({ startSearch }) => {
                     </button>
                     <div className='flex grow mid-align' style={{ justifyContent: "space-between" }}>
                         <h4 className='hero-txt'> Message50 </h4>
-                        <button onClick={startSearch}>
-                            <div className="flex mid-align gap-2">
-                                <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" />
-                                <span className='sr-only'>
-                                    Search
-                                </span>
-                            </div>
-                        </button>
+                        <IconBtn icon={faMagnifyingGlass} onClick={startSearch}>
+                            Search
+                        </IconBtn>
                     </div>
                 </div>
             </div>

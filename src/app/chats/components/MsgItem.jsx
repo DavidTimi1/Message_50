@@ -14,10 +14,10 @@ export const MsgItem = (props) => {
     const { details, id, select, replyTo, blockUp } = props;
     const { reply, file, textContent, action, time } = details;
 
-    const itemRef = useRef(null);
+    const itemRef = useRef(null), msgElem = useRef(null);
 
     return (
-        <div className={`msgcont ${action === "sent" ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onClick={handleClick} onContextMenu={select.toggle} onTouchStart={handleTouchStart}>
+        <div data-id={id} className={`msgcont ${action === "sent" ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
             <div className="flex-col fw gap-1">
                 <div className="msg-item" ref={itemRef}>
                     {reply && <MsgLink id={reply}></MsgLink>}
@@ -86,11 +86,6 @@ export const MsgItem = (props) => {
         on('touchmove', document, moveMsg, { passive: true })
         once('touchend', document, endMsgTouch)
 
-    }
-
-
-    function handleClick(e) {
-        select.on && select.toggle(id);
     }
 }
 

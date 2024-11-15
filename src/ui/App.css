@@ -29,8 +29,8 @@
   --body2-col: light-dark( hsl(0, 0%, 78%), var(--darkest-blue2) );
   --body3-col: light-dark( hsl(0, 0%, 65%), var(--darkest-blue3) );
 
-  --text-col: light-dark(black, white);
-  --text2-col: light-dark(white, black);
+  --text-col: light-dark(#222, #ddd);
+  --text2-col: light-dark(#444, #aaa);
 
   --tert-col: #bb5d00;
   --prim-col: var(--darkest-blue);
@@ -126,7 +126,8 @@ aside.side-wrapper {
 .side-bar {
   --bg: var(--body-col);
   background-color: var(--body-col);
-  border-radius: 0px 20px 20px 0px;
+  border-radius: 0px 10px 10px 0px;
+  color: var(--text-col);
   max-width: 350px;
   height: 100%;
   padding: 10px 5px 10px 5px;
@@ -150,7 +151,6 @@ aside.side-wrapper {
   font-size: larger;
   font-weight: 600;
   padding: 20px 10px 20px 20px;
-  text-shadow: 0 0 1px black;
   text-decoration: none;
   margin-right: 5px;
 
