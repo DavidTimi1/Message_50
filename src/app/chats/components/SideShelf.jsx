@@ -9,7 +9,7 @@ export const SideShelf = ({ searchContacts }) => {
     const toggleOverlay = useContext(ToggleOverlay);
 
     return (
-        <div className="sideshelf abs gap-1 flex-col mob">
+        <div className="sideshelf abs gap-2 flex-col mob">
             <button className="no-btn icon-btn" onClick={openAIChat}>
                 <div className="abs-mid btn-bg fw"></div>
                 <div className='img-txt'>

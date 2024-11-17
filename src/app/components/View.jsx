@@ -19,6 +19,22 @@ export const View = forwardRef(({ children, viewHead }, ref) => {
     )
 })
 
+export const RouteContainer = forwardRef(({ children, heading, id }, ref) => {
+
+    return (
+        <div className="route-container max close" id={id} ref={ref}>
+            <div className="max">
+                <div className="flex-col max">
+                    {heading}
+                    <div className="fw grow">
+                        {children}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+})
+
 
 export function ViewHead({ children }) {
     return (

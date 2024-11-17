@@ -29,7 +29,7 @@
   --body2-col: light-dark( hsl(0, 0%, 78%), var(--darkest-blue2) );
   --body3-col: light-dark( hsl(0, 0%, 65%), var(--darkest-blue3) );
 
-  --text-col: light-dark(#222, #ddd);
+  --text-col: light-dark(#111, #eee);
   --text2-col: light-dark(#444, #aaa);
 
   --tert-col: #bb5d00;

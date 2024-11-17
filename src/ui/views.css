@@ -1,5 +1,4 @@
 .view-container {
-    background-color: var(--prim-col);
     left: 0px;
     top: 0px;
     transition: all 0.25s ease-out;
@@ -14,13 +13,6 @@
         opacity: 0;
         visibility: hidden;
         z-index: -10;
-    }
-
-    .heading {
-        padding: 5px 20px;
-        background-color: var(--head-col);
-        border-bottom: 1px solid var(--head2-col);
-        box-shadow: 0 1px 3px black;
     }
 }
 
@@ -48,5 +40,36 @@
         &.trans-right {
             transform: translate(10%, 0px);
         }
+    }
+}
+
+.route-container {
+    overflow: hidden;
+
+    > * {
+        transition: all 0.25s ease-out;
+        transform: translateX(0px);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    &.close > * {
+        transform: translateX(20%);
+        opacity: 0;
+        visibility: hidden;
+    }
+
+}
+
+.view-container,
+.route-container {
+    background-color: var(--body-col);
+    color: var(--text-col);
+
+    .heading {
+        padding: 15px 10px;
+        background-color: var(--body-col);
+        border-bottom: 1px solid var(--body3-col);
+        box-shadow: 0 1px 3px var(--grey);
     }
 }
