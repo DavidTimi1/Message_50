@@ -27,7 +27,7 @@ export const Header = ({ startSearch }) => {
                         />
                         
                         {
-                            isOnline &&
+                            !isOnline &&
                             <span className="no-wifi abs">
                                 <FontAwesomeIcon icon={faWifi} />
                                 <span className="abs-mid" style={{ textShadow: "0 0 5px var(--body-col)" }}>
