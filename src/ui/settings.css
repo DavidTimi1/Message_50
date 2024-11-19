@@ -1,0 +1,50 @@
+
+#settings-window {
+    background-color: var(--body-col);
+    height: 100%;
+    left: 0px;
+    position: fixed;
+    top: 0px;
+    transition: all 0.2s ease-out;
+    width: 100%;
+}
+
+#settings-heading {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+    color: var(--text-col);
+    background-color: var(--head-col);
+
+    & > * {
+        font-size: 25px;
+        margin: 0 5px;
+    }
+}
+
+#settings-window .settings-body {
+    padding: 20px;
+}
+
+#profile-settings {
+    display: flex;
+    /* justify-content: space-evenly; */
+    align-items: center;
+
+    .my-dp {
+    position: relative;
+    height: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-color: grey;
+    margin: 5px;
+    }
+    /* > :not(.my-dp){
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    } */
+}

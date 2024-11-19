@@ -1,11 +1,14 @@
+import { Feedback } from "../feedback/page";
+import { ProfileEdit } from "../settings/components/ProfileSets";
 
 
 export const More = ({openOverlays}) => {
 
     return (
         <>
-        {/* <Overlay component={ContactCard} name="contact-card" />
-        <Overlay component={Feedback} name="feedback" /> */}
+        <Overlay component={ProfileEdit} name='profile-edit' />
+        {/* <Overlay component={ContactCard} name="contact-card" /> */}
+        <Overlay component={Feedback} name="feedback" />
         </>
     )
 

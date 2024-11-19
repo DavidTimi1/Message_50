@@ -36,7 +36,13 @@
   --prim-col: var(--darkest-blue);
   --sec-col: #262626;
 
+}
+
+  body, :root {
   font-size: 16px;
+  color: var(--text-col);
+  background-color: var(--body-col);
+  overflow: hidden auto;
 }
 
 
@@ -51,7 +57,8 @@ textarea {
 }
 
 input[type=radio],
-input[type=checkbox] {
+input[type=checkbox],
+input[type=range] {
   accent-color: var(--btn-col);
 }
 
@@ -103,14 +110,6 @@ svg.pending {
   padding: 0.1rem 0.4rem 0.1rem 0.4rem;
   border-radius: 1rem;
   font-weight: 600;
-}
-
-.dp-img {
-  aspect-ratio: 1/1;
-  background-color: #80808050;
-  border-radius: 50%;
-  width: 50px;
-  overflow: hidden;
 }
 
 
@@ -197,10 +196,19 @@ aside.side-wrapper {
 }
 
 
+.dp-img,
 .bg-img {
+  background-color: #80808050;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.dp-img {
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  width: 50px;
+  overflow: hidden;
 }
 
 .pad {

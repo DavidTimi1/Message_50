@@ -6,11 +6,11 @@
 .App {
     background-color: inherit;
     color: inherit;
-    height: 100vh;
+    height: 100%;
     overflow: hidden auto;
     padding: 0;
-    width: 100vw;
-    margin: 0px;
+    width: 100%;
+    margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

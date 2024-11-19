@@ -25,31 +25,29 @@ export const DevMode = true;
 
 
 export const Msg50 = () => {
-	const [userData, setUserData] = useState(USERDATA);
+	const [userData, setUserData] = useState(userDevData);
 	const userErr = userData?.error;
 	
 	useEffect(() => {
 		let ignore = false;
 
-		if (DevMode) {
-		setUserData(userDevData);
+		if (!userData && DevMode) {
+			setUserData(userDevData);
 
 		} else {
-		userErr &&
-			fetch("/api/user")
-			.then(res => res.json())
-			.then(!ignore && setUserData)
-			.catch(console.error);
+			userErr &&
+				fetch("/api/user")
+				.then(res => res.json())
+				.then(!ignore && setUserData)
+				.catch(console.error);
 
 		}
 
-		return () => {
-		ignore = true;
-		};
-	}, [userErr]);
+		return () => ignore = true;
+	});
 
 	return (
-		<div className='mega-max App'>
+		<div className='max App'>
 			<UserContext.Provider value={userData}>
 			<Router>
 				<Routes>
@@ -146,7 +144,7 @@ fetch("/api/user")
 	.catch(err => {
 		console.error(err)
 		USERDATA = { error: true }
-})
+	})
 
 
 export const userDevData = {

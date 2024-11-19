@@ -19,6 +19,7 @@
 
 .interface {
     background-color: var(--body-col);
+    color: var(--text-col);
     height: 100%;
     left: 0px;
     top: 0px;
@@ -44,7 +45,6 @@
 }
 
 .route-container {
-    overflow: hidden;
 
     > * {
         transition: all 0.25s ease-out;

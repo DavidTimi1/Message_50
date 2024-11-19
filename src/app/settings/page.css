@@ -1,0 +1,107 @@
+#settings {
+    color: var(--text-col);
+
+
+.settings-sec {
+    background-color: var(--body-col);
+    padding: 10px 5px;
+
+    &:not(:has( .acc-btn)):hover {
+        background-color: var(--body2-col);
+    }
+
+    &:has( .sets-more) {
+        background-color: var(--body3-col);
+    }
+
+
+    small {
+        color: var(--text2-col);
+        text-align: left;
+        font-size: 13px;
+        font-style: italic;
+    }
+
+    .rot-icon {
+        transition: .25s;
+    }
+
+
+}
+
+.setting-head {
+    text-align: left;
+}
+
+.accordion-button {
+    background-color: inherit;
+    /* border-radius: 1em 1em 0 0; */
+    color: var(--text-col);
+    outline-color: var(--btn-col);
+    border: 1px solid transparent;
+    box-shadow: none;
+
+    &:focus:not(.collapsed) {
+        border-color: var(--btn-col);
+    }
+
+
+    &:not(.collapsed) .setting-more {
+        display: none;
+    }
+}
+
+
+}
+
+:has(+ .sets-more) .acc-btn {
+    border-bottom: 1px solid var(--btn-col);
+    border-radius: 0px;
+}
+
+:has(+ .sets-more) .rot-icon, .rot-icon:hover {
+    color: var(--btn-col)
+}
+
+.edit-profile {
+    .img-dp {
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        overflow: hidden;
+
+        > img {
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+
+    .form-body {
+        margin-top: 25px;
+    }
+
+    .thmb {
+        width: fit-content;
+
+        .abs {
+            background-color: var(--body-col);
+            bottom: 0px;
+            border-radius: 50%;
+            right: -20px;
+            padding: 10px;
+        }
+
+    }
+
+    .nv-input input, .nv-input textarea {
+        padding: 5px 0;
+    }
+
+    small {
+        color: var(--text2-col);
+        transition: .25s;
+    }
+
+    .nv-input:focus-within small {
+        color: var(--btn-col);
+    }
+}
