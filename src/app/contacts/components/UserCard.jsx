@@ -82,6 +82,7 @@ export const UserCard = ({ show, args }) => {
             inMotion.current = false;
             return
         }
+        e.stopPropagation();
 
         if (!inMotion.current) return
 
@@ -102,6 +103,7 @@ export const UserCard = ({ show, args }) => {
     // when popup is closed
     function handleTouchEnd(e){
         ref.current.classList.remove("no-trans"); // to re-enable transitions
+        e.stopPropagation();
 
         if (Obj.current.dir == "down") close()
 
