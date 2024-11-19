@@ -32,9 +32,9 @@ export const UserCard = ({ show, args }) => {
         >
             <div className='max'>
                 <div className="pop-up-container flex-col abs fw" 
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
+                    // onTouchStart={handleTouchStart}
+                    // onTouchMove={handleTouchMove}
+                    // onTouchEnd={handleTouchEnd}
                     ref={ref}
                 >
                     <div className="fw">
