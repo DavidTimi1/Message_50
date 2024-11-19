@@ -2,7 +2,7 @@ import './ChatList.css';
 
 import { useContext, useState } from 'react'
 
-import { ChatContext } from '../../contexts';
+import { ChatContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
 import { timePast } from '../../../utils';
 
@@ -47,15 +47,18 @@ export const ChatList = () => {
 const ChatItem = ({data, Message}) => {
     const {id, time, name, handle, msg, status} = data;
 
+    const toggleOverlay = useContext(ToggleOverlay);
+
+
     return (
-        <div className='chat-cont br-1'>
+        <div className='chat-cont br-1' data-id={id}>
             <div className='abs-mid br-1 max'>
                 <div className='fw flex mid-align' style={{justifyContent: "space-between", padding: "10px 5px"}}>
                     
                 </div>
             </div>
-            <div className='max mid-align flex gap-2 br-1' style={{padding: "10px 5px"}} onClick={handleClick}>
-                <div className='dp-img'>
+            <div className='max mid-align flex gap-3 br-1' style={{padding: "10px 5px"}} onClick={handleClick}>
+                <div className='dp-img' onClick={showUserDetails}>
                     
                 </div>
                 <div className="flex-col grow gap-1">
@@ -81,6 +84,12 @@ const ChatItem = ({data, Message}) => {
         e.stopPropagation();
 
         Message(handle)
+    }
+
+    function showUserDetails(e){
+        e.stopPropagation();
+
+        toggleOverlay('user-card', true);
     }
 }
 

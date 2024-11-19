@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 
 import { ChatContext, ToggleOverlay } from './contexts';
 import { NavBar } from "./components/Navbar";
@@ -14,6 +14,9 @@ export const Msg50App = () => {
 	const [chatting, setChatting] = useState(false);
 	const [overlays, setOverlays] = useState(new Map());
 	const [msgFrom, jumpTo] = useState();
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
 
     return (
@@ -39,8 +42,9 @@ export const Msg50App = () => {
 		setChatting(handle);
 		jumpTo(id);
 
-        if (handle){
-            return <Navigate to='/' />
+        // to navigate from elsewhere
+        if (handle && location.pathname !== 'app'){
+            navigate('/app')
         }
 	}
 

@@ -3,7 +3,7 @@ import styles from '../page.module.css';
 
 import React, { useEffect, useState, useContext, useRef } from "react";
 
-import { ChatContext } from '../../contexts';
+import { ChatContext, ToggleOverlay } from '../../contexts';
 import { IconBtn } from "../../components/Button";
 
 import { on, once, title, transitionEnd, runOnComplete, standardUnit, int } from "../../../utils";
@@ -138,6 +138,9 @@ const Heading = ({selected, clearSelection, closeMsging}) => {
     const chatContext = useContext(ChatContext), chatting = chatContext.cur;
     const selecting = selected?.length, online = true; // options = state.opts
 
+    const toggleOverlay = useContext(ToggleOverlay);
+
+
     return (
         <div className={`${styles.heading}`}>
             <div className={selecting && "disappear"}>
@@ -145,13 +148,13 @@ const Heading = ({selected, clearSelection, closeMsging}) => {
                     <IconBtn icon={faAngleLeft} onClick={closeMsging}>
                         Back
                     </IconBtn>
-                    <div className="flex-col fw mid-align grow gap-1" style={{ justifyContent: "center" }}>
+                    <div className="flex-col fw mid-align grow gap-1" onClick={showUserProfile} style={{ justifyContent: "center" }}>
                         <div className="dp-img" style={{width: "40px"}}>
                         </div>
 
                         <div className="flex gap-2" style={{ justifyContent: "space-between" }}>
                             <div className="fs-3 fw-800"> {chatting && title(chatting)} </div>
-                            <small style={{ color: online ? "green" : "grey" }}> 
+                            <small style={{ color: online ? "green" : "var(--text2-col)" }}> 
                                 {online ? "Online" : online} 
                             </small>
                         </div>
@@ -183,6 +186,10 @@ const Heading = ({selected, clearSelection, closeMsging}) => {
             }
         </div>
     )
+
+    function showUserProfile(){
+        toggleOverlay('user-card', true);
+    }
 }
 
 
@@ -208,7 +215,6 @@ function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
             {
                 msgList.map(msg => {
                     let select = selected.includes(msg.id);
-                    console.log(select, msg.id, selected);
 
                     return (
                         <MsgItem

@@ -63,7 +63,7 @@ export const MsgItem = (props) => {
             blockUp(true);
 
             if (disp.x > 100 && !vibrated) {
-                navigator.vibrate(25);
+                navigator.vibrate(50);
                 vibrated = true;
             }
 
