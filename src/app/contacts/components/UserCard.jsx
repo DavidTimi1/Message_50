@@ -68,6 +68,8 @@ export const UserCard = ({ show, args }) => {
             inMotion.current = false;
             return
         }
+        e.stopPropagation();
+        e.preventDefault();
 
         inMotion.current = true;
 
@@ -83,6 +85,7 @@ export const UserCard = ({ show, args }) => {
             return
         }
         e.stopPropagation();
+        e.preventDefault();
 
         if (!inMotion.current) return
 
@@ -104,6 +107,7 @@ export const UserCard = ({ show, args }) => {
     function handleTouchEnd(e){
         ref.current.classList.remove("no-trans"); // to re-enable transitions
         e.stopPropagation();
+        e.preventDefault();
 
         if (Obj.current.dir == "down") close()
 
