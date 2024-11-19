@@ -64,7 +64,7 @@ export const Header = ({ startSearch }) => {
                         <h4 className='hero-txt'> Message50 </h4>
 
                         {
-                            isOnline &&
+                            !isOnline &&
                             <span className="no-wifi">
                                 <FontAwesomeIcon icon={faWifi} />
                                 <span className="abs-mid" style={{ textShadow: "0 0 5px var(--body-col)" }}>
