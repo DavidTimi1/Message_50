@@ -5,25 +5,36 @@ import { ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faPlus, faWifi, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { IconBtn } from "../../components/Button";
+import { UserContext } from "../../../contexts";
+import { useOnlineStatus } from "../../components/Hooks";
 
 
 export const Header = ({ startSearch }) => {
     const toggleOverlay = useContext(ToggleOverlay);
+    const userDp = useContext(UserContext).dp;
+
+    const isOnline = useOnlineStatus();
 
     return (
         <header className="app-heading">
-            <div className="main-heading mob">
+            <div className="main-heading hide md-block">
                 <div className='flex gap-2 mid-align'>
                     <button className="no-btn" type="button" onClick={openNavBar}>
-                        <div className='dp-img' style={{ backgroundColor: "grey", width: "35px" }}>
-                            {/* profile pic */}
-                        </div>
-                        <span className="no-wifi-icon abs">
-                            <FontAwesomeIcon icon={faWifi} />
-                            <span className="abs-mid" style={{ textShadow: "0 0 2px white" }}>
-                                <FontAwesomeIcon icon={faXmark} color="red" />
+                        <div className='dp-img' style={{
+                                backgroundImage: `url(${userDp})`,
+                                width: "35px" 
+                            }}
+                        />
+                        
+                        {
+                            isOnline &&
+                            <span className="no-wifi abs">
+                                <FontAwesomeIcon icon={faWifi} />
+                                <span className="abs-mid" style={{ textShadow: "0 0 5px var(--body-col)" }}>
+                                    <FontAwesomeIcon icon={faXmark} color="red" />
+                                </span>
                             </span>
-                        </span>
+                        }
                     </button>
                     <div className='flex grow mid-align' style={{ justifyContent: "space-between" }}>
                         <h4 className='hero-txt'> Message50 </h4>
@@ -34,7 +45,7 @@ export const Header = ({ startSearch }) => {
                 </div>
             </div>
 
-            <div className="main-heading lap">
+            <div className="main-heading md-hidden lap">
                 <div className='flex'>
                     <div className='fs-2'> Chats </div>
                     <div className='flex mid-align gap-2'>
@@ -51,6 +62,16 @@ export const Header = ({ startSearch }) => {
                             </div>
                         </button>
                         <h4 className='hero-txt'> Message50 </h4>
+
+                        {
+                            isOnline &&
+                            <span className="no-wifi">
+                                <FontAwesomeIcon icon={faWifi} />
+                                <span className="abs-mid" style={{ textShadow: "0 0 5px var(--body-col)" }}>
+                                    <FontAwesomeIcon icon={faXmark} color="red" />
+                                </span>
+                            </span>
+                        }
                     </div>
                 </div>
             </div>

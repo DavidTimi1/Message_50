@@ -11,6 +11,28 @@
         
     }
 
+    .app-heading {
+        padding: 10px;
+    }
+    
+    @media screen and (max-width: 768px){
+        
+        .md-hidden {
+            display: none !important;
+        }
+        .md-block {
+            display: block !important;
+        }
+    }
+
+    .no-wifi {
+        bottom: -10px;
+        text-shadow: -10px -10px 10px var(--body-col);
+    }
+
+
+
+
     .sideshelf {
         backdrop-filter: blur(2px);
         bottom: 50px;
