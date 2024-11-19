@@ -1,0 +1,95 @@
+.feed-zone {
+
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--body-col);
+    transition: all 0.2s ease-out;
+
+    &::backdrop {
+        backdrop-filter: blur(5px);
+        background-color: #80808050;
+    }
+
+
+    .feedback-body {
+        overflow: hidden auto;
+        padding: 10px;
+
+        & select {
+            background-color: var(--body2-col);
+            font-size: 15px;
+            padding: 10px;
+        }
+
+        & textarea {
+            margin: 20px auto;
+            font-size: 18px;
+        }
+
+
+        &.dragging::after {
+            content: '';
+            width: calc(100% - 10px);
+            height: calc(100% - 10px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #000000aa;
+            border:2px dashed grey;
+        }
+    }
+
+    .atth-view {
+        width: 200px;
+        height: 150px;
+        background-color: var(--body2-col);
+        flex: 0 0 auto;
+        padding: 10px;
+        border-radius: inherit;
+
+        &>label {
+            width: 80%;
+            height: 80%;
+            color: var(--text2-col);
+            border: 5px dashed var(--text2-col);
+        }
+    }
+
+    .rating {
+        & input {
+            display: none;
+        }
+
+        .star {
+            color: var(--btn-col);
+
+            &:nth-child(2) {
+                transform-origin: bottom;
+                transform: rotate(-45deg) translateY(30px) scale(.7);
+            }
+
+            &:nth-child(3) {
+                transform-origin: bottom;
+                transform: rotate(-45deg) translateY(10px) scale(.85);
+            }
+
+            &:nth-child(5) {
+                transform-origin: bottom;
+                transform: rotate(45deg) translateY(10px) scale(1.2);
+            }
+
+            &:last-child {
+                transform-origin: bottom;
+                transform: rotate(45deg) translateY(30px) scale(1.5);
+            }
+        }
+
+        .star:has( :checked) ~ .star {
+            color: var(--text2-col);
+        }
+
+    }
+
+}

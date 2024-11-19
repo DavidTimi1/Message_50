@@ -32,7 +32,7 @@ export function NavBar({ open }) {
                     <div className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw">
                             <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }}>
-                                <div className='dp-img'>
+                                <div className='dp-img' style={{backgroundImage: `url(${User.dp})`}}>
                                 </div>
                                 <div> Hi, {User.name} </div>
                             </button>
@@ -97,15 +97,15 @@ export function NavBar({ open }) {
         </aside>
     )
 
+    function openFeedback() {
+        toggleOverlay("feedback", true)
+    }
 
     function close() {
         once(transitionEnd, mainRef.current, () => toggleOverlay("navbar", false));
         mainRef.current.classList.add("close");
     }
 
-    function openFeedback() {
-        toggleOverlay("feedback", true)
-    }
 }
 
 
