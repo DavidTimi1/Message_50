@@ -1,0 +1,72 @@
+#user-card {
+
+    &.pop-up-window {
+        background-color: light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1) );
+        left: 0px;
+        position: fixed;
+        top: 0px;
+        z-index: 100;
+
+        &.close .pop-up-container {
+            transform: translateY(100%);
+        }
+    }
+
+    .pop-up-container {
+        background-color: var(--body-col);
+        border-radius: 1em 1em 0 0;
+        bottom: 0px;
+        left: 0;
+        transition: transform .25s ease-in-out;
+        padding: 5px;
+        max-height: 80%;
+        transform: translateY(0px);
+
+        small {
+            color: var(--text2-col)
+        }
+
+        .x {
+            justify-content: right;
+        }
+
+        .notch {
+            background-color: var(--text2-col);
+            border-radius: 5px;
+            height: 5px;
+            width: 50px;
+        }
+
+        .custom-scroll {
+            overflow: hidden auto;
+            padding: 30px 10px;
+        }
+    }
+
+    
+    .img-dp {
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        overflow: hidden;
+
+        > img {
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+
+
+    .thmb {
+        width: fit-content;
+
+        .abs {
+            background-color: var(--body-col);
+            bottom: 0;
+            border-radius: 50%;
+            right: -5px;
+            padding: 10px;
+        }
+
+    }
+
+}
