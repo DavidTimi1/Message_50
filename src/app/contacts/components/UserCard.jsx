@@ -1,7 +1,7 @@
 import './UserCard.css';
 
-import { useContext, useEffect, useRef } from "react";
-import { ToggleOverlay } from "../../contexts";
+import { useContext, useEffect, useRef, useState } from "react";
+import { ChatContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconBtn } from "../../components/Button";
 import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -12,8 +12,13 @@ import { UserContext } from "../../../contexts";
 
 
 export const UserCard = ({ show, args }) => {
+    const [err, setError] = useState("An error occured.");
+
     const ref = useRef(null), winRef = useRef(null), dragZone = useRef(null), contentRef = useRef(null), inMotion = useRef(false), Obj = useRef({ touchY: undefined, lastTop: 0, dir: "down" });
     const toggleOverlay = useContext(ToggleOverlay);
+
+    const devData = useContext(UserContext);
+
 
     useEffect(() => {
         let t_id = show && setTimeout(() => winRef.current.classList.remove("close"));
@@ -51,8 +56,12 @@ export const UserCard = ({ show, args }) => {
                                 <span className="sr-only"> Close </span>
                             </IconBtn>
                         </div> */}
-                        <Retry />
-                        <UserDetails />
+                        {
+                            err?
+                                <Retry note={err} retry={retry} />
+                            :
+                                <UserDetails close={close} data={devData} />
+                        }
                     </div>
                 </div>
             </div>
@@ -60,6 +69,9 @@ export const UserCard = ({ show, args }) => {
 
     )
 
+    function retry(){
+        setError();
+    }
     
     // when started touching
     function handleTouchStart(e){
@@ -127,34 +139,39 @@ export const UserCard = ({ show, args }) => {
     }
 
     function close() {
-        once(transitionEnd, ref.current, () => {
-            toggleOverlay('user-card', false)
-        });
+        return new Promise(res =>{
 
-        ref.current.style.transform = '';
-        winRef.current.classList.add("close");
+            once(transitionEnd, ref.current, () => {
+                toggleOverlay('user-card', false);
+                res("done");
+            });
+
+            ref.current.style.transform = '';
+            winRef.current.classList.add("close");
+        })
     }
 }
 
 
-const Retry = ({note}) => {
+const Retry = ({note, retry}) => {
 
     return (
-        <div className="body">
-            <div className="alert alert-danger">
+        <div className="body fw flex-col gap-1">
+            <div className="fw center-text" style={{color: "red"}}>
                 <span> {note} </span>
-                <Button>
-                    Retry
-                </Button>
             </div>
+            <Button onClick={retry}>
+                Retry
+            </Button>
         </div>
     )
 }
 
 
-const UserDetails = () => {
-    const devData = useContext(UserContext);
-    const {name, handle, dp, about} = devData;
+const UserDetails = ({data, close}) => {
+    const {name, handle, dp, about} = data;
+    const id = 7;
+
 
     return (
         <div className="body fw flex-col gap-4">
@@ -173,7 +190,7 @@ const UserDetails = () => {
                 <small> {handle} </small>
             </div>
 
-            <Actions />
+            <Actions id={id} handle={handle} close={close} />
             
             <div>
                 <small> About </small>
@@ -184,15 +201,15 @@ const UserDetails = () => {
 
             <div> <hr></hr> </div>
             
-            <div className="flex-col gap-2" color="red">
+            <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
                 <label className="flex mid-align gap-3">
-                    <FontAwesomeIcon icon={faEraser} />
+                    <FontAwesomeIcon icon={faEraser} size="lg" />
                     <span> Clear Chats with {name} </span>
                 </label>
                 
-                <label className="flex mid-align gap-3">
-                    <FontAwesomeIcon icon={faFlag} />
-                    <span> Clear Chats with {name} </span>
+                <label className="flex mid-align gap-3 fs-5">
+                    <FontAwesomeIcon icon={faFlag} size="lg" />
+                    <span> Report {name} </span>
                 </label>
             </div>
         </div>
@@ -200,34 +217,66 @@ const UserDetails = () => {
 }
 
 
-const Actions = () => {
+const Actions = ({id, handle, close}) => {
+    const openMessaging = useContext(ChatContext).set;
+    const toggleOverlay = useContext(ToggleOverlay);
 
     return (
-        <div className="flex mid-align even-space" style={{flexWrap: "wrap"}}>
-            <label className="flex-col mid-align">
-                <IconBtn icon={faMessage} />
-                <small>
-                    Message
-                </small>
-            </label>
+        <div className="flex mid-align even-space actn" style={{flexWrap: "wrap"}}>
+            <button className="no-btn icon-btn" type="button" onClick={loadMessages}>
+                <div className="btn-bg abs-mid fw"></div>
+                <div className="flex-col mid-align">
+                    <FontAwesomeIcon icon={faMessage} size="xl" />
+                    <small>
+                        Message
+                    </small>
+                </div>
+            </button>
+            <button className="no-btn icon-btn" type="button" onClick={editContact}>
+                <div className="btn-bg abs-mid fw"></div>
+                <div className="flex-col mid-align">
+                    <FontAwesomeIcon icon={faPencil} size="xl" />
+                    <small>
+                        Edit
+                    </small>
+                </div>
+            </button>
             
-            <label className="flex-col mid-align">
-                <IconBtn icon={faPencil} />
-                <small>
-                    Edit
-                </small>
-            </label>
-            
-            <label className="flex-col mid-align">
-                <IconBtn icon={faPlusCircle} />
-                <small>
-                    Save
-                </small>
-            </label>
+            <button className="no-btn icon-btn" type="button" onClick={saveContact}>
+                <div className="btn-bg abs-mid fw"></div>
+                <div className="flex-col mid-align">
+                    <FontAwesomeIcon icon={faPlusCircle} size="xl" />
+                    <small>
+                        Save
+                    </small>
+                </div>
+            </button>
 
             {/* Invite ?? */}
         </div>
     )
+
+    function loadMessages(){
+        close()
+        .then(_ => 
+            openMessaging(handle)
+        )
+        
+    }
+
+    function editContact(){
+        close()
+        .then(_ => 
+            toggleOverlay('manage-contact', {NEW: false, id: id})
+        )
+    }
+
+    function saveContact(){
+        close()
+        .then(_ => 
+            toggleOverlay('manage-contact', {NEW: true, handle: handle})
+        )
+    }
 }
 
 

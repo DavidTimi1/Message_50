@@ -69,4 +69,15 @@
 
     }
 
+    .actn {
+        .icon-btn {
+            padding: 15px;
+        }
+
+        svg {
+            color: var(--btn-col)
+        }
+
+    }
+
 }

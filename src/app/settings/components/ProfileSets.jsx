@@ -18,7 +18,7 @@ export const ProfileBrief = () => {
 
         <div className="settings-sec fw br-5">
             <div className="flex mid-align gap-2">
-                <button className="no-btn flex mid-align grow gap-4" onClick={editProfile}>
+                <button className="no-btn flex mid-align grow gap-4" onClick={showUserCard}>
                     <div className="dp-img" style={{ width: "70px", backgroundImage: `url(${User.dp})`, backgroundSize: "cover" }}>
                     </div>
                     <div className="grow">
@@ -47,6 +47,10 @@ export const ProfileBrief = () => {
 
     function editProfile() {
         toggleOverlay('profile-edit', 1);
+    }
+
+    function showUserCard(){
+        toggleOverlay('user-card', 1);
     }
 
     function shareProfile(){

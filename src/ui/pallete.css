@@ -158,14 +158,15 @@
     height: 0;
 }
 
+
 .custom-scroll::-webkit-scrollbar {
     appearance: none;
     background-color: inherit;
-    width: 7px;
+    width: 2px;
 }
 
+
 .custom-scroll::-webkit-scrollbar-track {
-    appearance: none;
     background-color: inherit;
 }
 
@@ -176,6 +177,16 @@
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
     background-color: var(--btn2-col);
+}
+
+@media screen and (min-width: 768px){
+
+    .custom-scroll::-webkit-scrollbar {
+        appearance: none;
+        background-color: inherit;
+        width: 7px;
+    }
+
 }
 
 
