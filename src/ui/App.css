@@ -235,6 +235,7 @@ label.nv-input {
 
 .icon-btn {
   --bg: transparent;
+  aspect-ratio: 1/1;
   padding: 10px;
 
   .btn-bg, .btn-bg::after {

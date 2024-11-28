@@ -1,0 +1,6 @@
+{
+    "login": "/login",
+    "signup": "/signup",
+    "app": "/app",
+    "sendMessage": "/api/send-msg"
+}
