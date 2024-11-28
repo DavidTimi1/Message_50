@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { ToggleOverlay } from "../../contexts";
+import { StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { UserContext } from "../../../contexts";
 import { IconBtn } from "../../components/Button";
 import { faAngleLeft, faCamera, faNoteSticky, faPencil, faShare, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -67,19 +67,56 @@ export const ProfileBrief = () => {
 
 export const ProfileEdit = ({ show }) => {
     const title = "Profile Information";
-    const ref = useRef(null);
+    const ref = useRef(null),navId = 'profile-edit';
+
     const toggleOverlay = useContext(ToggleOverlay);
-    const userDp = useContext(UserContext).dp
+    const userDp = useContext(UserContext).dp;
+
+    const { pushState, removeState } = useContext( StateNavigatorContext );
 
     const [dp, setDp] = useState(userDp);
 
+
+    // Close function with animation handling
+    const close = () => {
+        // Trigger animation class
+        if (ref.current){
+            ref.current.classList.add("close");
+
+        } else {
+            setTimeout(handleTransitionEnd); 
+        }
+
+        // Wait for the transition/animation to complete
+        once(transitionEnd, ref.current, handleTransitionEnd);
+
+        function handleTransitionEnd() {
+            toggleOverlay(navId, false);
+        }
+    }
+
+
     useEffect(() => {
-        let t_id = show && setTimeout(() => ref.current.classList.remove("close"));
+
+        let t_id, ignore = false;
+
+        if (show){
+
+            t_id = setTimeout(() => {
+                if (ignore) return
+
+                pushState( navId, close ); // incase nav buttons are used
+                ref.current.classList.remove("close")
+            }, 100)
+
+        }
 
         return () => {
             t_id && clearTimeout(t_id);
+            ignore = true;
         }
-    }, [show])
+
+    }, [show, navId, pushState, close]);
 
 
     return (
@@ -87,7 +124,7 @@ export const ProfileEdit = ({ show }) => {
         <div className="interface close edit-profile" ref={ref}>
             <div className="max custom-scroll" style={{overflow: "hidden auto"}}>
                 <div className="fw flex mid-align gap-2" style={{padding: "10px"}}>
-                    <IconBtn icon={faAngleLeft} onClick={close}>
+                    <IconBtn icon={faAngleLeft} onClick={handleCloseClick}>
                         <span className="sr-only"> Close </span>
                     </IconBtn>
                     <h3> {title} </h3>
@@ -107,12 +144,16 @@ export const ProfileEdit = ({ show }) => {
         </div>
     )
 
-    function close() {
-        once(transitionEnd, ref.current, () => {
-            toggleOverlay('profile-edit', false)
-        });
 
-        ref.current.classList.add("close");
+    function handleCloseClick(){
+        // go back in history to trigger close
+        return new Promise( res => {
+            once(transitionEnd, ref.current, () =>{
+                res( removeState(navId) );
+            });
+
+            ref.current.classList.add("close");
+        })        
     }
 
     function setProfile(data){

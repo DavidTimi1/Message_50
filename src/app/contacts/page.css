@@ -32,22 +32,19 @@
 
     .sideshelf {
         backdrop-filter: blur(2px);
-        bottom: 20px;
+        bottom: 50px;
         padding: 10px;
         right: 20px;
     
         
          .icon-btn {
-            aspect-ratio: 1/1;
             border-radius: 50%;
-            padding: 0;
-            padding: 10px;
+            color: white;
+            padding: 19px;
 
     
             .btn-bg {
-                aspect-ratio: 1/1;
                 background-color: var(--btn-col);
-                border-radius: 50%;
             }
     
             &:hover .btn-bg {
@@ -58,7 +55,7 @@
         .xtra {
             /* background-color: white; */
             border-radius: 50%;
-            bottom: 1px;
+            bottom: 10px;
             left: 5px;
             padding: 2px;
 
@@ -66,7 +63,7 @@
                 /* color: var(--btn-col); */
                 color: white;
                 stroke: var(--btn-col);
-                stroke-width: 30px;
+                stroke-width: 10px;
             }
         }
     

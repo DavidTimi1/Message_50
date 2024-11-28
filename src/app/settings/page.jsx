@@ -1,11 +1,11 @@
 import './page.css';
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { RouteContainer } from "../components/View";
 import { $, title } from '../../utils';
 
-import { useNavigate } from 'react-router-dom';
+import { replace, useLocation, useNavigate } from 'react-router-dom';
 
 import { ChatSettings } from './components/ChatsSets';
 import { StorageSettings } from './components/StorageSets';
@@ -13,6 +13,7 @@ import { Help } from './components/Help';
 import { Blocked } from './components/BlockedSets';
 import { ProfileBrief } from './components/ProfileSets';
 import { Heading } from "./components/Heading";
+import { ToggleOverlay } from '../contexts';
 
 const viewName = "Settings";
 
@@ -23,7 +24,8 @@ export const SettingsPage = () => {
 
     const mainRef = useRef(null), heighter = useRef(null);
 
-    const navigate = useNavigate();
+    const navigate = useNavigate(), locationState = useLocation().state;
+    const toggleOverlay = useContext( ToggleOverlay );
 
     useEffect(() => {
         let t_id = setTimeout(() => mainRef.current.classList.remove("close"));
@@ -33,6 +35,15 @@ export const SettingsPage = () => {
             t_id && clearTimeout(t_id);
         }
     }, [])
+    
+    useEffect(() => {
+
+        if (locationState === 'edit-profile'){
+            navigate('', {replace: true});
+            toggleOverlay('profile-edit', 1);
+        }
+
+    }, [locationState])
 
 
     return (

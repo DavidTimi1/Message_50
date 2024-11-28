@@ -1,39 +1,77 @@
 import './UserCard.css';
 
-import { useContext, useEffect, useRef, useState } from "react";
-import { ChatContext, ToggleOverlay } from "../../contexts";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconBtn } from "../../components/Button";
 import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../../../buttons";
-import { once, transitionEnd } from "../../../utils";
+import { on, once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
+import { useNavigate } from 'react-router-dom';
 
 
 
 export const UserCard = ({ show, args }) => {
     const [err, setError] = useState("An error occured.");
+    
+    const { pushState, removeState } = useContext( StateNavigatorContext );
 
+    const navId = 'user-card';
     const ref = useRef(null), winRef = useRef(null), dragZone = useRef(null), contentRef = useRef(null), inMotion = useRef(false), Obj = useRef({ touchY: undefined, lastTop: 0, dir: "down" });
     const toggleOverlay = useContext(ToggleOverlay);
 
     const devData = useContext(UserContext);
 
 
+    // Close function with animation handling
+    const close = useCallback(() => {
+        // Trigger animation class
+        if (winRef.current){
+            ref.current.style.transform = '';
+            winRef.current.classList.add("close");
+
+        } else {
+            setTimeout(handleTransitionEnd); 
+        }
+
+        // Wait for the transition/animation to complete
+        once(transitionEnd, ref.current, handleTransitionEnd);
+
+        function handleTransitionEnd() {
+            toggleOverlay(navId, false);
+        }
+    }, [toggleOverlay, navId]);
+
+
     useEffect(() => {
-        let t_id = show && setTimeout(() => winRef.current.classList.remove("close"));
+
+        let t_id, ignore = false;
+
+        if (show){
+
+            t_id = setTimeout(() => {
+                if (ignore) return
+
+                pushState( navId, close ); // incase nav buttons are used
+                winRef.current.classList.remove("close")
+            }, 100)
+
+        }
 
         return () => {
             t_id && clearTimeout(t_id);
+            ignore = true;
         }
-    }, [show])
+
+    }, [show, navId, pushState, close]);
 
 
     return (
         show &&
         <div id="user-card" className="max pop-up-window close"
             ref={winRef}
-            onClick={close}
+            onClick={handleCloseClick}
         >
             <div className='max'>
                 <div className="pop-up-container flex-col abs fw" 
@@ -43,7 +81,7 @@ export const UserCard = ({ show, args }) => {
                     ref={ref}
                 >
                     <div className="fw">
-                        <div ref={dragZone} onClick={close} style={{padding: "5px"}}>
+                        <div ref={dragZone} onClick={handleCloseClick} style={{padding: "5px"}}>
                             <div className="notch mx-auto"></div>
                         </div>
                     </div>
@@ -60,7 +98,7 @@ export const UserCard = ({ show, args }) => {
                             err?
                                 <Retry note={err} retry={retry} />
                             :
-                                <UserDetails close={close} data={devData} />
+                                <UserDetails navId={navId} closeModal={handleCloseClick} data={devData} />
                         }
                     </div>
                 </div>
@@ -138,18 +176,18 @@ export const UserCard = ({ show, args }) => {
             ref.current.style.transform = '';
     }
 
-    function close() {
-        return new Promise(res =>{
-
-            once(transitionEnd, ref.current, () => {
-                toggleOverlay('user-card', false);
-                res("done");
+    function handleCloseClick(){
+        // go back in history to trigger close
+        return new Promise( res => {
+            once(transitionEnd, ref.current, () =>{
+                res( removeState(navId) );
             });
 
             ref.current.style.transform = '';
             winRef.current.classList.add("close");
-        })
+        })        
     }
+
 }
 
 
@@ -168,7 +206,7 @@ const Retry = ({note, retry}) => {
 }
 
 
-const UserDetails = ({data, close}) => {
+const UserDetails = ({data, closeModal, navId}) => {
     const {name, handle, dp, about} = data;
     const id = 7;
 
@@ -190,7 +228,7 @@ const UserDetails = ({data, close}) => {
                 <small> {handle} </small>
             </div>
 
-            <Actions id={id} handle={handle} close={close} />
+            <Actions id={id} navId={navId} handle={handle} closeModal={closeModal} />
             
             <div>
                 <small> About </small>
@@ -217,7 +255,7 @@ const UserDetails = ({data, close}) => {
 }
 
 
-const Actions = ({id, handle, close}) => {
+const Actions = ({id, handle, closeModal}) => {
     const openMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
 
@@ -257,25 +295,31 @@ const Actions = ({id, handle, close}) => {
     )
 
     function loadMessages(){
-        close()
-        .then(_ => 
-            openMessaging(handle)
-        )
+        closeModal()
+        .then(done => {
+            if (done){
+                setTimeout(() => openMessaging(handle), 100)
+            }
+        })           
         
     }
 
     function editContact(){
-        close()
-        .then(_ => 
-            toggleOverlay('manage-contact', {NEW: false, id: id})
-        )
+        closeModal()
+        .then(done => {
+            console.log(done)
+            if (done)
+                toggleOverlay('manage-contact', {NEW: false, id: id})
+        })
     }
 
     function saveContact(){
-        close()
-        .then(_ => 
-            toggleOverlay('manage-contact', {NEW: true, handle: handle})
-        )
+        closeModal()
+        .then(done => {
+            console.log(done)
+            if (done)
+                toggleOverlay('manage-contact', {NEW: true, handle: handle})
+        })           
     }
 }
 

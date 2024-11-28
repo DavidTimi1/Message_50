@@ -1,37 +1,52 @@
 import { useContext, useEffect, useRef } from "react";
 
 import { UserContext } from "../../contexts";
-import { ToggleOverlay } from "../contexts";
+import { StateNavigatorContext, ToggleOverlay } from "../contexts";
 
 import { changeTheme } from '../../theme';
 import { once, transitionEnd } from "../../utils";
 import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { IconBtn } from "./Button";
 
 
 export function NavBar({ open }) {
     const User = useContext(UserContext);
-    const mainRef = useRef(null);
+    const mainRef = useRef(null), navId = "navbar";
     const toggleOverlay = useContext(ToggleOverlay);
 
+    const navigate = useNavigate();
+    
+    const { pushState, removeState } = useContext( StateNavigatorContext );
+
     useEffect(() => {
-        let t_id = open && setTimeout(() => mainRef.current.classList.remove("close"));
+        let t_id, ignore = false;
+        
+        if (open){
+
+            t_id = setTimeout(() => {
+                if (ignore) return
+
+                pushState(navId, close); // incase nav buttons are used
+                mainRef.current.classList.remove("close")
+            }, 100)
+        }
 
         return () => {
             t_id && clearTimeout(t_id);
+            ignore = true;
         }
     }, [open])
 
     return (
         open &&
-        <aside className="side-wrapper mega-max close" ref={mainRef} onClick={close}>
-            <div className="side-bar fw">
+        <aside className="side-wrapper mega-max close" ref={mainRef} onClick={handleCloseClick}>
+            <div className="side-bar fw" onClick={ e => e.stopPropagation()}>
                 <div className="content custom-scroll max">
                     <div className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw">
-                            <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }}>
+                            <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
                                 <div className='dp-img' style={{backgroundImage: `url(${User.dp})`}}>
                                 </div>
                                 <div> Hi, {User.name} </div>
@@ -40,19 +55,19 @@ export function NavBar({ open }) {
                         <div className="fw">
                             <hr></hr>
                         </div>
-                        <NavItem href="/app" icon={faMessage}>
+                        <NavItem closeNavbar={close} href="/app" icon={faMessage}>
                             Chats
                         </NavItem>
-                        <NavItem href="/app/contacts" icon={faUsers}>
+                        <NavItem closeNavbar={close} href="/app/contacts" icon={faUsers}>
                             Contacts
                         </NavItem>
-                        <NavItem href="/app/media" icon={faFolder}>
+                        <NavItem closeNavbar={close} href="/app/media" icon={faFolder}>
                             Storage & Media
                         </NavItem>
-                        <NavItem href="/app/notifications" icon={faBell}>
+                        <NavItem closeNavbar={close} href="/app/notifications" icon={faBell}>
                             Notifications
                         </NavItem>
-                        <NavItem href="/app/settings" icon={faGears}>
+                        <NavItem closeNavbar={close} href="/app/settings" icon={faGears}>
                             Settings
                         </NavItem>
                         <div style={{marginTop: "auto"}}>
@@ -64,7 +79,7 @@ export function NavBar({ open }) {
                             </button>
                             <div className="fw">
                                 <div className='flex fw mid-align even-space' style={{ flexWrap: "wrap" }}>
-                                    <IconBtn icon={faBoltLightning} onClick={close}>
+                                    <IconBtn icon={faBoltLightning} onClick={handleCloseClick}>
                                         Upgrade to plus
                                     </IconBtn>
 
@@ -89,7 +104,7 @@ export function NavBar({ open }) {
                     </div>
                 </div>
                 <div className='abs' style={{ right: "10px", top: "10px" }}>
-                    <IconBtn icon={faXmark} onClick={close}>
+                    <IconBtn icon={faXmark} onClick={handleCloseClick}>
                         Close
                     </IconBtn>
                 </div>
@@ -97,22 +112,33 @@ export function NavBar({ open }) {
         </aside>
     )
 
+    function viewMyProfile(){
+        close();
+        navigate('/app/settings', {state: 'edit-profile'});
+    }
+
     function openFeedback() {
         toggleOverlay("feedback", true)
     }
 
+    function handleCloseClick(){
+        removeState(navId);
+    }
+
     function close() {
-        once(transitionEnd, mainRef.current, () => toggleOverlay("navbar", false));
-        mainRef.current.classList.add("close");
+        if (mainRef.current){
+            once(transitionEnd, mainRef.current, () => toggleOverlay("navbar", false));
+            mainRef.current.classList.add("close");
+        }
     }
 
 }
 
 
-function NavItem({ children, href, icon }) {
+function NavItem({ children, href, icon, closeNavbar }) {
 
     return (
-        <NavLink className="nav-link" to={href}>
+        <NavLink className="nav-link" to={href} onClick={handleClick}>
             <div className="flex mid-align gap-2 fw">
                 <FontAwesomeIcon icon={icon} />
                 <span>
@@ -121,4 +147,8 @@ function NavItem({ children, href, icon }) {
             </div>
         </NavLink>
     )
+
+    function handleClick(e){
+        closeNavbar();
+    }
 }

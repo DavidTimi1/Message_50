@@ -1,35 +1,62 @@
 import './page.css';
 
-import { useContext, useEffect, useRef } from 'react';
-import { ToggleOverlay } from '../contexts';
+import { useCallback, useContext, useEffect, useRef } from 'react';
+
+import { StateNavigatorContext, ToggleOverlay } from '../contexts';
 import { Heading } from './components/Heading';
 import { Form } from './components/Form';
 
 
-
 export const Feedback = ({ show }) => {
-    const mainRef = useRef(null);
+    const mainRef = useRef(null), navId = 'feedback';
     const toggleOverlay = useContext(ToggleOverlay);
 
+    const { pushState, removeState } = useContext( StateNavigatorContext );
+
+    const close = useCallback(() => {
+        toggleOverlay('feedback', false);
+
+    }, [toggleOverlay]);
+
+
     useEffect(() => {
+        const dialog =  mainRef.current;
+        let ignore = false;
+
         if (show) {
-            mainRef.current.showModal();
+            setTimeout(() => {
+                if (ignore) return
+
+                pushState(navId, close); // incase nav buttons are used
+                dialog.showModal();
+            }, 100)
+
+
         } else {
-            mainRef.current.close();
+
+           dialog.close();
         }
-    }, [show])
+
+        return () => ignore = true
+
+    }, [show, navId, pushState, close]);
+    
+
 
     return (
         <dialog className='feed-zone max br-5' ref={mainRef}>
             <div className='content max flex-col'>
-                <Heading close={close} />
+                <Heading close={handleCloseClick} />
                 <Form />
             </div>
         </dialog>
     )
 
-    function close() {
-        toggleOverlay('feedback', false);
+
+    function handleCloseClick(){
+
+        removeState(navId);
     }
+
 }
 
