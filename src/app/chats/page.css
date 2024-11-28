@@ -43,7 +43,6 @@
         .icon-btn {
             --bg: var(--btn-col);
             aspect-ratio: 1/1;
-            padding: 12px;
 
             .btn-bg {
                 box-shadow: 0 2px 3px black;

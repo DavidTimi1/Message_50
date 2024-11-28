@@ -3,7 +3,7 @@ import styles from '../page.module.css';
 
 import React, { useEffect, useState, useContext, useRef } from "react";
 
-import { ChatContext, ToggleOverlay } from '../../contexts';
+import { ChatContext, ToggleOverlay, SendMsgContext, StateNavigatorContext } from '../../contexts';
 import { IconBtn } from "../../components/Button";
 
 import { on, once, title, transitionEnd, runOnComplete, standardUnit, int } from "../../../utils";
@@ -14,6 +14,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faCircleInfo, faCopy, faFile, faFileAudio, faFilm, faImage, faMicrophone, faPaperPlane, faShare, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import { MsgItem } from './MsgItem';
+import { getMsg, msgsTable, offlineMsgsTable } from '../../page';
+import { MsgListContext } from '../contexts';
+import { useOfflineActivities } from '../../components/Offline';
+import { useOnlineStatus } from '../../components/Hooks';
 
 
 
@@ -22,48 +26,135 @@ export default function MsgInterface({ viewMsg }) {
     const [reply, setReply] = useState();
     const [preview, setPrev] = useState({});
 
-    const mainRef = useRef(null);
+    const { pushState, removeState } = useContext( StateNavigatorContext );
+    
+    const [msgList, setMsgList] = useState(DevMode ? devMsgs : []);
+    const [pendingList, setPendingList] = useState([]);
+    
+    const firstId = msgList[0]?.id, lastId = msgList?.[msgList.length - 1]?.id;
+
+    const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
     const chatContext = useContext(ChatContext), chatting = chatContext.cur;
+
+    const {msgsStatus} = useContext(SendMsgContext);
+
 
     const select = state?.selected;
 
 
     useEffect(() => {
-        let t_id = chatting && setTimeout(() => mainRef.current.classList.remove("close"));
+        let t_id, ignore = false;
+        
+        if (chatting){
+
+            t_id = setTimeout(() => {
+                if (ignore) return
+
+                pushState(navId, close); // incase nav buttons are used
+                mainRef.current.classList.remove("close")
+            }, 100)
+        }
+
+        if (!DevMode){
+            getMessages()
+            .then (res => {
+                setMsgList(res.data)
+                setPendingList(res.unsent)
+            })
+        }
 
         return () => {
             t_id && clearTimeout(t_id);
+            ignore = true;
         }
 
     }, [chatting]);
+    
 
+    useEffect(() => {
+        if (!chatting) return
+        
+        for (let status of msgsStatus){
+            const index = pendingList.findIndex( val => val.id === status.id);
+
+            if (index > -1){
+                setPendingList( prev => {
+                    const clone = [...prev];
+                    let replacement;
+                    
+                    if (!status.status?.success){
+                        replacement = {...clone[index], status: status.status };
+                    }
+
+                    clone.splice(index, 1, replacement);
+
+                    return clone
+                })
+
+                // if sent
+                if (status.status?.success){
+                    // get message and add to list to be displayed
+                    getMsg(status.status.id)
+                    .then( msg => {
+                        setMsgList( prev => [...prev, msg] )
+                    } )
+                }
+            }
+        }
+
+    }, [chatting, msgsStatus]);
+
+
+    const isSelecting = Boolean(select?.length);
+    useEffect(() => {
+        if (!chatting) return
+
+        if (isSelecting){
+            pushState(selectNavId, clearSelection);
+            navigator.vibrate(100);
+        
+        } else {
+            removeState(selectNavId);
+        }
+
+    }, [chatting, isSelecting]);
+    
 
     return (
         chatting &&
         <div id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef} >
             <div className="max flex-col">
                 <Heading
-                    clearSelection={clearSelection}
-                    closeMsging={close}
+                    closeMsging={handleCloseClick}
                     selected={select}
+                    clearSelection={clearSelection}
                 />
 
                 <div className="fw grow flex-col">
                     <div className='abs max'>
                     </div>
-                    { chatting &&
-                        <MsgList
-                            replyTo={replyTo}
-                            toggleSelect={toggleSelection}
-                            selected={select ?? []}
-                            viewMsg={viewMsg}
-                        />
-                    }
 
-                    <div className='fw'>
-                        { preview.on && <PreviewFile data={preview.data} close={() => previewFile()} /> }
-                        <Footer reply={reply} previewFile={previewFile} />
-                    </div>
+                    <MsgListContext.Provider value={{
+                            loadPrevious: loadPreviousMsgs,
+                            cur: msgList
+                        }}
+                    >
+                        { chatting &&
+                            <MsgList
+                                msgList={msgList}
+                                pendingList={pendingList}
+                                replyTo={replyTo}
+                                toggleSelect={toggleSelection}
+                                selected={select ?? []}
+                                viewMsg={viewMsg}
+                            />
+                        }
+
+                        <div className='fw'>
+                            { preview.on && <PreviewFile data={preview.data} close={() => previewFile()} /> }
+                            <Footer reply={reply} addUnsent={addUnsent} removeReply={() => setReply()} previewFile={previewFile} />
+                        </div>
+                    </MsgListContext.Provider>
                 </div>
 
             </div>
@@ -71,10 +162,24 @@ export default function MsgInterface({ viewMsg }) {
     )
 
 
+    function loadPreviousMsgs(){
+        loadMoreMessages(null, firstId)
+        .then(msgs => {
+            setMsgList( prev => [...msgs, ...prev])
+        })
+    }
+
+    function addUnsent(data){
+        setPendingList( prev => [...prev, data] );
+    }
+
     function clearSelection() {
-        setState({
-            ...state,
-            selected: []
+        setState( prevState => {
+
+            return ({
+                ...prevState,
+                selected: []
+            })
         })
     }
 
@@ -83,7 +188,6 @@ export default function MsgInterface({ viewMsg }) {
 
         id = int(id);
         let curSelection = select ?? [];
-        curSelection.length === 0 && navigator.vibrate(100);
 
         setState( prevState => {
             const selections = prevState?.selected?.slice?.() ?? [];
@@ -95,6 +199,7 @@ export default function MsgInterface({ viewMsg }) {
             } else {
                 selections.push(id)
             }
+
 
             return ({
                 ...prevState,
@@ -121,6 +226,10 @@ export default function MsgInterface({ viewMsg }) {
         }
     }
 
+    function handleCloseClick(){
+        removeState(navId);
+    }
+
     function close() {
         once(transitionEnd, mainRef.current, () => {
             chatContext.set(false);
@@ -134,11 +243,12 @@ export default function MsgInterface({ viewMsg }) {
 }
 
 
-const Heading = ({selected, clearSelection, closeMsging}) => {
+const Heading = ({selected, closeMsging, clearSelection}) => {
     const chatContext = useContext(ChatContext), chatting = chatContext.cur;
     const selecting = selected?.length, online = true; // options = state.opts
 
     const toggleOverlay = useContext(ToggleOverlay);
+    const { removeState } = useContext(StateNavigatorContext)
 
 
     return (
@@ -193,18 +303,11 @@ const Heading = ({selected, clearSelection, closeMsging}) => {
 }
 
 
-function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
-    const [msgList, setMsgList] = useState(DevMode ? devMsgs : []);
+function MsgList({ replyTo, selected, toggleSelect, viewMsg, msgList, pendingList }) {
     const listElem = useRef();
-    const nowChatting = useContext(ChatContext).cur;
 
-    // const firstId = msgList?.[0]?.id, lastId = msgList?.[msgList.length - 1]?.id;
     const selectOn = Boolean(selected.length);
 
-    useEffect(() => {
-        !DevMode && getMessages();
-
-    })
 
     return (
         <div className={`${styles.content} msglist fw grow custom-scroll`} 
@@ -227,6 +330,24 @@ function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
                         />
                     )
                 })
+            }
+            
+            {
+                pendingList.map( msg => {
+                    let select = selected.includes(msg.id);
+
+                    return (
+                        <MsgItem
+                            key={msg.id}
+                            id={msg.id}
+                            select={{ cur: select, toggle: toggleSelect, on: selectOn }}
+                            details={msg}
+                            replyTo={replyTo}
+                            blockUp={blockUp}
+                        /> 
+                    )
+                })
+
             }
 
         </div>
@@ -261,48 +382,17 @@ function MsgList({ replyTo, selected, toggleSelect, viewMsg }) {
         }
     }
 
-
-    function getMessages() {
-        let list = [];
-        let i = 0;
-
-        openTrans(DB, "all_messages_tb")
-            .index("handle").openCursor(IDBKeyRange.only(nowChatting), "prev")
-            .onsuccess = e => {
-                let cur = e.target.result;
-
-                if (cur && ((!viewMsg && i < 50) || (viewMsg && i < 10))) {
-                    let id = cur.primaryKey;
-                    list.prepend(cur.value);
-
-                    (!viewMsg || id > viewMsg) && i++;
-                    cur.continue();
-
-                } else {
-                    // show messages that have not yet been sent
-                    openTrans(DB, "offline_messages")
-                        .index("handle").openCursor(IDBKeyRange.only(nowChatting)).onsuccess = e => {
-                            let cur = e.target.result;
-
-                            if (cur) {
-                                let id = cur.primaryKey;
-                                list.append({ ...cur.value, unsent: true });
-                                cur.continue();
-
-                            } else {
-                                setMsgList(list)
-                            }
-                        }
-                }
-            }
-    }
 }
 
 
-function Footer({previewFile}) {
+function Footer({previewFile, reply, removeReply, addUnsent}) {
     const [UI, setUI] = useState({});
     const fileRef = useRef(null), inputRef = useRef(null);
     const showOpts = UI.opts, canSend = UI.ready;
+
+    const chatting = useContext(ChatContext).cur;
+    const isOnline = useOnlineStatus();
+    const offloadQueue = useOfflineActivities().sendMsg;
 
     return (
         <div className="msgg-bottom fw mx-auto">
@@ -360,8 +450,39 @@ function Footer({previewFile}) {
         console.log("recording")
     }
 
-    function queueToSend() {
+    async function queueToSend(e) {
+        let receivers, file, textContent;
 
+        receivers = chatting instanceof Array? chatting : [chatting];
+        textContent = inputRef.current.value;    
+        file = fileRef.current;
+    
+        // if user tries to send a message add it to browser's db
+        console.log(DB);
+        const data = {
+            reply,
+            receivers,
+            textContent,
+            file
+        }
+
+        let id = await IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite') )
+            .add(data);
+
+        // TODO offload Queue , addUnsent
+
+        addUnsent({...data, id:id})
+
+        isOnline && offloadQueue();
+            
+        // remove reply
+        removeReply();
+        // remove image
+        fileRef.current = undefined;
+        // remove text
+        inputRef.current.value = '';
+        setUI({ ...UI, opts: false, ready: false });
+        // scroll to bottom
     }
 
     function selectFile(value) {
@@ -533,21 +654,89 @@ const PreviewFile = ({data, close}) => {
 }
 
 
-export async function getMsg(id) {
 
-    return await IDBPromise(openTrans(DB, "all_messages_tb").get(id))
-        .then(msg => {
-            // if it is continue else remove
-            if (msg && msg.status === 'x') {
-                return null
+
+function getMessages(nowChatting) {
+    let list = [];
+    let unsent = [];
+    let i = 0, uB = 50, uB2 = 10;
+
+
+    return new promise(res => {
+
+        openTrans(DB, msgsTable)
+        .index("handle").openCursor(IDBKeyRange.only(nowChatting), "prev")
+        .onsuccess = e => {
+            let cur = e.target.result;
+
+            if (cur && ((!viewMsg && i < uB) || (viewMsg && i < uB2))) {
+                let id = cur.primaryKey;
+                list.prepend(cur.value);
+
+                (!viewMsg || id > viewMsg) && i++;
+                cur.continue();
+
+            } else {
+                // show messages that have not yet been sent
+                openTrans(DB, offlineMsgsTable)
+                    .index("handle").openCursor(IDBKeyRange.only(nowChatting))
+                    .onsuccess = e => {
+                        let cur = e.target.result;
+
+                        if (cur) {
+                            let id = cur.primaryKey;
+                            unsent.append({ ...cur.value, id:id });
+                            cur.continue();
+
+                        } else {
+                            res ({
+                                unsent: unsent,
+                                data: list
+                            })
+                        }
+                    }
             }
-            return msg
-        })
-        .catch(err => {
-            console.error(err);
-            return null
-        })
+        }
+    })
 }
+
+
+function loadMoreMessages(afterId, beforeId) {
+    let range, i = 0, list = [];
+
+    if (afterId){
+        range = [IDBKeyRange.lowerBound( afterId, true )];
+
+    } else if (beforeId) {
+        range = [IDBKeyRange.upperBound(beforeId, true), "prev"];
+
+    }
+
+    // return a promise resolving the list or rejecting undefined
+    return new Promise( (res, rej) => {
+        !range && rej();
+
+        openTrans(DB, msgsTable)
+        .openCursor(...range)
+        .onsuccess = e => {
+            let cursor = e.target.result;
+
+            if (cursor && i < 20) {
+                let id = cursor.primaryKey;
+
+                list.append(cursor.value)
+
+                i++;
+                cursor.continue();
+            } else {
+                res(list);
+            }
+        } 
+    })
+
+}
+
+let justSent = [];
 
 
 const devMsgs = [

@@ -1,24 +1,73 @@
 import './ChatList.css';
 
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
-import { ChatContext, ToggleOverlay } from '../../contexts';
+import { ChatContext, SendMsgContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
 import { timePast } from '../../../utils';
+import { DB } from '../../../db';
+import { chatsTable, offlineMsgsTable } from '../../page';
 
 
 export const ChatList = () => {
+    const ref = useRef(null);
+
     const [chats, setChats] = useState(DevMode? devChats : []);
+    const [pendingList, setPendingList] = useState([]);
+
+    const compound = [...pendingList, ...chats].sort( (prev, next) => prev - next )
 
     const toggleMessaging = useContext(ChatContext).set;
+    
+    const firstId = chats[0]?.id, lastId = chats?.[chats.length - 1]?.id;
+
+    const {msgsStatus} = useContext(SendMsgContext);
 
 
+    useEffect(() => {
+        if (!DevMode){
+            getChats()
+            .then( res => {
+                setChats(res.data);
+                setPendingList(res.unsent);
+            })
+        }
+
+    }, []);
+    
+
+    useEffect(() => {
+        // to effect status changes
+        for (let status of msgsStatus){
+            const index = pendingList.findIndex( val => val.id === status.id);
+
+            if (index > -1 && status.status?.success){
+                setPendingList( prev => {
+                    const clone = [...prev];
+
+                    clone.splice(index, 1);
+
+                    return clone
+                })
+
+                // get message and add to list to be displayed
+                getChats()
+                .then( res => {
+                    setChats(res.data);
+                    setPendingList(res.unsent);
+                })
+            }
+        }
+
+    }, [msgsStatus]);
+
+    
     return (
-        <div className="chat-list custom-scroll max">
+        <div className="chat-list custom-scroll max" ref={ref}>
             <div className='content max'>
-            { chats.length? 
+            { compound.length? 
             
-                chats.map( chat =>{
+                compound.map( chat =>{
                     const {handle, receivers} = chat;
 
                     return (
@@ -102,6 +151,58 @@ function TimePast({ time }) {
         <>{value}</>
     )
 
+}
+
+
+function getChats(max) {
+    let list = [], unsent = [], done = [];
+    let i = 0;
+
+    return new promise(res => {
+
+        // check for any chat that has unsent messages starting getting only the last per user
+        openTrans(DB, offlineMsgsTable)
+        .openCursor(null, "prev")
+        .onsuccess = e => {
+            let cursor = e.target.result;
+
+            if (cursor) {
+                const {value} = cursor, {handle} = value;
+
+                unsent.push(value);
+                done.push(handle);
+
+                i++;
+                cursor.continue();
+
+            } else {
+                // check the messages sent to each person starting from the person last chatted with
+
+                openTrans(DB, chatsTable)
+                .openCursor()
+                .onsuccess = e => {
+                    let cursor = e.target.result;
+
+                    if (cursor && i < max) {
+                        const {value} = cursor, {handle} = value;
+
+                        // if the chat has unsent messages, skip
+                        if (!done.includes(handle)){
+                            list.push(value);
+                        }
+
+                        i++;
+                        cursor.continue();
+
+                    } else 
+                        res({
+                            unsent: unsent,
+                            data: list
+                        })
+                }
+            }
+        }
+    })
 }
 
 
