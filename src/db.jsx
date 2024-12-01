@@ -105,3 +105,36 @@ IDBrequest.addEventListener('success', e => {
     dispatchEvent(new Event('loadedDatabase'));
     console.log("Indexeddb is ready to go!");
 });
+
+
+export const chatsTable = 'people_chats_tb';
+export const msgsTable = 'all_messages_tb';
+export const offlineMsgsTable = 'offline_messages';
+
+
+
+export const getMsg = async (id) => {
+
+    return await IDBPromise(openTrans(DB, msgsTable).get(id))
+        .then(msg => {
+            // if it is continue else remove
+            if (msg && msg.status === 'x') {
+                return null
+            }
+            return msg
+        })
+        .catch(err => {
+            console.error(err);
+            return null
+        })
+}
+
+
+export const getContactDetails = async (id) => {
+    return IDBPromise( openTrans(DB, chatsTable).get(id) )
+    .then(res => res)
+    .catch(err => {
+        console.error(err);
+        return null
+    })
+}

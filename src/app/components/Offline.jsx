@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useOnlineStatus } from "./Hooks";
-import { DB, IDBPromise, openTrans } from "../../db";
-import { msgsTable, offlineMsgsTable } from "../page";
+
+import { DB, IDBPromise, openTrans, msgsTable, offlineMsgsTable } from "../../db";
 
 import api from '../../data/api.json';
 import { SendMsgContext } from "../contexts";

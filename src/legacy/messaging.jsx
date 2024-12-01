@@ -10,7 +10,7 @@ import { ChatContext } from '../contexts';
 import { IconBut } from "../buttons";
 import ProfilePic from "./contacts";
 import { on, once, sanitize, title, transitionEnd } from "../ui/helpers";
-import { IDBPromise, openTrans, DB } from '../db';
+import { IDBPromise, openTrans, DB, getMsg } from '../db';
 import { DevMode } from '../App';
 import { BgImg, TimePast } from './more';
 
@@ -768,23 +768,6 @@ function PreviewFile({ type, name, ext, size, src, show }) {
             </div>
         </div>
     )
-}
-
-
-export async function getMsg(id) {
-
-    return await IDBPromise(openTrans(DB, "all_messages_tb").get(id))
-        .then(msg => {
-            // if it is continue else remove
-            if (msg && msg.status === 'x') {
-                return null
-            }
-            return msg
-        })
-        .catch(err => {
-            console.error(err);
-            return null
-        })
 }
 
 

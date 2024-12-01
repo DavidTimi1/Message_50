@@ -5,8 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { ChatContext, SendMsgContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
 import { timePast } from '../../../utils';
-import { DB } from '../../../db';
-import { chatsTable, offlineMsgsTable } from '../../page';
+import { DB, chatsTable, offlineMsgsTable } from '../../../db';
 
 
 export const ChatList = () => {

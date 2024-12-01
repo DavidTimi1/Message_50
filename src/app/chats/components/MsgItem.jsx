@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
 
 import { faArrowDown, faCircleArrowDown, faCirclePause, faCirclePlay, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { getMsg } from '../../../db';
 
 
 export const MsgItem = (props) => {
