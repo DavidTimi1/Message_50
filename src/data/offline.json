@@ -1,0 +1,19 @@
+[
+    {
+        "id": 79,
+        "handle": "@J_ohn",
+        "time": 1725143622810,
+        "textContent": "Yh, sent offline",
+        "sent": true,
+        "status": "s"
+    },
+    {
+        "id": 307,
+        "time": 1725142799711,
+        "handle": "multiple: @J_ohn, @Peace1",
+        "textContent": "Sent to multiple while offline!!",
+        "sent": true,
+        "status": "s",
+        "receivers": ["@J_ohn", "@Peace1"]
+    }
+]

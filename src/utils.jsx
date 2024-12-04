@@ -240,9 +240,18 @@ export const bytesToURL = (url) => {
 }
 
 
-export function runOnComplete(param, ev, el, func, args) {
-    if (param) args ? func?.(...args) : func?.()
-    else once(ev, el, _ => args ? func?.(...args) : func?.())
+export async function runOnComplete(param, ev, el, func, args) {
+    func = func ?? mTFunc;
+
+    return new Promise( resolve => {
+        if (param) resolve();
+            
+        else once( ev, el, resolve )
+
+    }).then (() =>  args ? func?.(...args) : func?.() )
+
+    
+    function mTFunc(){}
 }
 
 

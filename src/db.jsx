@@ -1,11 +1,17 @@
 // USING INDEXED DATABASE
+
+import { seedDB } from "./data/loadData";
+import { once, runOnComplete } from "./utils";
+
 // global table database
-export let DB;
+let DB;
 
 export let loadedDB = false;
+export const dbEvent = 'loadedDatabase';
+export const dbName = 'messages_db';
 
 // open a new indexeddb 
-const IDBrequest = indexedDB.open('messages_db', 1);
+const IDBrequest = indexedDB.open(dbName, 1);
 
 
 export const openTrans = (db, tb, mode) => db.transaction(tb, mode).objectStore(tb);
@@ -16,6 +22,15 @@ export const IDBPromise = req =>
         req.onsuccess = _ => res(req.result);
         req.onerror = _ => rej(req.error);
     })
+
+
+
+
+export const chatsTable = 'people_chats_tb';
+export const msgsTable = 'all_messages_tb';
+export const offlineMsgsTable = 'offline_messages';
+export const contactsTable = 'people_tb';
+export const filesTable = 'files';
 
 
 // listen for any errors from opening the indexeddb
@@ -63,59 +78,82 @@ IDBrequest.onupgradeneeded = e => {
     // handle errors
     DB.onerror = _ => console.error('Error loading database.');
 
-    if (!DB.objectStoreNames.contains("all_messages_tb")) {
+    if (!DB.objectStoreNames.contains(msgsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
-        let messagesTable = DB.createObjectStore('all_messages_tb', { keyPath: 'id' });
+        let messagesTable = DB.createObjectStore(msgsTable, { keyPath: 'id' });
         messagesTable.createIndex('timestamp', 'timestamp', { unique: false });
         messagesTable.createIndex('handle', 'handle', { unique: false });
     }
-    if (!DB.objectStoreNames.contains("people_chats_tb")) {
+    if (!DB.objectStoreNames.contains(chatsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
-        let peopleChatsTable = DB.createObjectStore("people_chats_tb", { keyPath: 'handle' });
+        let peopleChatsTable = DB.createObjectStore(chatsTable, { keyPath: 'handle' });
         // peopleChatsTable.createIndex('unread', 'unread', {unique: false});
     }
-    // if (!DB.objectStoreNames.contains("people_tb")) {
-    //     // create a table (object store) in athe database and add columns(object indices)
-    //     let peopleTable = DB.createObjectStore('people_tb', { keyPath: 'id' });
-    //     peopleTable.createIndex('handle', 'handle', { unique: false });
-    // }
-    if (!DB.objectStoreNames.contains("offline_messages")) {
+    if (!DB.objectStoreNames.contains(contactsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
-        let offlineMessages = DB.createObjectStore('offline_messages', { autoIncrement: true });
+        let peopleTable = DB.createObjectStore(contactsTable, { keyPath: 'handle' });
+    }
+    if (!DB.objectStoreNames.contains(offlineMsgsTable)) {
+        // create a table (object store) in athe database and add columns(object indices)
+        let offlineMessages = DB.createObjectStore(offlineMsgsTable, { autoIncrement: true });
         offlineMessages.createIndex('handle', 'handle', { unique: false });
     }
-    if (!DB.objectStoreNames.contains("offline_tasks")) {
+    // if (!DB.objectStoreNames.contains("offline_tasks")) {
+    //     // create a table (object store) in athe database and add columns(object indices)
+    //     let undone = DB.createObjectStore('offline_tasks', { autoIncrement: true });
+    //     undone.createIndex('taskType', 'taskType', { unique: false })
+    // }
+    if (!DB.objectStoreNames.contains(filesTable)) {
         // create a table (object store) in athe database and add columns(object indices)
-        let undone = DB.createObjectStore('offline_tasks', { autoIncrement: true });
-        undone.createIndex('taskType', 'taskType', { unique: false })
-    }
-    if (!DB.objectStoreNames.contains("files")) {
-        // create a table (object store) in athe database and add columns(object indices)
-        let filesTable = DB.createObjectStore('files', { autoIncrement: true });
-        filesTable.createIndex('type', 'type', { unique: false })
+        let filesTb = DB.createObjectStore(filesTable, { autoIncrement: true });
+        filesTb.createIndex('type', 'type', { unique: false })
     }
 }
 
 
 // if it is successful the reulting databse should be assigned to db
 IDBrequest.addEventListener('success', e => {
-    DB = e.target.result;
-    loadedDB = true;
+    const { target: { result } } = e;
 
-    dispatchEvent(new Event('loadedDatabase'));
-    console.log("Indexeddb is ready to go!");
+    DB = result;
+    seedDB(DB)
+        .then(() => {
+            loadedDB = true;
+            
+            dispatchEvent(new Event(dbEvent));
+            console.log("Indexeddb is ready to go!");
+        })
+
 });
 
 
-export const chatsTable = 'people_chats_tb';
-export const msgsTable = 'all_messages_tb';
-export const offlineMsgsTable = 'offline_messages';
+export const deleteDatatbase = () => {
+    const vert = confirm("Are you sure you wanna?");
+    if (!vert) return 
+
+    IDBPpromise( window.indexedDB.deleteDatabase(dbName) )
+    .then(() => alert("Deleted Successfully!"))
+    .catch(() => alert("Failed to delete DB!"))
+}
+
+
+export const loadDB = () => {
+    
+    return new Promise( resolve => {
+        if (loadedDB) resolve(DB);
+            
+        else once( dbEvent, () => resolve(DB) )
+
+    }).then(res => res);
+}
+
 
 
 
 export const getMsg = async (id) => {
 
-    return await IDBPromise(openTrans(DB, msgsTable).get(id))
+    return await loadDB()
+        .then(() => IDBPromise(openTrans(DB, msgsTable).get(id)))
         .then(msg => {
             // if it is continue else remove
             if (msg && msg.status === 'x') {
@@ -131,10 +169,13 @@ export const getMsg = async (id) => {
 
 
 export const getContactDetails = async (id) => {
-    return IDBPromise( openTrans(DB, chatsTable).get(id) )
-    .then(res => res)
-    .catch(err => {
-        console.error(err);
-        return null
-    })
+    openTrans(DB, chatsTable).get(id)
+    
+    return loadDB()
+        .then(() => IDBPromise( openTrans(DB, contactsTable).get(id)) )
+        .then(res => res)
+        .catch(err => {
+            console.error(err);
+            return null
+        })
 }

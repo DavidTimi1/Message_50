@@ -15,6 +15,8 @@ import { ProfileBrief } from './components/ProfileSets';
 import { Heading } from "./components/Heading";
 import { ToggleOverlay } from '../contexts';
 
+import { deleteDatabase } from '../../db';
+
 const viewName = "Settings";
 
 
@@ -128,7 +130,7 @@ const Danger = () => {
             <hr></hr>
             <div className="settings-sec">
                 <label className="no-accordion fw">
-                    <button className="no-btn btn mixed btn-outline-danger fw">
+                    <button className="no-btn btn mixed btn-outline-danger fw" onClick={deleteDatabase}>
                         Clear All Chats
                     </button>
                 </label>

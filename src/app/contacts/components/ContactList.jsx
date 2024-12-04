@@ -1,18 +1,27 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { DevMode } from "../../../App";
 import { ChatContext, ToggleOverlay } from "../../contexts";
 import { ContactItem } from "./ContactItem";
 import { $ } from "../../../utils";
+import { loadDB, openTrans } from "../../../db";
 
 
 
 
 export const ContactList = () => {
-    const [contacts, setContacts] = useState(DevMode? devContacts : []);
+    const [contacts, setContacts] = useState({});
     const ref = useRef(null);
 
+    const hashes = Object.keys(contacts).sort( (a, b) => a > b ? 1 : a == b ? 0 : -1 );
+
     const toggleMessaging = useContext(ChatContext).set;
-    const toggleOverlay = useContext(ToggleOverlay)
+    const toggleOverlay = useContext(ToggleOverlay);
+
+    useEffect(() => {
+        getContacts()
+        .then(setContacts)
+
+    }, [])
 
 
     return (
@@ -22,22 +31,29 @@ export const ContactList = () => {
                 onClick={handleClick} 
                 onContextMenu={handleContextMenu}
             >
-                { contacts.length? 
-                
-                    contacts.map( person =>{
-                        const {handle} = person;
+                { hashes.length? 
 
-                        if (handle === 'multiple') return;
+                    hashes.map( hash => {
+                        const hashBucket = contacts[hash];
 
-                        return (
-                            <ContactItem
-                                key={handle}
-                                Message={toggleMessaging}
-                                data={person}
-                            /> 
-                        )
+                        return hashBucket.sort( sortByName )
+                        .map( person =>{
+                            const {handle} = person;
+
+                            if (handle === 'multiple') return;
+
+                            return (
+                                <ContactItem
+                                    key={handle}
+                                    Message={toggleMessaging}
+                                    data={person}
+                                /> 
+                            )
+                        })
                     })
+
                     : 
+
                     <>
                         <div className="no-message"> You do not have any contacts. </div>
                         <div className="new-ptr">
@@ -76,20 +92,61 @@ export const ContactList = () => {
 }
 
 
-const devContacts = [
-    {
-        id: 3,
-        name: "Jacob",
-        handle: "@Jayjay",
-    },
-    {
-        id: 7,
-        name: "John",
-        handle: "@J_ohn",
-    },
-    {
-        id: 30,
-        name: "John, Peace",
-        handle: "multiple",
-    },
-]
+
+function getContacts(){
+    const contactsHashTable = {};
+    
+
+    return loadDB()
+    .then( DB => new Promise((res, rej) => {
+
+        let req = openTrans(DB, "people_tb").openCursor();
+
+        req.onsuccess = (e) => {
+            let cursor = e.target.result;
+
+            if (cursor) {
+
+                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name }
+                
+                let char = name.charAt(0).toUpperCase();
+                char = char.toLowerCase() == char ? '#' : char
+
+                if (!(char in contactsHashTable))
+                    contactsHashTable[char] = []
+
+                contactsHashTable[char].push(detail);
+                contactsHashTable[char].sort( sortByName );
+
+                cursor.continue();
+
+            } else
+                res(contactsHashTable);
+        }
+
+        req.onerror = (e) => rej(e.target.error)
+    }))
+}
+
+
+function sortByName(a, b){
+    retrun ( a.name > b.name ? 1 : a.name == b.name ? 0 : -1 )
+}
+
+// const devContacts = [
+//     {
+//         id: 3,
+//         name: "Jacob",
+//         handle: "@Jayjay",
+//     },
+//     {
+//         id: 7,
+//         name: "John",
+//         handle: "@J_ohn",
+//     },
+//     {
+//         id: 30,
+//         name: "John, Peace",
+//         handle: "multiple",
+//     },
+// ]

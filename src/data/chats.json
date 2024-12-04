@@ -1,26 +1,23 @@
 [
     {
-        "id": 3,
+        "id": 356,
         "time": 1725142641588,
-        "name": "Jacob",
         "handle": "@Jayjay",
-        "msg": "Hello bruvver",
+        "textContent": "Hello bruvver",
         "status": "s"
     },
     {
-        "id": 7,
+        "id": 71,
         "time": 1725142622810,
-        "name": "John",
         "handle": "@J_ohn",
-        "msg": "Hello bruvver",
+        "textContent": "Hello bruvver",
         "status": "s"
     },
     {
-        "id": 30,
+        "id": 305,
         "time": 1725142599711,
-        "name": "John, Peace",
-        "handle": "multiple",
-        "msg": "Hello bruvver",
+        "handle": "multiple: @J_ohn, @Peace1",
+        "textContent": "Hello bruvver",
         "status": "s",
         "receivers": ["@J_ohn", "@Peace1"]
     }

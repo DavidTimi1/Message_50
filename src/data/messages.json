@@ -1,20 +1,23 @@
 [
     {
         "id": 3,
+        "handle": "@Jayjay",
         "time": 1725142641588,
         "textContent": "Hello bruvver",
-        "action": "sent"
+        "sent": true
     },
     {
         "id": 7,
+        "handle": "@J_ohn",
         "time": 1725142622810,
         "textContent": "Hello bruvver",
-        "action": "received"
+        "sent": false
     },
     {
         "id": 30,
+        "handle": "@Jayjay",
         "time": 1725142599711,
         "textContent": "Hello bruvver",
-        "action": "sent",
-    },
+        "sent": true
+    }
 ]
