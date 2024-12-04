@@ -89,7 +89,6 @@ export const ManageContact = ({ show, args }) => {
         return new Promise( res => {
             once(transitionEnd, ref.current, () =>{
                 let done = removeState(navId);
-                console.log(done);
             });
 
             ref.current.classList.add("close");
@@ -104,7 +103,7 @@ const Form = ({NEW, id}) => {
         <form action="/contacts" method="post" onSubmit={handleSubmit} className="mx-auto">
             {
                 id && 
-                <input name={id} type="text" hidden />
+                <input name="id" value={id} type="text" hidden readOnly />
             }
             <div className="flex-col gap-3">
                 <label className="nv-input fw br-5">

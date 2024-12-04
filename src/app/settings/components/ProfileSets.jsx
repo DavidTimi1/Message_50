@@ -221,7 +221,7 @@ const ProfileForm = () => {
                         <FontAwesomeIcon icon={faUser} size="xl" />
                         <div className="flex-col gap-1">
                             <small> Username </small>
-                            <input className="fw" ref={nameRef} contentEditable="false" />
+                            <input className="fw" ref={nameRef} readOnly />
                         </div>
                     </div>
                 </label>

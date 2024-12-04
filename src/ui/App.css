@@ -50,7 +50,7 @@ input:not([type=file], [type=range]),
 textarea {
   border-radius: 1rem;
   resize: none;
-  padding: 5px 15px;
+  padding: 5px;
   /* margin-left: 5px; */
   transition: outline 0.1s ease-out, border 0.1s ease-out;
   color: var(--text-col);

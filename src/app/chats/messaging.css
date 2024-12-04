@@ -8,15 +8,29 @@
     margin-top: 0.5px;
     user-select: none;
 
+    &:after {
+        content: '';
+        background-color: transparent;
+        transition: background-color .25s;
+        position: absolute;
+    }
+
     &.selected:after {
         background-color: #ff800055;
-        content: '';
         height: 100%;
         left: 0;
-        position: absolute;
         top: 0;
         width: 100%;
     }
+
+    &.requested::after {
+        animation: glowMsg .25s alternate-reverse 4 forwards ease-in-out;
+        height: 100%;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
 
     &.s-cont.adding {
         transform: translate(-5px, 10px) scale(0.7);
@@ -264,7 +278,13 @@
     background-color: var(--body2-col);
     bottom: 100%;
     height: calc(100vh - 100%);
+    transition: .25s;
+    opacity: 1;
     left: 0;
+
+    &.close {
+        opacity: 0;
+    }
 }
 
 .file-preview {
@@ -342,6 +362,10 @@
         }
     }
 
+    .contain {
+        background-color: var(--body2-col);
+    }
+
     .icon-btn {
         color: white;
         
@@ -350,9 +374,52 @@
         }
     }
 
+    .ref {
+        background-color: var(--body2-col);
+        border-radius: .5em;
+        height: auto;
+        interpolate-size: allow-keywords;
+        transition: .25s;
+
+        &:has( *){
+            padding: 5px;
+        }
+
+        .btn-bg {
+            --bg: unset;
+        }
+
+        .icon-btn {
+            padding: 5px;
+        }
+
+        > * {
+            background-color: var(--body-col);
+            border-radius: .5em;
+            color: var(--text2-col);
+            overflow: hidden;
+            padding: 5px 10px;
+        }
+        > ::before {
+            content: '';
+            background-color: var(--btn2-col);
+            display: block;
+            height: 100%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            width: 3px;
+        }
+    }
+
     textarea {
         padding-block: 2px;
     }
 
 
+}
+
+@keyframes glowMsg {
+    from {background-color: transparent;}
+    from {background-color: #ff800055;}
 }

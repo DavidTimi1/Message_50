@@ -4,6 +4,9 @@
 
 .settings-sec {
     background-color: var(--body-col);
+    height: auto;
+    interpolate-size: allow-keywords;
+    transition: height .25s;
     padding: 10px 5px;
 
     &:not(:has( .acc-btn)):hover {

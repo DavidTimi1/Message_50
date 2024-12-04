@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useOnlineStatus } from "./Hooks";
 
-import { DB, IDBPromise, openTrans, msgsTable, offlineMsgsTable } from "../../db";
+import { IDBPromise, openTrans, msgsTable, offlineMsgsTable, loadDB } from "../../db";
 
 import api from '../../data/api.json';
 import { SendMsgContext } from "../contexts";
@@ -94,7 +94,8 @@ export const useOfflineActivities = () => {
                 .then( () => deleteMessageFromStore(msg.id) ) // delete after success
                 .then( () => saveMsgInDb(officialId, msg) ) // save message in db
                 .then( () => updateMsgStatus(msg.id, {id: officialId, success: true}) ) // set status to sent
-            })
+
+            }, new Promise(res => res())) // start the chain of promises
         })
     }
 }
@@ -117,18 +118,22 @@ export const OnOnlineMsgSender= () =>{
 
 const getMessagesFromStore = () => {
     
-    return IDBPromise(
-        openTrans(DB, offlineMsgsTable)
-        .getAll()
-    )
+    return loadDB()
+        .then( DB => IDBPromise (
+                openTrans(DB, offlineMsgsTable)
+                .getAll()
+            )
+        )
 }
 
 const deleteMessageFromStore = (id) => {
     
-    return IDBPromise(
-        openTrans(DB, offlineMsgsTable, 'readwrite')
-        .delete(id)
-    )
+    return loadDB()
+        .then( DB => IDBPromise (
+                openTrans(DB, offlineMsgsTable, 'readwrite')
+                .delete(id)
+            )
+        )
 }
 
 const sendMessageToServer = (data) => {
@@ -151,8 +156,10 @@ const sendMessageToServer = (data) => {
 
 const saveMsgInDb = (id, msgData) => {
 
-    return IDBPromise(
-        openTrans(DB, msgsTable, 'readwrite')
-        .put( {...msgData, id:id} )
-    )
+    return loadDB()
+        .then( DB => IDBPromise (
+                openTrans(DB, msgsTable, 'readwrite')
+                .put( {...msgData, id:id} )
+            )
+        )
 }

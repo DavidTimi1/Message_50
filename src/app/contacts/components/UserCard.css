@@ -17,7 +17,8 @@
         border-radius: 1em 1em 0 0;
         bottom: 0px;
         left: 0;
-        transition: transform .25s ease-in-out;
+        transition: .25s ease-in-out;
+        interpolate-size: allow-keywords;
         padding: 5px;
         max-height: 80%;
         transform: translateY(0px);
