@@ -127,13 +127,21 @@ IDBrequest.addEventListener('success', e => {
 });
 
 
-export const deleteDatatbase = () => {
+export const deleteDatabase = () => {
     const vert = confirm("Are you sure you wanna?");
     if (!vert) return 
 
-    IDBPpromise( window.indexedDB.deleteDatabase(dbName) )
-    .then(() => alert("Deleted Successfully!"))
-    .catch(() => alert("Failed to delete DB!"))
+    loadDB()
+    .then( DB => {
+        DB.close() // close open transactions
+        
+        IDBPromise( indexedDB.deleteDatabase(dbName) )
+        .then(() => {
+            console.log("worked")
+            alert("Deleted Successfully!")
+        })
+        .catch(() => alert("Failed to delete DB!"))
+    })
 }
 
 
