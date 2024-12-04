@@ -1,24 +1,43 @@
 import '../messaging.css';
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 
 import { IconBtn } from "../../components/Button";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
 
-import { faArrowDown, faCircleArrowDown, faCirclePause, faCirclePlay, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getMsg } from '../../../db';
+import { ChatContext } from '../../contexts';
 
 
 export const MsgItem = (props) => {
-    const { details, id, select, replyTo, blockUp } = props;
-    const { reply, file, textContent, action, time } = details;
+    const { details, id, select, blockUp, replyTo } = props;
+    const { reply, file, textContent, sent, time, notSent, status } = details;
+
+    const chatContext = useContext( ChatContext ), {cur} = chatContext; 
+    const highlightMe = chatContext.id === id, unRequest = () => chatContext.set(cur);
 
     const itemRef = useRef(null), msgElem = useRef(null);
 
+
+    useEffect(() => {
+        if (highlightMe){
+            once("animationend", unRequest);
+            msgElem.current.scrollIntoView({ behaviour: "smooth", inline: "start" });
+            
+            msgElem.current.classList.add("requested"); // glow
+
+        } else {
+            msgElem.current.classList.remove("requested");
+        }
+
+    }, [highlightMe]);
+
+
     return (
-        <div data-id={id} className={`msgcont ${action === "sent" ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
+        <div data-id={id} className={`msgcont ${ sent ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
             <div className="flex-col fw gap-1">
                 <div className="msg-item" ref={itemRef}>
                     {reply && <MsgLink id={reply}></MsgLink>}
@@ -29,10 +48,21 @@ export const MsgItem = (props) => {
                     </div>
 
                     <div className="abs instr">
-                        <IconBtn icon={faShare} className="reply" onClick={_ => replyTo(id)} />
+                        <IconBtn icon={faShare} className="reply" onClick={replyThis} />
                     </div>
                 </div>
-                <small className="timestamp br-1">
+                <small className="timestamp br-1 flex mid-align gap-2">
+                    {
+                        sent &&
+
+                        <FontAwesomeIcon icon={
+                            notSent?
+                                faClock
+                            :
+                                faCheckDouble
+                        } />
+                    }
+
                     <TimePast time={time} />
                 </small>
             </div>
@@ -77,7 +107,7 @@ export const MsgItem = (props) => {
             msgItem.classList.remove("no-trans");
 
             let displacement = Math.abs(e.changedTouches[0].clientX - touch.x);
-            if (displacement > 100) replyTo(id);
+            if (displacement > 100) replyThis();
 
             msgItem.style.transform = "translateX(0px)";
             document.removeEventListener('touchmove', moveMsg);
@@ -87,6 +117,10 @@ export const MsgItem = (props) => {
         on('touchmove', document, moveMsg, { passive: true })
         once('touchend', document, endMsgTouch)
 
+    }
+
+    function replyThis(){
+        replyTo(id)
     }
 }
 
@@ -103,7 +137,7 @@ function MsgLink({ id }) {
                 // if it is continue else remove
                 if (msg) {
                     // TODO check if name is saved
-                    let person = msg.action === 's' ? "You" : msg.person;
+                    let person = msg.sent? "You" : msg.person;
 
                     if (msg.status === 'x') {
                         setStatus(false);

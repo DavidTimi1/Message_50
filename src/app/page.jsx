@@ -17,7 +17,7 @@ import { StateNavigatorProvider } from "./history";
 
 
 export const Msg50App = () => {
-	const [chatting, setChatting] = useState(false);
+	const [chatting, setChatting] = useState({user: false});
 	const [overlays, setOverlays] = useState(new Map());
 	const [msgFrom, jumpTo] = useState();
 
@@ -29,7 +29,7 @@ export const Msg50App = () => {
         <StateNavigatorProvider>
 		<ToggleOverlay.Provider value={toggleOverlay}>
         <SendMsgsProvider>
-        <ChatContext.Provider value={{ cur: chatting, set: toggleMessaging }}>
+        <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
             <NavBar open={overlays.has('navbar')} />
 
         <Routes>
@@ -49,8 +49,7 @@ export const Msg50App = () => {
     )
 
 	function toggleMessaging(handle, id) {
-		setChatting(handle);
-		jumpTo(id);
+		setChatting({user: handle, msgId: id});
 
         // to navigate from elsewhere
         if (handle && location.pathname !== '/app'){

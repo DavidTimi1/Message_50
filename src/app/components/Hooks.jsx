@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { on } from "../../utils";
+import { getContactDetails } from "../../db";
 
 
 
@@ -21,4 +22,21 @@ export const useOnlineStatus = () => {
     }, [])
     
     return isOnline
+}
+
+
+export const useContactName = (id) => {
+    const [ name, setName ] = useState(id);
+
+    useEffect(() => {
+        if (!id) return
+
+        getContactDetails(id)
+        .then( res => {
+            setName(res?.name ?? id);
+        });
+
+    }, [id]);
+
+    return name
 }
