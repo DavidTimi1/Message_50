@@ -26,7 +26,6 @@ export const useStateNavigation = () => {
     useEffect(() => {
         stateStack.current = []; // restart if the path changes
         on('popstate', handlePopState);
-        console.log("changed", pathname)
 
         return () => {
             window.removeEventListener('popstate', handlePopState);
@@ -77,7 +76,7 @@ export const useStateNavigation = () => {
         if (len > 1){
             const stateObj = getStateObj(newStack);
     
-            navigate(pathname, { state:stateObj, replace: true }); // '' ensures no URL change
+            navigate(pathname, { state:stateObj }); // '' ensures no URL change
         
         }
 

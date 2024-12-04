@@ -2,26 +2,37 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 
 import { once, title, transitionEnd } from "../../../ui/helpers";
-import { ChatContext } from "../../contexts";
+import { ChatContext, StateNavigatorContext } from "../../contexts";
 import { IconBtn } from "../../components/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 
-
+const navId = 'searchGeneral';
 
 export default function SearchWindow({ show, closeSearch, initFilters }) {
     const filters = initFilters ?? [];
     const inputRef = useRef(null), myRef = useRef(null);
 
+    const { pushState, removeState } = useContext( StateNavigatorContext );
+
     const only = filters.includes("only") && filters.length === 2;
 
 
     useEffect(() => {
-        let t_id = show && setTimeout(() => myRef.current.classList.remove("close"), 50)
+        let t_id;
+        
+        if (show){
+            t_id = setTimeout(() => {
+                pushState(navId, close);
+                myRef.current.classList.remove("close");
+
+            }, 50)
+        }
 
         return () => t_id && clearTimeout(t_id);
-    }, [show])
+
+    }, [show, pushState])
 
 
     return (
@@ -29,7 +40,7 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
         <div className="interface close search" ref={myRef}>
             <div className="fw flex-col mid-align">
                 <div className="header fw flex mid-align gap-2">
-                    <IconBtn icon={faAngleLeft} onClick={close}>
+                    <IconBtn icon={faAngleLeft} onClick={handleCloseClick}>
                         close search
                     </IconBtn>
 
@@ -80,6 +91,10 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
 
     function clearInput() {
         inputRef.current.value = '';
+    }
+
+    function handleCloseClick(){
+        removeState(navId);
     }
 
 
