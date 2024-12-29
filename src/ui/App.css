@@ -1,6 +1,13 @@
 :root {
-  font-family: sans-serif;
+  /* font-family: sans-serif; */
   letter-spacing: 0.5px;
+  
+  font-family: "Lato", serif;
+  font-weight: 400;
+  font-style: normal;
+  
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   --blue: hsl(204, 60%, 50%);
   --blue2: hsl(204, 62%, 47%);
@@ -11,7 +18,7 @@
   /* #338ecc - new blue??? */
   --darkest-blue: hsl(210, 50%, 2%);
   --darkest-blue2: hsl(210, 50%, 4%);
-  --darkest-blue3: hsl(210, 50%, 7%);
+  --darkest-blue3: #09121b;
 
   --dark-blue: hsl(211, 66%, 8%);
   --dark-blue2: hsl(211, 67%, 11%);
@@ -90,26 +97,11 @@ small {
   font-size: 80%;
 }
 
-svg.pending {
-  animation: 1s rot infinite cubic-bezier(0, .05, 1, .95);
-
-  circle {
-    stroke-dashoffset: calc(var(--length) - 2);
-    stroke: white;
-  }
-}
 
 @keyframes rot {
   to {
     rotate: 270deg;
   }
-}
-
-.num-count {
-  background-color: var(--btn-col);
-  padding: 0.1rem 0.4rem 0.1rem 0.4rem;
-  border-radius: 1rem;
-  font-weight: 600;
 }
 
 
@@ -259,5 +251,31 @@ label.nv-input {
 
   &:hover .btn-bg::after {
     background-color: light-dark(#00000020, #ffffff30);
+  }
+}
+
+
+.my-btn {
+  --color: var(--text-col);
+  background-color: var(--btn-col);
+  background-size: 300% 300%;
+  background-position: 0 50%;
+  border-radius: 1rem;
+  transition: background-position .5s ease-in-out;
+
+  .btn {
+    color: var(--color);
+  }
+
+  &:hover {
+    background-color: var(--btn2-col);
+  }
+}
+
+
+@media screen and (min-width: 768px) {
+  .pad {
+    padding-left: 35px;
+    padding-right: 35px;
   }
 }

@@ -11,8 +11,6 @@
     padding: 0;
     width: 100%;
     margin: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .overlay {
@@ -130,17 +128,18 @@
     text-align: left;
 }
 
-.dark-mode .sun {
+:root:has( meta[content="dark"]) .sun {
     display: none;
 }
 
 .moon {
     display: none !important;
 
-    .dark-mode & {
+    :root:has( meta[content="dark"]) & {
         display: block !important;
     }
 }
+
 
 
 .side-scroll {

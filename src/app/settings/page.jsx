@@ -122,7 +122,7 @@ const Danger = () => {
         <div className='fw'>
             <div className="settings-sec">
                 <label className="no-accordion fw">
-                    <button className="no-btn btn mixed btn-outline-secondary fw">
+                    <button className="no-btn btn mixed btn-outline-secondary fw" onClick={deleteDatabase}>
                         Log out
                     </button>
                 </label>
@@ -130,7 +130,7 @@ const Danger = () => {
             <hr></hr>
             <div className="settings-sec">
                 <label className="no-accordion fw">
-                    <button className="no-btn btn mixed btn-outline-danger fw" onClick={deleteDatabase}>
+                    <button className="no-btn btn mixed btn-outline-danger fw">
                         Clear All Chats
                     </button>
                 </label>

@@ -1,6 +1,6 @@
 import { faAngleDown, faMessage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { changeTheme, getTheme } from "../../../theme";
+import { changeTheme, getTheme } from "../../../theme.js";
 import { useState } from "react";
 
 

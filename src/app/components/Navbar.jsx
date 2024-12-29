@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef } from "react";
 import { UserContext } from "../../contexts";
 import { StateNavigatorContext, ToggleOverlay } from "../contexts";
 
-import { changeTheme } from '../../theme';
+import { changeTheme } from '../../theme.js';
 import { once, transitionEnd } from "../../utils";
 import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -64,9 +64,9 @@ export function NavBar({ open }) {
                         <NavItem closeNavbar={close} href="/app/media" icon={faFolder}>
                             Storage & Media
                         </NavItem>
-                        <NavItem closeNavbar={close} href="/app/notifications" icon={faBell}>
+                        {/* <NavItem closeNavbar={close} href="/app/notifications" icon={faBell}>
                             Notifications
-                        </NavItem>
+                        </NavItem> */}
                         <NavItem closeNavbar={close} href="/app/settings" icon={faGears}>
                             Settings
                         </NavItem>

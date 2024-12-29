@@ -35,7 +35,7 @@ export const Msg50App = () => {
         <Routes>
             <Route path='/' element={<ChatsPage />} />
             <Route path='/media' element={<MediaPage />} />
-            <Route path='/notifications' element={<NotificationsPage />} />
+            {/* <Route path='/notifications' element={<NotificationsPage />} /> */}
             <Route path='/settings' element={<SettingsPage />} />
             <Route path='/contacts' element={<ContactsPage />} />
             <Route path='*' element={<Navigate to="/app" replace />} />

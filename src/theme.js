@@ -1,4 +1,5 @@
 const THEMES = ["light", "dark"];
+const themeColors = ["#fff", "#0d1430"]
 
 export function getTheme() {
     let pref = localStorage.getItem("theme");
@@ -6,28 +7,24 @@ export function getTheme() {
         let prefLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
         pref = prefLight ? "light" : "dark"
     }
-    // let invPref = THEMES[!THEMES.indexOf(pref)];
 
     return pref;
 }
 
 
 export function changeTheme(){
-    const html = document.querySelector("html"), theme = getTheme();
-    let colScheme = document.querySelector("meta[name=color-scheme]");
+    const theme = getTheme();
     const newTheme = THEMES[THEMES.indexOf(theme) ? 0 : 1];
 
-    if (!colScheme){
-        colScheme = document.createElement('meta');
-        colScheme.setAttribute('name', "color-scheme");
-    }
+    const root = document.querySelector(":root"), themeColor = root.querySelector("meta[name='theme-color']"), colorScheme = root.querySelector("meta[name='color-scheme']");
 
     if (theme === "light") {
-        colScheme.content = "light dark";
-        html.classList.add("dark-mode");
+        colorScheme.content = "dark";
+        themeColor.content = themeColors[1];
+
     } else {
-        colScheme.content = "light";
-        html.classList.remove("dark-mode");
+        colorScheme.content = "light";
+        themeColor.content = themeColors[0];
     }
 
     try {
