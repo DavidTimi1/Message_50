@@ -102,8 +102,13 @@
     align-items: center;
 }
 
-.abs, .abs-mid, .abs-mid-y {
+.abs, .abs-mid, .abs-mid-y, .abs-top {
     position: absolute;
+}
+
+.abs-top {
+    top: 0;
+    left: 0;
 }
 
 .abs-mid {

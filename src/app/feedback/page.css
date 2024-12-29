@@ -1,21 +1,33 @@
 .feed-zone {
-
+    border: none;
     padding: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
+    max-width: 100%;
+    max-height: 100%;
+    width: min(700px, 100%);
+    transform: translateY(0px);
+    opacity: 1;
     background-color: var(--body-col);
-    transition: all 0.2s ease-out;
+    box-shadow: 2px 5px 20px #222;
+    transition: 0.25s ease-in-out;
+
+    @starting-style {
+        & {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    }
 
     &::backdrop {
         backdrop-filter: blur(5px);
         background-color: #80808050;
     }
 
+    .heading, .feedback-body {
+        padding: 10px;
+    }
 
     .feedback-body {
         overflow: hidden auto;
-        padding: 10px;
 
         & select {
             background-color: var(--body2-col);
@@ -25,19 +37,32 @@
 
         & textarea {
             margin: 20px auto;
+            flex-shrink: 0;
             font-size: 18px;
         }
 
+        &:not(.dragging) .drop-info {
+            display: none;
+        }
 
-        &.dragging::after {
-            content: '';
-            width: calc(100% - 10px);
-            height: calc(100% - 10px);
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: #000000aa;
-            border:2px dashed grey;
+
+        &.dragging {
+
+            .drop-info {
+                z-index: 5;
+            }
+        
+            &::after {
+                content: '';
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                backdrop-filter: blur(2px);
+                background-color: #00000022;
+                border:2px dashed grey;
+            }
         }
     }
 

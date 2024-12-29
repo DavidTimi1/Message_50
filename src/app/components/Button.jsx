@@ -26,3 +26,20 @@ export const IconBtn = (props) => {
         </button>
     )
 }
+
+
+export function Button(props){
+    const type = props.type ?? "button";
+    const {className} = props;
+    
+
+    return (
+        <button {...props} type={type} className={"my-btn no-btn " + (className ?? '')}>
+            <div className="btn-bg">
+                <div className="btn max">
+                    {props.children}
+                </div>
+            </div>
+        </button>
+    )
+}

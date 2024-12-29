@@ -6,10 +6,10 @@ import { IconBtn } from '../../components/Button';
 export const Heading = ({ close }) => {
 
     return (
-        <div className="fw" style={{ padding: "10px" }}>
-            <div className="flex mid-align fw gap-2">
-                <IconBtn icon={faXmark} onClick={close} />
+        <div className="fw heading">
+            <div className="flex mid-align fw" style={{justifyContent: "space-between"}}>
                 <h5 className="grow"> Help & Feedback </h5>
+                <IconBtn icon={faXmark} onClick={close} />
             </div>
         </div>
     )

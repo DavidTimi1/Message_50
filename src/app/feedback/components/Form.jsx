@@ -1,34 +1,69 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Attachment } from "./Attachment";
 import { Rating } from "./Rating";
-import { faSpinner, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faSpinner, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "../../../buttons";
+import { Button } from "../../components/Button";
 
 
 
-export const Form = () => {
+export const Form = ({closeModal}) => {
     const [mode, setMode] = useState('')
-    const [pending, setPending] = useState(false);
+    const [status, setStatus] = useState(false);
     const [files, setFiles] = useState({}), count = useRef(null);
 
     const ref = useRef(null);
 
+    useEffect(() => {
+        if (status === true) {
+            setTimeout(closeModal, 1500);
+        }
+    }, [status])
+
     return (
-        <form method="post" action="/feedback" className="feedback-body grow" dropzone="copy" ref={ref} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
-            <SelectMode handleChange={changeMode} selected={mode} />
-            <textarea name="text" cols="30" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
-            <Attachment files={files} remove={removeFile} add={addFile} />
+        <form method="post" action="/feedback" className="feedback-body flex-col gap-3 grow"
+            ref={ref}
+            onDragEnter={handleDragOver}
+            onDragOver={handleDragOver} 
+            onDragLeave={handleDragLeave} 
+            onDrop={handleDrop}
+            onSubmit={handleSubmit}
+        >
+            {
+                status === true ?
+                    <div className="abs-mid">
+                        <div className="flex-col mid-align gap-2 center-text">
+                            <FontAwesomeIcon icon={faCircleCheck} size="3x" />
+                            <span>
+                                Thank you a lot for the feedback. It will be reviewed promptly.
+                            </span>
+                        </div>
+                    </div>
 
-            {mode === 'comment' && <Rating />}
+                :
 
-            <Button>
-                <span style={{ opacity: pending ? 0.2 : 1 }}> Send </span>
-                {
-                    pending && 
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                }
-            </Button>
+                    <>
+                    <SelectMode handleChange={changeMode} selected={mode} />
+                    <textarea name="text" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
+                    <Attachment files={files} remove={removeFile} add={addFile} />
+
+                    {mode === 'comment' && <Rating />}
+
+                    <Button type="submit">
+                        {
+                            status === false ?
+                            "Send"
+                            : 
+                            <FontAwesomeIcon icon={faSpinner} spin />
+                        }
+                    </Button>
+
+                    <div className="drop-info flex-col gap-2 abs-mid center-text">
+                        <FontAwesomeIcon icon={faUpload} size="3x" />
+                        <span> Drop here to add file </span>
+                    </div>
+                    </>
+            }
 
         </form>
     )
@@ -92,6 +127,13 @@ export const Form = () => {
                 return nextFiles;
             })
         }
+    }
+
+    function handleSubmit(e){
+        e.preventDefault();
+
+        const fd = new FormData(e.target);
+        setStatus(true);
     }
 }
 

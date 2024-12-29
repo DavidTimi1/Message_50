@@ -45,9 +45,9 @@ export const Feedback = ({ show }) => {
 
     return (
         <dialog className='feed-zone max br-5' ref={mainRef}>
-            <div className='content max flex-col'>
+            <div className='content max flex-col pad'>
                 <Heading close={handleCloseClick} />
-                <Form />
+                <Form closeModal={handleCloseClick} />
             </div>
         </dialog>
     )

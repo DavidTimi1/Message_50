@@ -12,7 +12,7 @@ export const Attachment = ({ files, add, remove }) => {
             <div>
                 <span>{count ? `${count} File(s)` : "No File"} attached </span>
             </div>
-            <div className="flex mid-align even-space gap-2 fw" style={{ borderRadius: "10px", flexWrap: "wrap" }}>
+            <div className="flex mid-align gap-2 fw" style={{ borderRadius: "10px", flexWrap: "wrap" }}>
                 {
                     fileKeys.map(key => {
                         const { img } = files[key];
@@ -35,8 +35,8 @@ export const Attachment = ({ files, add, remove }) => {
 
                 <div className='atth-view'>
                     <label className='br-5 abs-mid' tabIndex="0" role="button">
-                        <div className="abs-mid">
-                        <FontAwesomeIcon icon={faPlus} size="4x" />
+                        <div className="abs-mid flex-col gap-3">
+                            <FontAwesomeIcon icon={faPlus} size="3x" />
                         </div>
                         
                         <input className='hide' type="file" onInput={handleInput} accept="image/*, video/*" />
