@@ -111,15 +111,15 @@ const ChatItem = ({ data, Message }) => {
                 </div>
             </div>
             <div className='max mid-align flex gap-3 br-1' style={{ padding: "10px 5px" }} onClick={handleClick}>
-                <div className='dp-img' onClick={showUserDetails}>
+                <div className='dp-img flex' onClick={showUserDetails}>
 
                 </div>
-                <div className="flex-col grow gap-1">
+                <div className="flex-col details grow gap-1">
                     <div className="flex fw" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-                        <div className="user" title={name}>
+                        <div className="user grow crop-excess" title={name}>
                             {handle !== "multiple" ? name : "Broadcast List"}
                         </div>
-                        <small style={{ color: "grey" }}>
+                        <small className='tl'>
                             <TimePast time={time} />
                         </small>
                     </div>

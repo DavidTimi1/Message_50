@@ -51,16 +51,9 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
                             <input autoFocus autoComplete="on" 
                                 className="search-box not-visible max" ref={inputRef} 
                                 placeholder={`Search ${only? filters[0] : ''}...`} 
+                                type="search"
                             />
                         </label>
-
-                        <button onClick={clearInput}>
-                            <div className="abs btn-bg fw"></div>
-                            <FontAwesomeIcon icon={faXmark} />
-                            <span className="sr-only">
-                                close
-                            </span>
-                        </button>
                     </div>
                 </div>
 
@@ -87,11 +80,6 @@ export default function SearchWindow({ show, closeSearch, initFilters }) {
             </div>
         </div>
     )
-
-
-    function clearInput() {
-        inputRef.current.value = '';
-    }
 
     function handleCloseClick(){
         removeState(navId);

@@ -5,6 +5,15 @@
     overflow: hidden auto;
     scroll-behavior: smooth;
 
+    > * {
+        padding: 10px;
+    }
+
+    .dp-img, .tl{
+        flex-shrink: 0;
+        color: grey;
+    }
+
     .user {
         font-size: 120%;
         font-weight: 500;

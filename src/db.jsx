@@ -131,17 +131,27 @@ export const deleteDatabase = () => {
     const vert = confirm("Are you sure you wanna?");
     if (!vert) return 
 
+    let done = false;
+
     loadDB()
     .then( DB => {
         DB.close() // close open transactions
-        
-        IDBPromise( indexedDB.deleteDatabase(dbName) )
+        carryOutDeletion();
+    })
+
+    setTimeout(carryOutDeletion, 3000);
+
+    function carryOutDeletion(){
+        if (done) return 
+        done = true;
+
+        return IDBPromise( indexedDB.deleteDatabase(dbName) )
         .then(() => {
             console.log("worked")
             alert("Deleted Successfully!")
         })
         .catch(() => alert("Failed to delete DB!"))
-    })
+    }
 }
 
 
@@ -177,10 +187,20 @@ export const getMsg = async (id) => {
 
 
 export const getContactDetails = async (id) => {
-    openTrans(DB, chatsTable).get(id)
     
     return loadDB()
-        .then(() => IDBPromise( openTrans(DB, contactsTable).get(id)) )
+        .then(DB => IDBPromise( openTrans(DB, contactsTable).get(id)) )
+        .then(res => res)
+        .catch(err => {
+            console.error(err);
+            return null
+        })
+}
+
+export const saveFile = async (data) => {
+    
+    return loadDB()
+        .then( DB => IDBPromise( openTrans(DB, filesTable, 'readwrite').add(data) ) )
         .then(res => res)
         .catch(err => {
             console.error(err);

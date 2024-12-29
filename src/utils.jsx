@@ -272,24 +272,24 @@ export function timePast(timestamp) {
     let { year, month, day, hr, min } = data;
 
     if (year - 1970)
-        return `${year} year${year > 1 ? 's' : ''} ago`
+        return `${year} yr${year > 1 ? 's' : ''}`
 
     if (month)
-        return `${month} month${month > 1 ? 's' : ''} ago`
+        return `${month} mo${month > 1 ? 's' : ''}`
 
     if (--day) {
         const week = day > 13 && Math.floor(day / 7);
         if (week)
-            return `${week} weeks ago`
+            return `${week} wks`
 
-        return `${day} day${day > 1 ? 's' : ''} ago`
+        return `${day} day${day > 1 ? 's' : ''}`
     }
 
     if (hr)
-        return `${hr} hour${hr > 1 ? 's' : ''} ago`
+        return `${hr} hour${hr > 1 ? 's' : ''}`
 
     if (min)
-        return `${min} min${min > 1 ? 's' : ''} ago`
+        return `${min} min${min > 1 ? 's' : ''}`
 
     return `Just now`
 }
