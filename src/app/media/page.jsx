@@ -12,6 +12,7 @@ import { AudiosList } from './components/Audios';
 import { OthersList } from './components/Files';
 import { Heading } from './components/Heading';
 import { useNavigate } from 'react-router-dom';
+import { filesTable, loadDB, openTrans } from '../../db';
 
 
 const viewName = "Storage and Media";
@@ -23,6 +24,8 @@ export const MediaPage = () => {
     const viewObserver = initObserver();
     const mainRef = useRef(null), heighter = useRef(null), detailsRef = useRef(null), imgsRef = useRef(null), vidsRef = useRef(null), audsRef = useRef(null), othsRef = useRef(null);
 
+    const [files, setFiles] = useState({})
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,6 +33,10 @@ export const MediaPage = () => {
             mainRef.current.classList.remove("close");
             adjustHeight();
         });
+
+
+        loadFiles()
+        .then(setFiles);
 
         return () => {
             t_id && clearTimeout(t_id);
@@ -49,11 +56,11 @@ export const MediaPage = () => {
                             After activating, load resources,
                             20 secs after unactivated reload all */}
 
-                            <Details ref={detailsRef} viewObserver={viewObserver} goTo={goTo} />
-                            <ImagesList ref={imgsRef} viewObserver={viewObserver} />
-                            <VideosList ref={vidsRef} viewObserver={viewObserver} />
-                            <AudiosList ref={audsRef} viewObserver={viewObserver} />
-                            <OthersList ref={othsRef} viewObserver={viewObserver} />
+                            <Details ref={detailsRef} viewObserver={viewObserver} data={files} goTo={goTo} />
+                            <ImagesList ref={imgsRef} viewObserver={viewObserver} data={files.images} />
+                            <VideosList ref={vidsRef} viewObserver={viewObserver} data={files.videos} />
+                            <AudiosList ref={audsRef} viewObserver={viewObserver} data={files.audios} />
+                            <OthersList ref={othsRef} viewObserver={viewObserver} data={files.others} />
                         </div>
                     </div>
                 </div>
@@ -160,3 +167,55 @@ function MediaNav({ active, goTo }) {
     }
 }
 
+
+
+async function getFilesByType(type, limit = 50) {
+
+    return loadDB()
+    .then( DB => 
+        new Promise((resolve, reject) => {
+
+            const store = openTrans(DB, filesTable);
+            const index = store.index("type");
+            
+            const results = [];
+
+            const request = index.openCursor(type);
+            request.onsuccess = (e) => {
+                const cursor = e.target.result;
+
+                if (cursor && results.length < limit) {
+                    results.push(cursor.value);
+                    cursor.continue();
+
+                } else {
+                    resolve(results);
+                }
+            };
+
+            request.onerror = (e) => {
+                reject(e.target.error);
+            };
+        })
+    )
+}
+
+
+async function loadFiles() {
+    return new Promise( async (resolve, reject) => {
+
+        try {
+            const [images, videos, audio, other] = await Promise.all([
+                getFilesByType("image"),
+                getFilesByType("video"),
+                getFilesByType("audio"),
+                getFilesByType("other"),
+            ]);
+
+            resolve({ images, videos, audio, other });
+        } catch (error) {
+            reject(error);
+        }
+    })
+
+}

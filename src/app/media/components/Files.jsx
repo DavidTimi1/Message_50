@@ -6,7 +6,7 @@ import { forwardRef, useEffect } from "react";
 
 
 export const OthersList = forwardRef((props, ref) => {
-    const { preview, viewObserver } = props;
+    const { data, preview, viewObserver } = props;
 
     useEffect(() => {
         viewObserver.observe(ref.current);
@@ -15,35 +15,44 @@ export const OthersList = forwardRef((props, ref) => {
     return (
         <div className="media-view max" data-section="others" ref={ref}>
             <div className='max custom-scroll' style={{ overflow: "hidden auto" }}>
-                <div className='fw flex-col gap-1' style={{padding: "10px"}}>
-                    {
-                        others.map(oth => {
-                            const { fileSize, fileExt, name } = oth;
+                {
+                    data && data.length?
+                    
+                        <div className='fw flex-col gap-1' style={{padding: "10px"}}>
+                            {
+                                data.map(oth => {
+                                    const { fileSize, fileExt, name } = oth;
 
-                            return (
-                                <div key={oth.id} className="fw br-5 media-list-item">
-                                    <div className="fw flex mid-align gap-2" style={{ padding: "5px" }}>
-                                        <div>
-                                            <FontAwesomeIcon icon={faFile} size="xl" />
-                                        </div>
-                                        <div className="flex-col grow gap-1">
-                                            <div className="crop-excess">
-                                                {name}
+                                    return (
+                                        <div key={oth.id} className="fw br-5 media-list-item">
+                                            <div className="fw flex mid-align gap-2" style={{ padding: "5px" }}>
+                                                <div>
+                                                    <FontAwesomeIcon icon={faFile} size="xl" />
+                                                </div>
+                                                <div className="flex-col grow gap-1">
+                                                    <div className="crop-excess">
+                                                        {name}
+                                                    </div>
+                                                    <div className="fw">
+                                                        <small>
+                                                            <span>{fileSize}</span>
+                                                            <span>•</span>
+                                                            <span>{fileExt}</span>
+                                                        </small>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="fw">
-                                                <small>
-                                                    <span>{fileSize}</span>
-                                                    <span>•</span>
-                                                    <span>{fileExt}</span>
-                                                </small>
-                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    :
+
+                        <div className="abs-mid center-text">
+                            You do not have any Files stored yet ...
+                        </div>
+                }
             </div>
         </div>
     )

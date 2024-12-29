@@ -6,7 +6,9 @@ import { forwardRef, useEffect } from "react";
 
 
 export const Details = forwardRef((props, ref) => {
-    const { viewObserver, goTo } = props;
+    const { data, viewObserver, goTo } = props;
+
+    const {images, videos, audios, others} = data;
 
     useEffect(() => {
         viewObserver.observe(ref.current);
@@ -38,7 +40,7 @@ export const Details = forwardRef((props, ref) => {
 
                 <div>
                     {
-                        images.length ?
+                        images?.length ?
                             <div className="images-brief fw view-link" data-href="#img-slide">
                                 <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("images")}>
                                     <div className="vlt fw"> Photos </div>
@@ -49,7 +51,7 @@ export const Details = forwardRef((props, ref) => {
                                 </button>
                                 <div className="vl-items-cont max gap-2">
                                     { 
-                                        images.map(img => <div key={img.id} className="vl-item br-5"></div>)
+                                        images.slice(0, 6).map(img => <div key={img.id} className="vl-item br-5"></div>)
                                     }
                                     { 
                                         images.length > 4 &&
@@ -64,7 +66,7 @@ export const Details = forwardRef((props, ref) => {
                     }
 
                     {
-                        videos.length ?
+                        videos?.length ?
 
                             <div className="videos-brief fw view-link" data-href="#vid-slide">
                                 <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("videos")}>
@@ -75,7 +77,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {videos.map(vid => <div key={vid.id} className="vl-item br-5"></div>)}
+                                    {videos.slice(0, 6).map(vid => <div key={vid.id} className="vl-item br-5"></div>)}
 
                                     {videos.length > 4 &&
                                         <div className="view-all">
@@ -89,7 +91,7 @@ export const Details = forwardRef((props, ref) => {
                     }
 
                     {
-                        audios.length ?
+                        audios?.length ?
                             <div className="audios-brief fw view-link" data-href="#aud-slide">
                                 <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("audios")}>
                                     <div className="vlt fw"> Audios </div>
@@ -99,7 +101,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {audios.map(aud => <div key={aud.id} className="vl-item br-5"></div>)}
+                                    {audios.slice(0, 6).map(aud => <div key={aud.id} className="vl-item br-5"></div>)}
 
                                     {audios.length > 4 &&
                                         <div className="view-all">
@@ -113,7 +115,7 @@ export const Details = forwardRef((props, ref) => {
                     }
 
                     {
-                        others.length ?
+                        others?.length ?
                             <div className="others-brief fw view-link" data-href="#oth-slide">
                                 <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("others")}>
                                     <div className="vlt fw"> Others </div>
@@ -123,7 +125,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {others.map(oth => <div key={oth.id} className="vl-item br-5"></div>)}
+                                    {others.slice(0, 6).map(oth => <div key={oth.id} className="vl-item br-5"></div>)}
 
                                     {others.length > 4 &&
                                         <div className="view-all">
@@ -142,9 +144,3 @@ export const Details = forwardRef((props, ref) => {
         </div>
     )
 })
-
-
-const images = [{ src: "img1", id: 1 }, { src: "img2", id: 2 }, { src: "img3", id: 3 }, { src: "img4", id: 4 }, { src: "img5", id: 5 }];
-const videos = [{ src: "vid1", id: 1 }, { src: "vid2", id: 2 }, { src: "vid3", id: 3 }, { src: "vid4", id: 4 }, { src: "vid5", id: 5 }];
-const audios = [{ src: "aud1", id: 1 }, { src: "aud2", id: 2 }, { src: "aud3", id: 3 }, { src: "aud4", id: 4 }, { src: "aud5", id: 5 }];
-const others = [{ src: "doc1", name: "Doc1", id: 1 }, { src: "doc2", name: "Doc2", id: 2 }, { src: "doc3", name: "Doc3", id: 3 }, { src: "doc4", name: "Doc4", id: 4 }, { src: "doc5", name: "Doc5", id: 5 }];
