@@ -40,3 +40,12 @@ export const useContactName = (id) => {
 
     return name
 }
+
+export const useTransitionOnLoad = (ref) => {
+
+    useEffect(() => {
+        setTimeout(() => ref.current.classList.remove('not-animated'));
+
+    }, [ref])
+
+}

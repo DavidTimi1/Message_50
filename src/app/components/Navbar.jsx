@@ -8,7 +8,7 @@ import { once, transitionEnd } from "../../utils";
 import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useNavigate } from "react-router-dom";
-import { IconBtn } from "./Button";
+import { IconBtn } from "../../components/Button.jsx";
 
 
 export function NavBar({ open }) {
