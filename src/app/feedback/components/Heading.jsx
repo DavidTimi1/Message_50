@@ -1,5 +1,5 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { IconBtn } from '../../components/Button';
+import { IconBtn } from '../../../components/Button';
 
 
 
