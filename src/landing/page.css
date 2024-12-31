@@ -1,0 +1,78 @@
+/* General Styles */
+  
+  .landing-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(135deg, var(--body-col) 70%, var(--btn-col));
+    text-align: center;
+    padding: 100px 20px;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .hero-tagline {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  
+  /* Features Section */
+  .features {
+    padding: 50px 20px;
+    background: var(--body-col);
+    text-align: center;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+  
+  .feature-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .feature-card {
+    background: var(--sec-col);
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .feature-card p {
+    font-size: 1rem;
+  }
+  
+  /* Footer */
+  .footer {
+    background: #3c3c3c;
+    text-align: center;
+    padding: 20px 10px;
+  }
+  
+  
+  
+}
