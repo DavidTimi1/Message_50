@@ -1,0 +1,54 @@
+.search {
+
+    .header {
+        position: sticky;
+    }
+    
+    .filters-list {
+        padding: 20px 10px;
+    }
+    
+    .filter-btn {
+        padding: 5px 10px;
+        border: 1px solid var(--btn-col);
+        border-radius: 99px;
+
+        &:has( :checked) {
+            background-color: var(--btn-col);
+        }
+    }
+    
+    .results-messages {
+
+        .dp-img, .tl{
+            flex-shrink: 0;
+            color: grey;
+        }
+
+        .msg-res {
+
+            > * {
+                background-color: var(--body-col);
+            }
+        }
+        
+        .msg-res:hover {
+            cursor: pointer;
+
+            & > * {
+                background-color: var(--body2-col);
+            }
+        }
+
+        
+    .contact-res {
+        cursor: pointer;
+        padding: 10px;
+
+        &:hover {
+            background-color: var(--body2-col);
+        }
+    }
+
+    }
+}

@@ -12,26 +12,12 @@ import MsgInterface from './components/Messaging';
 
 
 export const ChatsPage = ({viewMsg}) => {
-    const [search, setSearch] = useState({ on: false });
-    const initFilters = search.filters;
+    const [search, setSearch] = useState(false);
 
     return (
         <div id="chats" className='max'>
-            {/* <div className="abs-mid">
-                <p className="fs-1 fw-1000"> 
-                    Welcome to Chats | Message50 
-                </p>
-                <small className="fw-100">
-                    Oops! Nothing here yet!
-                </small>
-                <div>
-                    <Link to='/routes'>
-                        {"Routes >"}
-                    </Link>
-                </div>
-            </div> */}
             <div className='flex-col max'>
-                <Header startSearch={() => setSearch({ on: true })} />
+                <Header startSearch={() => setSearch([])} />
                 <div className='grow'>
                     <ChatList />
                 </div>
@@ -39,16 +25,13 @@ export const ChatsPage = ({viewMsg}) => {
 
             <MsgInterface viewMsg={viewMsg} />
 
-            <SearchWindow initFilters={initFilters} show={search.on} closeSearch={() => setSearch({ on: false })} />
+            { search && <SearchWindow initFilters={search} closeSearch={() => setSearch(false)} /> }
                 
             <SideShelf searchContacts={searchContacts} />
         </div>
     )
     
     function searchContacts() {
-        setSearch({ 
-            on: true, 
-            filters: ["contacts", "only"]
-        });
+        setSearch(["only-contacts", "contacts"])
     }
 }

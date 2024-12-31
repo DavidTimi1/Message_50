@@ -3,7 +3,7 @@
     position: relative;
 }
 
-.App {
+.App, body {
     background-color: inherit;
     color: inherit;
     height: 100%;
