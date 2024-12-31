@@ -1,5 +1,5 @@
 const THEMES = ["light", "dark"];
-const themeColors = ["#fff", "#0d1430"]
+const themeColors = ["#eee", "#030508"]
 
 export function getTheme() {
     let pref = localStorage.getItem("theme");
