@@ -1,3 +1,5 @@
+import "./page.css";
+
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 
@@ -26,6 +28,7 @@ export const Msg50App = () => {
 
 
     return (
+        <div className="max main-app">
         <StateNavigatorProvider>
 		<ToggleOverlay.Provider value={toggleOverlay}>
         <SendMsgsProvider>
@@ -46,6 +49,7 @@ export const Msg50App = () => {
         </SendMsgsProvider>
 		</ToggleOverlay.Provider>
         </StateNavigatorProvider>
+        </div>
     )
 
 	function toggleMessaging(handle, id) {
