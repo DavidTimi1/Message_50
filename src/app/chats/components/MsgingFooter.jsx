@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 
 import { ChatContext } from '../../contexts';
-import { IconBtn } from "../../components/Button";
+import { IconBtn } from "../../../components/Button";
 
 import { transitionEnd, runOnComplete } from "../../../utils";
 import { IDBPromise, openTrans, getMsg, offlineMsgsTable } from '../../../db';

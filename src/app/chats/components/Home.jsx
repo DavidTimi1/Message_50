@@ -2,37 +2,28 @@ import ChatList from './chats';
 import './ui/home.css';
 
 import { useContext, useState } from 'react';
-import MsgInterface from './messaging';
+import MsgInterface from './Messaging';
 import { Button, IconBut } from '../../../buttons';
 import { ToggleOverlay } from './contexts';
 
-const searchFilters = {
-    unread: true,
-    contacts: true,
-    messages: true,
-    media: false,
-    images: false,
-    videos: false,
-    audios: false,
-    files: false
-}
 
 
 export default function Home({ show }) {
     const deviceType = "mobile";
-    const [search, setSearch] = useState({ on: false, filters: searchFilters || {} });
+    const [search, setSearch] = useState(false);
     const initFilters = search.filters;
     const toggleOverlay = useContext(ToggleOverlay);
 
     return (
         <div id="home" className={show ? 'max' : "max veil"}>
             <div className='flex-col max'>
-                <Header startSearch={() => setSearch({ on: true })} />
+                <Header startSearch={() => setSearch([])} />
                 <div className='grow'>
                     <ChatList />
                 </div>
             </div>
-            <SearchWindow initFilters={initFilters} show={search.on} closeSearch={() => setSearch({ on: false })} />
+
+            { search && <SearchWindow initFilters={initFilters} closeSearch={() => setSearch(false)} /> }
 
             {
                 deviceType === "mobile" &&
@@ -49,7 +40,7 @@ export default function Home({ show }) {
     )
 
     function searchContacts() {
-        setSearch({ on: true, filters: ["contacts"] })
+        setSearch(["only-contacts", "contacts"])
     }
 
     function openAIChat() {

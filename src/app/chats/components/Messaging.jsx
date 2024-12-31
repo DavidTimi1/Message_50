@@ -14,7 +14,7 @@ import { faAngleLeft, faCircleInfo, faCopy, faFile, faShare, faTrash, faXmark } 
 
 import { MsgItem } from './MsgItem';
 import { Footer } from './MsgingFooter';
-import { IconBtn } from "../../components/Button";
+import { IconBtn } from "../../../components/Button";
 import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
 

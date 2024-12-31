@@ -4,9 +4,10 @@ import { useContext } from "react";
 import { ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faPlus, faWifi, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { IconBtn } from "../../components/Button";
+import { IconBtn } from "../../../components/Button";
 import { UserContext } from "../../../contexts";
 import { useOnlineStatus } from "../../components/Hooks";
+import { ProdName } from "../../../App";
 
 
 export const Header = ({ startSearch }) => {
@@ -37,7 +38,7 @@ export const Header = ({ startSearch }) => {
                         }
                     </button>
                     <div className='flex grow mid-align' style={{ justifyContent: "space-between" }}>
-                        <h4 className='hero-txt'> Message50 </h4>
+                        <h4 className='hero-txt'> { ProdName } </h4>
                         <IconBtn icon={faMagnifyingGlass} onClick={startSearch}>
                             Search
                         </IconBtn>
@@ -61,7 +62,7 @@ export const Header = ({ startSearch }) => {
                                 <span>AI Chat</span>
                             </div>
                         </button>
-                        <h4 className='hero-txt'> Message50 </h4>
+                        <h4 className='hero-txt'> { ProdName } </h4>
 
                         {
                             !isOnline &&

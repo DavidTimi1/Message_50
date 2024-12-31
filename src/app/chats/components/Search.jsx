@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import { once, title, transitionEnd } from "../../../ui/helpers";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
-import { IconBtn } from "../../components/Button";
+import { IconBtn } from "../../../components/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";

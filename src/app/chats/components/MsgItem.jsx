@@ -2,7 +2,7 @@ import '../messaging.css';
 
 import { useEffect, useState, useRef, useContext } from "react";
 
-import { IconBtn } from "../../components/Button";
+import { IconBtn } from "../../../components/Button";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
