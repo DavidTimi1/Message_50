@@ -1,0 +1,148 @@
+#sign-in {
+
+    form {
+        transition: 1s;
+        width: min(90%, 500px);
+        
+
+        & .form-body {
+            background-color: #ffffff10;
+            backdrop-filter: blur(20px);
+            padding: 10px;
+            
+        }
+
+        & .form-bg {
+            background-color: transparent;
+            z-index: -5;
+        }
+    }
+
+    .no-link {
+        color: var(--btn-col);
+
+        &:hover {
+            color: var(--btn2-col);
+        }
+    }
+
+    .circle {
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+    }
+
+    .or {
+        &::before, &::after {
+            content: "";
+            background-color: var(--body2-col);
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 1px;
+            width: calc(50% - 20px);
+        }
+
+        > * {
+            padding: 5px;
+            width: max-content;
+        }
+
+        &::before {
+            left: 0;
+        }
+        &::after {
+            right: 0;
+        }
+    }
+
+    .aes {
+        z-index: -5;
+    
+        > * {
+            border-radius: 35px;
+            height: 70px;
+            filter: blur(40px);
+            width: 37%;
+        }
+    }
+
+
+    .err-msg {
+        padding: 10px;
+        background-color: pink;
+        border: 1px solid salmon;
+        border-radius: .5rem;
+        color: red;
+    }
+    
+    footer {
+        font-weight: 200;
+        font-size: smaller;
+        width: max-content;
+    }
+
+    .otp {
+        padding: 10px;
+    }
+
+    .code-box {
+        > * { 
+            aspect-ratio: 1/1;
+            border: 1px solid grey;
+            outline: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 40px;
+            transition: .2s;
+            text-align: center;
+        }
+
+        &:focus-within > .active {
+            border: 1px solid black;
+            outline: 1px solid black;
+        }
+    }
+
+}
+
+/* 
+.floating-label {
+    border: 1px solid grey;
+    border-radius: 30px;
+
+
+    .lb {
+        background-color: transparent;
+        transform-origin: top left;
+        transition: .3s;
+        text-shadow: 0 0 10px white;
+        padding: 0 10px;
+        left: 10px
+    }
+
+    input, textarea {
+        background-color: transparent;
+        outline: none;
+        border: none;
+        padding: 5px 10px;
+
+        &::placeholder {
+            opacity: 0;
+        }
+    }
+
+    small {
+        font-weight: 200;
+    }
+    
+
+    &:focus-within,
+    &:not(:has( :placeholder-shown)) {
+        border-color: black;
+
+        .lb {
+            font-weight: 500;
+            top: 0;
+            transform: translateY(-50%);
+        }
+    }
+} */

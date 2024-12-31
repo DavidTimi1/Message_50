@@ -1,6 +1,5 @@
 :root {
   /* font-family: sans-serif; */
-  letter-spacing: 0.5px;
   
   font-family: "Lato", serif;
   font-weight: 400;
@@ -98,96 +97,6 @@ small {
 }
 
 
-@keyframes rot {
-  to {
-    rotate: 270deg;
-  }
-}
-
-
-aside.side-wrapper {
-  background-color: light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1) );
-  left: 0px;
-  position: fixed;
-  top: 0px;
-  z-index: 100;
-}
-
-
-.side-bar {
-  --bg: var(--body-col);
-  background-color: var(--body-col);
-  border-radius: 0px 10px 10px 0px;
-  color: var(--text-col);
-  max-width: 350px;
-  height: 100%;
-  padding: 10px 5px 10px 5px;
-  position: relative;
-  box-shadow: 0 0 5px black;
-  transform: translateX(0px);
-  transition: transform .3s ease-in-out;
-  /* &.show {
-      transform: translateX(305px);
-  } */
-
-  .close & {
-    transform: translateX(calc(-100% - 5px));
-  }
-}
-
-
-.nav-link {
-  border-radius: 5px;
-  color: var(--text-col);
-  font-size: larger;
-  font-weight: 600;
-  padding: 20px 10px 20px 20px;
-  text-decoration: none;
-  margin-right: 5px;
-
-  &:hover,
-  &:focus {
-    color: var(--btn-col);
-  }
-
-  &:active,
-  &:focus {
-    background-color: var(--body3-col);
-  }
-
-  &.active {
-    background-color: var(--body2-col);
-    color: var(--btn-col);
-
-    &::before {
-      border-radius: 20px;
-      content: '';
-      display: inline-block;
-      height: calc(200% / 3);
-      left: 0px;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 10px;
-    }
-
-    &::after {
-      background-color: var(--btn-col);
-      border-radius: 5px;
-      content: '';
-      display: inline-block;
-      height: calc(100% / 3);
-      left: 0px;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 5px;
-    }
-  }
-
-}
-
-
 .dp-img,
 .bg-img {
   background-color: #80808050;
@@ -203,9 +112,27 @@ aside.side-wrapper {
   overflow: hidden;
 }
 
+.can-animate {
+  opacity: 1;
+  transform: translateY(0px);
+  transition: .5s;
+
+  &.not-animated {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
 .pad {
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.box {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin: 50px auto;
+  scroll-margin-top: 100px;
 }
 
 label.nv-input {
