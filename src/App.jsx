@@ -16,11 +16,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 import { UserContext } from './contexts';
 
-import { LandingPage } from './landing/page';
+import LandingPage from './landing/page';
 import { Msg50App } from './app/page';
 import { AppRoutes } from './Routes';
+import { SignIn } from './sign-in/page';
 
-
+export const ProdName = "Message50";
 export const DevMode = true;
 
 
@@ -52,6 +53,8 @@ export const Msg50 = () => {
 			<Router>
 				<Routes>
 					<Route path='/' element={<LandingPage />} />
+					<Route path='/register' element={<SignIn isLogin={false} />} />
+					<Route path='/login' element={<SignIn isLogin={true} />} />
 					<Route path='/app/*' element={<Msg50App />} />
 					<Route path='/routes' element={<AppRoutes />} />
 					<Route path='*' element={<Navigate to='/' replace />} />

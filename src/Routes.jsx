@@ -18,18 +18,23 @@ export const AppRoutes = () => {
                     </Link>
                 </li>
                 <li>
+                    <Link to='/login'>
+                        Login Page
+                    </Link>
+                </li>
+                <li>
+                    <Link to='/'>
+                        Register Page
+                    </Link>
+                </li>
+                <li>
                     <Link to='/app'>
                         Msg50App
                     </Link>
                 </li>
                 <li>
                     <Link to='/routes'>
-                        Dev Routes
-                    </Link>
-                </li>
-                <li>
-                    <Link to='/signin'>
-                        SignIn | Msg50
+                        Dev Routes : (Current)
                     </Link>
                 </li>
             </ul>
