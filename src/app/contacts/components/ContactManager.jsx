@@ -2,9 +2,8 @@ import { useCallback, useContext, useEffect, useRef } from "react";
 import { StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAt } from "@fortawesome/free-solid-svg-icons/faAt";
-import { IconBtn } from "../../components/Button";
+import { Button, IconBtn } from "../../../components/Button";
 import { faCheck, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "../../../buttons";
 import { once, transitionEnd } from "../../../utils";
 
 

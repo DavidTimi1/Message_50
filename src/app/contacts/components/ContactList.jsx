@@ -3,7 +3,7 @@ import { DevMode } from "../../../App";
 import { ChatContext, ToggleOverlay } from "../../contexts";
 import { ContactItem } from "./ContactItem";
 import { $ } from "../../../utils";
-import { loadDB, openTrans } from "../../../db";
+import { contactsTable, loadDB, openTrans } from "../../../db";
 
 
 
@@ -100,7 +100,7 @@ function getContacts(){
     return loadDB()
     .then( DB => new Promise((res, rej) => {
 
-        let req = openTrans(DB, "people_tb").openCursor();
+        let req = openTrans(DB, contactsTable).openCursor();
 
         req.onsuccess = (e) => {
             let cursor = e.target.result;
@@ -130,7 +130,7 @@ function getContacts(){
 
 
 function sortByName(a, b){
-    retrun ( a.name > b.name ? 1 : a.name == b.name ? 0 : -1 )
+    return ( a.name > b.name ? 1 : a.name == b.name ? 0 : -1 )
 }
 
 // const devContacts = [

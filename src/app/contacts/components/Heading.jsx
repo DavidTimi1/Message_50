@@ -1,6 +1,6 @@
 import { faAngleLeft, faMagnifyingGlass, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { IconBtn } from "../../components/Button"
+import { IconBtn } from "../../../components/Button"
 
 
 export const Heading = ({close}) => {

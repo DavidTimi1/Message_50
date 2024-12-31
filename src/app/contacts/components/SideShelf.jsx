@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { ToggleOverlay } from '../../contexts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { IconBtn } from '../../components/Button';
+import { IconBtn } from '../../../components/Button';
 
 
 export const SideShelf = () => {

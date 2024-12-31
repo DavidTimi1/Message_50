@@ -1,5 +1,5 @@
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons"
-import { IconBtn } from "../../components/Button"
+import { IconBtn } from "../../../components/Button"
 import { useContext } from "react";
 import { ChatContext, ToggleOverlay } from "../../contexts";
 
