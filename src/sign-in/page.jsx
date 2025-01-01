@@ -4,17 +4,28 @@ import Navbar from './components/Navbar';
 import Body from './components/Body';
 import { Link } from 'react-router-dom';
 import { ProdName } from '../App';
+import { useState } from 'react';
 
 
 export const SignIn = ({isLogin}) => {
+	const [scroll, setScroll] = useState(false);
 
 	return (
-		<div id="sign-in">
-			<Navbar />
+		<div id="sign-in" className='max' onScroll={handleScroll}>
+			<Navbar scroll={scroll} />
 			<Body isLogin={isLogin} />
 			<Footer />
 		</div>
 	)
+
+
+    function handleScroll(e){
+        const isScrolling = e.target.scrollTop > 10;
+
+        if (isScrolling != scroll){
+            setScroll(isScrolling);
+        }
+    }
 }
 
 

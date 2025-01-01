@@ -28,7 +28,7 @@ const Body = ({isLogin}) => {
     useEffect(() => {
         if (status === true){
             setTimeout(() => {
-                navigate("/lily/console/info");
+                navigate("/app");
             }, 2000)
         }
     }, [status])
@@ -54,8 +54,16 @@ const Body = ({isLogin}) => {
 								</div>
 							}
 
-							<Button className="br-5">
-								Sign in with Google
+							<Button className="br-5" onClick={handleGoogleSignIn}>
+								{
+									status === "pending" ? 
+									<FontAwesomeIcon icon={faSpinner} spin />
+									:
+									status === true ?
+									<FontAwesomeIcon icon={faCheckCircle} />
+									:
+									"Sign in with Google"
+								}
 							</Button>
 
 							<div className='fw or'>
@@ -111,8 +119,16 @@ const Body = ({isLogin}) => {
 		</div>
 	)
 
+	function handleGoogleSignIn(){
+		setStatus("pending");
+
+		setTimeout(() => setStatus(true), 2000)
+	}
+
 	function handleSubmit(e){
 		e.preventDefault();
+
+		setStatus("pending");
 
         const formData = new FormData(e.target);
 

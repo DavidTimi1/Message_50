@@ -19,7 +19,7 @@ export default function Navbar({scroll}){
     return (
         <div className={"navbar fw" + (scroll? " scroll" : "") }>
             <div className='fw pad'>
-                <div className="lap-nav nav even-space fw flex mid-align">
+                <div className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
                     <a href="/" className="no-link flex-rev mid-align gap-1 brand">
                         <h3 className="brand fh"> {ProdName} </h3>
                     </a>
@@ -36,22 +36,7 @@ export default function Navbar({scroll}){
                         </Link>
                     </div>
 
-                    <div className='flex fw gap-2 mid-align even-space'>
-                        <Link to="/login" className="my-btn no-link br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Log In
-                                </div>
-                            </div>
-                        </Link>
-
-                        <Link to="/register" className="my-btn no-link br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Register
-                                </div>
-                            </div>
-                        </Link>
+                    <div>
                     </div>
                 </div>
 
@@ -109,23 +94,6 @@ function Menu({show, closeMenu}){
                     <Link className="nav-item" to='/app'>
                         App
                     </Link>
-                    <div className='flex fw gap-2 mid-align even-space'>
-                        <Link to="/login" className="my-btn no-link fw br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Log In
-                                </div>
-                            </div>
-                        </Link>
-
-                        <Link to="/register" className="fw my-btn no-link br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Register
-                                </div>
-                            </div>
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
