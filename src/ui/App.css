@@ -185,10 +185,16 @@ label.nv-input {
 .my-btn {
   --color: var(--text-col);
   background-color: var(--btn-col);
-  background-size: 300% 300%;
-  background-position: 0 50%;
   border-radius: 1rem;
+  padding: 1px;
   transition: background-position .5s ease-in-out;
+
+  &.deval > * {
+    background-clip: border-box;
+    -webkit-background-clip: border-box;
+    background-color: var(--body-col);
+    border-radius: inherit;
+  }
 
   .btn {
     color: var(--color);
