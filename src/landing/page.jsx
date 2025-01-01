@@ -5,17 +5,22 @@ import React, { useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 import { ProdName } from '../App';
 import Navbar from './Navbar';
+import { useTransitionOnLoad } from '../app/components/Hooks';
 
 
 const LandingPage = () => {
     const [scroll, setScroll] = useState(false);
+    const ref = useRef();
+
+    useTransitionOnLoad(ref);
+
 
     return (
-        <div className='max' onScroll={handleScroll}>
+        <div className='landing-page max' onScroll={handleScroll}>
 
             <Navbar scroll={scroll} />
 
-            <div className="landing-page">
+            <div className="content max flex-col gap-5 can-animate not-animated" ref={ref}>
             {/* Hero Section */}
             <header className="hero">
                 <div className="hero-content">
@@ -23,13 +28,15 @@ const LandingPage = () => {
                 <p className="hero-tagline">
                     Quick, Secure and Seamless Messaging Platform
                 </p>
-                <Link to="/register" className="my-btn no-link br-5">
-                    <div className="btn-bg">
-                        <div className="btn max">
-                            Get Started
+                <div className="flex" style={{justifyContent: "center"}}>
+                    <Link to="/register" className="my-btn no-link br-5">
+                        <div className="btn-bg">
+                            <div className="btn max">
+                                Get Started
+                            </div>
                         </div>
-                    </div>
-                </Link>
+                    </Link>
+                </div>
                 </div>
             </header>
 
@@ -59,7 +66,7 @@ const LandingPage = () => {
     );
 
     function handleScroll(e){
-        const isScrolling = e.target.scrollHeight > 10;
+        const isScrolling = e.target.scrollTop > 10;
 
         if (isScrolling != scroll){
             setScroll(isScrolling);

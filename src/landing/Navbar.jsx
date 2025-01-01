@@ -4,7 +4,7 @@ import logo from '../logo.svg';
 import { useEffect, useState, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-import { transitionEnd } from '../utils';
+import { once, transitionEnd } from '../utils';
 
 import { faBars, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ProdName } from '../App';
@@ -19,7 +19,7 @@ export default function Navbar({scroll}){
     return (
         <div className={"navbar fw" + (scroll? " scroll" : "") }>
             <div className='fw pad'>
-                <div className="lap-nav nav even-space fw flex mid-align">
+                <div className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
                     <a href="/" className="no-link flex-rev mid-align gap-1 brand">
                         <h3 className="brand fh"> {ProdName} </h3>
                     </a>
@@ -36,8 +36,8 @@ export default function Navbar({scroll}){
                         </Link>
                     </div>
 
-                    <div className='flex fw gap-2 mid-align even-space'>
-                        <Link to="/login" className="my-btn no-link br-5">
+                    <div className='flex gap-2 mid-align even-space'>
+                        <Link to="/login" className="my-btn no-link deval br-5">
                             <div className="btn-bg">
                                 <div className="btn max">
                                     Log In
@@ -110,7 +110,7 @@ function Menu({show, closeMenu}){
                         App
                     </Link>
                     <div className='flex fw gap-2 mid-align even-space'>
-                        <Link to="/login" className="my-btn no-link fw br-5">
+                        <Link to="/login" className="my-btn deval no-link fw br-5">
                             <div className="btn-bg">
                                 <div className="btn max">
                                     Log In
