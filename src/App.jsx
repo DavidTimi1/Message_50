@@ -4,7 +4,6 @@ import './ui/App.css';
 
 import userDp from './public/Nagi_0.jpg';
 
-import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContexts";
 
@@ -15,7 +14,7 @@ import { AuthProvider } from "./auth/AuthContexts";
 // import { NavBar } from './navbar';
 // import { More } from './more';
 
-import { UserContext } from './contexts';
+import { UserProvider } from './contexts';
 
 import LandingPage from './landing/page';
 import { Msg50App } from './app/page';
@@ -29,31 +28,11 @@ export const apiHost = "http://localhost:8000";
 
 
 export const Msg50 = () => {
-	const [userData, setUserData] = useState(userDevData);
-	const userErr = userData?.error;
-	
-	useEffect(() => {
-		let ignore = false;
-
-		if (!userData && DevMode) {
-			setUserData(userDevData);
-
-		} else {
-			userErr &&
-				fetch("/api/user")
-				.then(res => res.json())
-				.then(!ignore && setUserData)
-				.catch(console.error);
-
-		}
-
-		return () => ignore = true;
-	});
 
 	return (
 		<div className='max App'>
         <AuthProvider>
-			<UserContext.Provider value={userData}>
+			<UserProvider devData={userDevData}>
 			<Router>
 				<Routes>
 					<Route path='/' element={<LandingPage />} />
@@ -64,7 +43,7 @@ export const Msg50 = () => {
 					<Route path='*' element={<Navigate to='/' replace />} />
 				</Routes>
 			</Router>
-			</UserContext.Provider>
+			</UserProvider>
 			
 		</AuthProvider>
 		</div>
