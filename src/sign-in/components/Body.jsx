@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Input } from '../page';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Button } from '../../components/Button';
+import { AuthContext } from '../../auth/AuthContexts';
+import { apiHost } from '../../App';
 
 
 const Body = ({isLogin}) => {
@@ -13,6 +15,8 @@ const Body = ({isLogin}) => {
 
 	const navigate = useNavigate();
 	const pathname = useLocation().pathname;
+
+	const logUIIn = useContext(AuthContext).login;
 
 	useEffect(() => {
 		const body = ref.current;
@@ -132,13 +136,48 @@ const Body = ({isLogin}) => {
 
         const formData = new FormData(e.target);
 
-		setTimeout(() => setStatus(true), 2000)
-		return 
+		if (isLogin){
+			logInWithDetails(formData);
 
-        axios.post(regUrl, formData)
+		} else {
+			registerWithDetails(e.target)
+			.then (console.log);
+
+		}
+
+	}
+
+	function logInWithDetails(data){
+		const loginUrl = apiHost + "/login";
+
+		axios.post(loginUrl, data)
+		.then((response) => {
+			console.log('Logged In successfully:', response.data);
+			logUIIn(response.data.access);
+			setStatus(true);
+		})
+		.catch((error) => {
+			console.error('Error signing in:', error);
+
+			setStatus({
+				error: error.response?.data?.error || "An error occurred. Please try again."
+			});
+		});
+	}
+
+	function registerWithDetails(form){
+        const data = new FormData(form);
+		const regUrl = apiHost + "/register";
+
+        return axios.post(regUrl, data)
         .then((response) => {
-            console.log('Signed In successfully:', response.data);
-            setStatus(true);
+            console.log('Registered successfully:', response.data);
+
+			// const loginData = new FormData();
+			console.log("trying to login")
+			logInWithDetails(data);
+			return data;
+			
         })
         .catch((error) => {
             console.error('Error signing in:', error);
