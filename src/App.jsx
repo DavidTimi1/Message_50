@@ -6,6 +6,7 @@ import userDp from './public/Nagi_0.jpg';
 
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthContexts";
 
 // import Home from './home';
 // import { Media } from './media';
@@ -21,8 +22,10 @@ import { Msg50App } from './app/page';
 import { AppRoutes } from './Routes';
 import { SignIn } from './sign-in/page';
 
+
 export const ProdName = "Message50";
 export const DevMode = true;
+export const apiHost = "http://localhost:8000";
 
 
 export const Msg50 = () => {
@@ -49,6 +52,7 @@ export const Msg50 = () => {
 
 	return (
 		<div className='max App'>
+        <AuthProvider>
 			<UserContext.Provider value={userData}>
 			<Router>
 				<Routes>
@@ -61,6 +65,8 @@ export const Msg50 = () => {
 				</Routes>
 			</Router>
 			</UserContext.Provider>
+			
+		</AuthProvider>
 		</div>
 	)
 }
@@ -148,6 +154,7 @@ fetch("/api/user")
 		console.error(err)
 		USERDATA = { error: true }
 	})
+
 
 
 export const userDevData = {

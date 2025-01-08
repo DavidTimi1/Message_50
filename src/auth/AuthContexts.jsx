@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axiosInstance from './axiosInstance';
+import axiosInstance from './axiosInstance.js';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -26,22 +26,22 @@ export const AuthProvider = ({ children }) => {
 
     
     // Verify token on load (optional)
-    useEffect(() => {
-        const verifyToken = async () => {
-            if (auth?.token) {
-                try {
-                    // Verify token using the axios instance
-                    await axiosInstance.post('/verify-token', { token: auth.token });
+//     useEffect(() => {
+//         const verifyToken = async () => {
+//             if (auth?.token) {
+//                 try {
+//                     // Verify token using the axios instance
+//                     await axiosInstance.post('/verify-token', { token: auth.token });
                     
-                } catch (err) {
-                    logout(); // Logout if token is invalid
-                }
-            }
-        }
+//                 } catch (err) {
+//                     logout(); // Logout if token is invalid
+//                 }
+//             }
+//         }
 
-        verifyToken();
+//         verifyToken();
 
-  }, [auth]);
+//   }, [auth]);
 
     return (
         <AuthContext.Provider value={{ auth, login, logout }}>

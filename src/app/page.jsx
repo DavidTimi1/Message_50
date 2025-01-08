@@ -14,6 +14,7 @@ import { ContactsPage } from "./contacts/page";
 import { More } from "./components/more";
 import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
+import ProtectedRoute from "../auth/ProtectedRoutes";
 
 
 
@@ -30,24 +31,46 @@ export const Msg50App = () => {
     return (
         <div className="max main-app">
         <StateNavigatorProvider>
-		<ToggleOverlay.Provider value={toggleOverlay}>
-        <SendMsgsProvider>
-        <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
-            <NavBar open={overlays.has('navbar')} />
+            <ToggleOverlay.Provider value={toggleOverlay}>
+            <SendMsgsProvider>
+            <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
+                <NavBar open={overlays.has('navbar')} />
 
-        <Routes>
-            <Route path='/' element={<ChatsPage />} />
-            <Route path='/media' element={<MediaPage />} />
-            {/* <Route path='/notifications' element={<NotificationsPage />} /> */}
-            <Route path='/settings' element={<SettingsPage />} />
-            <Route path='/contacts' element={<ContactsPage />} />
-            <Route path='*' element={<Navigate to="/app" replace />} />
-        </Routes>
+            <Routes>
+                <Route path='/' element={
+                    <ProtectedRoute>
+                        <ChatsPage />
+                    </ProtectedRoute>
+                } />
+                <Route path='/media' element={
+                    <ProtectedRoute>
+                        <MediaPage />
+                    </ProtectedRoute>
+                } />
+                {/* <Route path='/notifications' element={
+                    <ProtectedRoute>
+                        <NotificationsPage />
+                    </ProtectedRoute>
+                } /> */}
+                <Route path='/settings' element={
+                    <ProtectedRoute>
+                        <SettingsPage />
+                    </ProtectedRoute>
+                } />
+                <Route path='/contacts' element={
+                    <ProtectedRoute>
+                        <ContactsPage />
+                    </ProtectedRoute>
+                } />
+                <Route path='*' element={
+                    <Navigate to="/app" replace />
+                } />
+            </Routes>
 
-            <More openOverlays={overlays} />
-        </ChatContext.Provider>
-        </SendMsgsProvider>
-		</ToggleOverlay.Provider>
+                <More openOverlays={overlays} />
+            </ChatContext.Provider>
+            </SendMsgsProvider>
+            </ToggleOverlay.Provider>
         </StateNavigatorProvider>
         </div>
     )
