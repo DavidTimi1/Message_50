@@ -40,7 +40,7 @@ export const ContactResultItem = ({data}) => {
 
 
     return (
-        <div className="contact-res br-5" data-id={id}>
+        <div className="contact-res br-5" data-user={id}>
             <div className="max gap-3 flex mid-align">
                 <div className="dp-img">
                     {/* TODO */}

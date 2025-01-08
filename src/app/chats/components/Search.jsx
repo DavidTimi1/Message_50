@@ -28,7 +28,6 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
     const onlyContacts = filters.includes("only-contacts") && filters.length === 2;
 
-
     useEffect(() => {
         let contacts = [], msgs = [], ignore = false;
 
@@ -83,6 +82,16 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
     }, [pushState])
 
+    useEffect(() => {
+        let t_id = setTimeout(() => {
+            inputRef.current.focus();
+
+        }, 200)
+
+        return () => clearTimeout(t_id);
+
+    }, [])
+
 
     return (
         <div className="interface close search" ref={myRef}>
@@ -120,7 +129,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                 {
                     results.contacts &&
 
-                    <div className="search-result fw results-contacts" onClick={handleMsgClick}>
+                    <div className="search-result fw results-contacts" onClick={handleCLClick}>
                         <div>
                             <ChatUnsaved searchBoxRef={inputRef} closeSearch={close} />
                             <button>
@@ -137,7 +146,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                 {
                     results.msgs &&
 
-                    <div className="search-result fw results-messages" onClick={handleCLClick}>
+                    <div className="search-result fw results-messages" onClick={handleMsgClick}>
                         {
                             results.msgs.map( (data, key) => <MsgResultItem key={key} data={data} /> )
                         }
@@ -148,20 +157,20 @@ export default function SearchWindow({ closeSearch, initFilters }) {
         </div>
     )
 
-    function handleMsgClick(){
+    function handleMsgClick(e){
         const { target } = e;
 
-        const el = target.closest(".msg-res"), msgId = el?.dataset?.id, userId = el?.dataset?.user
+        const el = target.closest(".msg-res"), msgId = el?.dataset?.id, userId = el?.dataset?.user;
 
         if (msgId && userId) {
             handleCloseClick();
-            selectOn && openChat(userId, msgId)
+            setTimeout( () => openChat(userId, msgId) )
         }
         
     }
 
     
-    function handleCLClick(){
+    function handleCLClick(e){
         const { target } = e;
 
         const el = target.closest(".contact-res"), userId = el?.dataset?.user;
