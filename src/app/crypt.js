@@ -1,5 +1,5 @@
 // Function to generate an RSA private-public key pair
-async function generateKeyPair() {
+export async function generateKeyPair() {
     try {
         // Generate RSA key pair
         const keyPair = await window.crypto.subtle.generateKey(
@@ -37,7 +37,7 @@ async function exportPrivateKeyToPEM(privateKey) {
 }
 
 
-async function exportPublicKeyToSPKI(publicKey) {
+export async function exportPublicKeyToSPKI(publicKey) {
     const exportedKey = await window.crypto.subtle.exportKey("spki", publicKey);
 
     const exportedKeyBase64 = arrayBufferToBase64(exportedKey);
@@ -62,7 +62,7 @@ function addLineBreaks(str, lineLength = 64) {
 
 
 // Function to backup private key (e.g., download as a file)
-function backupPrivateKey(privateKey) {
+export function backupPrivateKey(privateKey) {
     const blob = new Blob([JSON.stringify(privateKey)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
@@ -78,7 +78,7 @@ function backupPrivateKey(privateKey) {
 
 
 // Function to restore private key from backup
-async function importPrivateKeyFromPEM(pem) {
+export async function importPrivateKeyFromPEM(pem) {
     const base64Key = pem.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "").trim();
     const binaryKey = window.atob(base64Key);
     const binaryArray = new Uint8Array(binaryKey.length);
@@ -103,7 +103,7 @@ async function importPrivateKeyFromPEM(pem) {
 
 
 // Generate a random symmetric AES-GCM key
-async function generateSymmetricKey() {
+export async function generateSymmetricKey() {
     return await window.crypto.subtle.generateKey(
         {
             name: "AES-GCM",
@@ -116,7 +116,7 @@ async function generateSymmetricKey() {
 
 
 // Symmetrically encrypt JSON data
-async function encryptJsonData(jsonData, symmetricKey) {
+export async function encryptJsonData(jsonData, symmetricKey) {
     const encoder = new TextEncoder();
     const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 12-byte random IV
     const encodedData = encoder.encode(JSON.stringify(jsonData));
@@ -135,7 +135,7 @@ async function encryptJsonData(jsonData, symmetricKey) {
 
 
 // Encrypt the symmetric key using the server's public key
-async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
+export async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
     const exportedKey = await window.crypto.subtle.exportKey("raw", symmetricKey);
 
     const encryptedKey = await window.crypto.subtle.encrypt(
@@ -151,7 +151,7 @@ async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
 
 
 // Import server's public key
-async function importServerPublicKey(pem) {
+export async function importServerPublicKey(pem) {
     const pemHeader = "-----BEGIN PUBLIC KEY-----";
     const pemFooter = "-----END PUBLIC KEY-----";
     const pemContents = pem.replace(pemHeader, "").replace(pemFooter, "").replace(/\n/g, "");
@@ -172,7 +172,27 @@ async function importServerPublicKey(pem) {
 
 
 // Full encryption workflow
-async function encryptMessage(jsonData, serverPublicKeyPem) {
+export async function encryptMessage(jsonData, file) {
+    // Step 2: Generate a symmetric key (AES)
+    const symmetricKey = await generateSymmetricKey();
+
+    // Step 3: Encrypt JSON data with the symmetric key
+    const { encryptedData, iv } = await encryptJsonData(jsonData, symmetricKey);
+
+    const encryptedFileData = await encryptMediaFile(file, symmetricKey)
+
+    // Return the encrypted payload
+    return {
+        encryptedData: btoa(String.fromCharCode(...new Uint8Array(encryptedData))), // Base64 for transport
+        iv: btoa(String.fromCharCode(...iv)), // Base64 for transport
+        key: symmetricKey,
+        encryptedFileData
+    };
+}
+
+
+// Full encryption workflow
+export async function encryptMessageFull(jsonData, serverPublicKeyPem) {
     // Step 1: Import server's public key
     const serverPublicKey = await importServerPublicKey(serverPublicKeyPem);
 
@@ -194,7 +214,7 @@ async function encryptMessage(jsonData, serverPublicKeyPem) {
 }
 
 
-async function encryptMediaFile(file, symmetricKey) {
+export async function encryptMediaFile(file, symmetricKey) {
     const arrayBuffer = await file.arrayBuffer();
     const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Generate a random IV
 
@@ -211,7 +231,7 @@ async function encryptMediaFile(file, symmetricKey) {
 }
 
 
-async function decryptMediaFile(encryptedBuffer, iv, symmetricKey) {
+export async function decryptMediaFile(encryptedBuffer, iv, symmetricKey) {
     const decryptedBuffer = await window.crypto.subtle.decrypt(
         {
             name: "AES-GCM",
