@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
     const path = useLocation().pathname;
 
     // Redirect to login if not authenticated
-    return auth?.token ? children : <Navigate to="/login" state={{next: path}} />;
+    return auth?.token ? children : <Navigate to={`/login?next=${path}`} state={{next: path}} />;
 };
 
 
