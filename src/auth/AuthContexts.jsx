@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance from './axiosInstance.js';
+import { apiHost } from '../App.jsx';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -11,6 +12,8 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('jwt');
         return token ? { token } : null;
     });
+
+    const verifyUrl = apiHost + '/token/verify';
 
     // Login function
     const login = (token) => {
@@ -25,23 +28,23 @@ export const AuthProvider = ({ children }) => {
     };
 
     
-    // Verify token on load (optional)
-//     useEffect(() => {
-//         const verifyToken = async () => {
-//             if (auth?.token) {
-//                 try {
-//                     // Verify token using the axios instance
-//                     await axiosInstance.post('/verify-token', { token: auth.token });
+    // Verify token on load
+    useEffect(() => {
+        const verifyToken = async () => {
+            if (auth?.token) {
+                try {
+                    // Verify token using the axios instance
+                    await axiosInstance.post(verifyUrl, { token: auth.token });
                     
-//                 } catch (err) {
-//                     logout(); // Logout if token is invalid
-//                 }
-//             }
-//         }
+                } catch (err) {
+                    logout(); // Logout if token is invalid
+                }
+            }
+        }
 
-//         verifyToken();
+        verifyToken();
 
-//   }, [auth]);
+  }, [auth]);
 
     return (
         <AuthContext.Provider value={{ auth, login, logout }}>
