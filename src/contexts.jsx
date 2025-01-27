@@ -2,6 +2,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./auth/AuthContexts";
 import { useAuth } from "./auth/ProtectedRoutes";
 import { apiHost, DevMode } from "./App";
+
+import noDp from './public/Nagi_0.jpg';
+
 import axiosInstance from "./auth/axiosInstance";
 
 export const UserContext = createContext(null);
@@ -24,7 +27,9 @@ export const UserProvider = ({ children, devData }) => {
 			.then( res => {
 				console.log(res.data);
 
-				setUserData(res.data)
+				const {dp} = res.data 
+
+				setUserData({...res.data, dp: dp || noDp})
 			})
 			.catch((error) => {
 				console.error('Error Loading Data:', error);
