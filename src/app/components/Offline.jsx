@@ -140,7 +140,7 @@ const deleteMessageFromStore = (id) => {
         )
 }
 
-const useSendMessageToServer = async (data) => {
+const useSendMessageToServer = (data) => {
     const sendUrl = apiHost + "/chats/send";
     const {updateMsgStatus} = useContext( SendMsgContext );
 
@@ -149,29 +149,26 @@ const useSendMessageToServer = async (data) => {
     
     // encrypt data
     encryptMessage({reply, textContent}, file)
+
     .then (async ({encryptedData, iv, encryptedFileData, key}) => {
-
-        // get public keys
-        const publicKeys = await getPubicKeys(receivers)
-
-        // for each receiver
-        for (i = 0; i < receivers.length; i++) {
-            if (!publicKeys[i]) return
-
-            const {uuid, publicKey} = publicKeys[i];
-
-            // encrypt the key to encrypted data
-            const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
-
-            const jsonData = {
-                uuid, iv,
-                key: encryptedKey,
-                file: encryptedFileData,
-                data: encryptedData
+        
+        //  upload file(s)
+        new Promise(res => {
+            if (!file){
+                res(null);
+                return
             }
 
+            const metadata = {
+                type: file.type,
+                size: file.size
+            };
+
+            const jsonData = {data: encryptedFileData, metadata, receivers};
+            const mediaUploadUrl = apiHost + "/chats/media";
+            
             // send all to server / each
-            return axiosInstance.post(sendUrl, jsonData, {
+            axiosInstance.post(mediaUploadUrl, jsonData, {
                 headers: {
                   'Content-Type': 'application/json', // Ensure the server recognizes JSON data
                 },
@@ -180,11 +177,46 @@ const useSendMessageToServer = async (data) => {
                     const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                     updateMsgStatus(data.id, progress)
                 }
-            });
+            }).then(res)
+        })
 
-        }
+        .then( async(fileId) => {
+
+            // get public keys
+            const publicKeys = await getPubicKeys(receivers)
+
+            // for each receiver
+            for (i = 0; i < receivers.length; i++) {
+                if (!publicKeys[i]) return
+
+                const {uuid, publicKey} = publicKeys[i];
+
+                // encrypt the key to encrypted data
+                const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
+
+                const jsonData = {
+                    uuid, iv,
+                    key: encryptedKey,
+                    file: fileId,
+                    data: encryptedData
+                }
+
+                // send all to server / each
+                return axiosInstance.post(sendUrl, jsonData, {
+                    headers: {
+                    'Content-Type': 'application/json', // Ensure the server recognizes JSON data
+                    },
+                    withCredentials: true,
+                    onUploadProgress: (progressEvent) => {
+                        const progress = Math.round((progressEvent.loaded * (i+1) * 100) / (progressEvent.total * receivers.length) ) ;
+                        updateMsgStatus(data.id, progress)
+                    }
+                });
+            }
+        })
     })
 }
+
 
 async function getPubicKeys(list){
     const keysUrl = apiHost + "chats/api/public-keys";
