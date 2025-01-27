@@ -78,7 +78,7 @@ const Body = ({isLogin}) => {
 
 							{ !isLogin && <Input type="email" name="email" label="Email*" placeholder='Enter your email address' /> }
 							
-							<Input type="password" name="password" label="Password*" placeholder='Enter your password' />
+							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={8} />
 
 							<div className='flex fw' style={{justifyContent: "flex-end"}}>
 								<Link className='no-link' to='/lily/reset'>

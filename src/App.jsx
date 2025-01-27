@@ -137,7 +137,7 @@ fetch("/api/user")
 
 
 export const userDevData = {
-	about: "Experienced programmer, Full stack web developer, AI enthusiast",
+	bio: "Experienced programmer, Full stack web developer, AI enthusiast",
 	name: "David",
 	handle: "@dev_id",
 	dp: userDp

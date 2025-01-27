@@ -5,7 +5,7 @@ import { ChatContext, ToggleOverlay } from "../../contexts";
 
 
 export const ContactItem = ({data, Message}) => {
-    const {id, name, handle, about} = data;
+    const {id, name, handle, bio} = data;
 
     const toggleOverlay = useContext(ToggleOverlay);
 
@@ -19,8 +19,8 @@ export const ContactItem = ({data, Message}) => {
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>
                     {
-                        about &&
-                        <small className="crop-excess fw"> {about} </small>
+                        bio &&
+                        <small className="crop-excess fw"> {bio} </small>
                     }
                 </div>
                 <div className="dropdown">

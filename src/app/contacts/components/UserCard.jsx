@@ -8,10 +8,12 @@ import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faXmark } from "@f
 import { on, once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../auth/axiosInstance';
 
 
 
 export const UserCard = ({ show, args }) => {
+    const userData = useState({});
     const [err, setError] = useState("An error occured.");
     
     const { pushState, removeState } = useContext( StateNavigatorContext );
@@ -42,6 +44,16 @@ export const UserCard = ({ show, args }) => {
         }
     }, [toggleOverlay, navId]);
 
+    useEffect(() => {
+        const dataUrl = apiHost + "/chats/api.user/"
+
+        try {
+            const {handle, id} = args;
+
+            const userData = axiosInstance.get(dataUrl + handle)
+            se
+        }
+    })
 
     useEffect(() => {
 
@@ -206,7 +218,7 @@ const Retry = ({note, retry}) => {
 
 
 const UserDetails = ({data, closeModal, navId}) => {
-    const {name, handle, dp, about} = data;
+    const {name, handle, dp, bio} = data;
     const id = 7;
 
 
@@ -230,9 +242,9 @@ const UserDetails = ({data, closeModal, navId}) => {
             <Actions id={id} navId={navId} handle={handle} closeModal={closeModal} />
             
             <div>
-                <small> About </small>
+                <small> Bio </small>
                 <div className="fs-5 fw-200">
-                    { about }
+                    { bio }
                 </div>
             </div>
 

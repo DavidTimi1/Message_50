@@ -188,14 +188,14 @@ const DPBtn = ({setProfile}) => {
 
 
 const ProfileForm = () => {
-    const { name, about } = useContext(UserContext);
-    const nameRef = useRef(null), aboutRef = useRef(null);
+    const { name, bio } = useContext(UserContext);
+    const nameRef = useRef(null), bioRef = useRef(null);
 
     useEffect(() => {
         nameRef.current.value = name;
-        aboutRef.current.value = about;
+        bioRef.current.value = bio;
 
-    }, [about, name])
+    }, [bio, name])
 
     useEffect(() => {
         let f;
@@ -229,10 +229,10 @@ const ProfileForm = () => {
                         <FontAwesomeIcon icon={faNoteSticky} size="xl" />
                         <div className="flex-col fw gap-1">
                             <small className="flex" style={{justifyContent: "space-between"}}>
-                                <span> About </span>
+                                <span> bio </span>
                                 <span> 100 characters </span>
                             </small>
-                            <textarea className="fw" ref={aboutRef} maxLength="100"></textarea>
+                            <textarea className="fw" ref={bioRef} maxLength="100"></textarea>
                         </div>
                     </div>
                 </label>

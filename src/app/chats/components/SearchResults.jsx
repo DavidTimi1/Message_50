@@ -36,7 +36,7 @@ export const MsgResultItem = ({ data }) => {
 
 
 export const ContactResultItem = ({data}) => {
-    const {id, name, handle, about} = data;
+    const {id, name, handle, bio} = data;
 
 
     return (
@@ -48,8 +48,8 @@ export const ContactResultItem = ({data}) => {
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>
                     {
-                        about &&
-                        <small className="crop-excess fw"> {about} </small>
+                        bio &&
+                        <small className="crop-excess fw"> {bio} </small>
                     }
                 </div>
             </div>
