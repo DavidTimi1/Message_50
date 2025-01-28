@@ -15,6 +15,7 @@ import { More } from "./components/more";
 import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute from "../auth/ProtectedRoutes";
+import { connectSocket, disconnectSocket } from "./components/Sockets";
 
 
 
@@ -26,6 +27,24 @@ export const Msg50App = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+
+    useEffect(() => {
+        const socket = connectSocket();
+
+        
+        socket.on('message', async (encryptedMsg) => {
+            try {
+                const decryptedMsg = await decryptMessage(encryptedMsg);
+                await storeMessageInDB(decryptedMsg);
+                
+            } catch (error) {
+                console.error('Failed to decrypt or store message:', error);
+            }
+        });
+
+        return disconnectSocket;
+    }, [])
 
 
     return (
