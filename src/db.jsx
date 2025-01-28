@@ -31,6 +31,7 @@ export const msgsTable = 'all_messages_tb';
 export const offlineMsgsTable = 'offline_messages';
 export const contactsTable = 'people_tb';
 export const filesTable = 'files';
+export const keysTable = 'keys';
 
 
 // listen for any errors from opening the indexeddb
@@ -107,6 +108,11 @@ IDBrequest.onupgradeneeded = e => {
         // create a table (object store) in athe database and add columns(object indices)
         let filesTb = DB.createObjectStore(filesTable, { autoIncrement: true });
         filesTb.createIndex('type', 'type', { unique: false })
+    }
+    
+    // For storing secrets
+    if (!DB.objectStoreNames.contains(keysTable)) {
+        DB.createObjectStore(keysTable, { keyPath: "id" });
     }
 }
 

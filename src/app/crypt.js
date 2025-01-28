@@ -1,3 +1,5 @@
+import { IDBPromise, loadDB, openTrans } from "../db";
+
 // Function to generate an RSA private-public key pair
 export async function generateKeyPair() {
     try {
@@ -13,13 +15,14 @@ export async function generateKeyPair() {
             ["encrypt", "decrypt"]
         );
 
-        // Export keys as JSON strings
+        // Export public key as pem strings
         const publicKey = await exportPublicKeyToSPKI( keyPair.publicKey ) ;
 
-        // Store private key securely (IndexedDB is recommended, but here we use localStorage as an example)
+        // Store private key securely in IndexedDB
+        await storePrivateKeyInIndexedDB(keyPair.privateKey);
 
         // Return public key to send or store externally
-        return { publicKey, privateKey }; // Both keys as JSON
+        return { publicKey };
 
     } catch (error) {
         console.error("Error generating key pair:", error);
@@ -27,13 +30,30 @@ export async function generateKeyPair() {
     }
 }
 
-async function exportPrivateKeyToPEM(privateKey) {
-    const exportedKey = await window.crypto.subtle.exportKey("pkcs8", privateKey);
 
-    const exportedKeyBase64 = arrayBufferToBase64(exportedKey);
-    const pem = `-----BEGIN PRIVATE KEY-----\n${addLineBreaks(exportedKeyBase64)}\n-----END PRIVATE KEY-----`;
+// Function to store private key in IndexedDB
+async function storePrivateKeyInIndexedDB(privateKey) {
+    
+    loadDB()
+    .then( async (db) => {
+        
+        const privateKeyData = await window.crypto.subtle.exportKey("pkcs8", privateKey);
+        const privateKeyObject = {
+            id: "privateKey",
+            key: privateKeyData
+        };
 
-    return pem;
+        IDBPromise( 
+            openTrans(db, "keys", "readwrite").put(privateKeyObject)
+
+        ).then(() => {
+            console.log("Private key stored successfully");
+
+        }).catch((error) => {
+            console.error("Failed to store private key:", error);
+        });
+
+    })
 }
 
 
@@ -55,6 +75,7 @@ function arrayBufferToBase64(buffer) {
     });
     return window.btoa(binary);
 }
+
 
 function addLineBreaks(str, lineLength = 64) {
     return str.match(new RegExp(`.{1,${lineLength}}`, 'g')).join('\n');
@@ -243,3 +264,28 @@ export async function decryptMediaFile(encryptedBuffer, iv, symmetricKey) {
 
     return decryptedBuffer; // ArrayBuffer
 }
+
+
+// Decrypt the symmetric key using the private key
+export async function decryptSymmetricKey(encryptedKey, privateKey) {
+    const decryptedKey = await window.crypto.subtle.decrypt(
+        {
+            name: "RSA-OAEP",
+        },
+        privateKey,
+        encryptedKey
+    );
+
+    return window.crypto.subtle.importKey(
+        "raw",
+        decryptedKey,
+        {
+            name: "AES-GCM",
+            length: 256,
+        },
+        true,
+        ["encrypt", "decrypt"]
+    );
+}
+
+
