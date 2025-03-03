@@ -1,7 +1,3 @@
-import io from 'socket.io-client';
-import { apiHost } from '../../App';
-
-
 
 // Establish socket connection initaily
 // Handle on receive socket messsage
@@ -11,14 +7,17 @@ import { apiHost } from '../../App';
 
 // Connect to socket server
 let SOCKET = null;
-const socketUrl = apiHost;
+const socketHost = "ws://127.0.0.1:5173/ws/chat/";
 
-export function connectSocket(){
-    SOCKET = io(socketUrl);
-    SOCKET.on('connect', () => {
+
+export function connectSocket(token){
+    SOCKET = new WebSocket(`${ socketHost }?token=${token}`);
+
+    SOCKET.onopen = () => {
         console.log('Connected to socket server');
-    });
-    SOCKET.on('message', handleSocketMessage);
+    };
+
+    SOCKET.onerror = (error) => console.error("WebSocket error:", error);
 
     return SOCKET;
 }
@@ -30,11 +29,11 @@ export function useSocket(){
 
 
 // disconnect socket
-export function disconnectSocket(){
-    SOCKET.off('message', handleSocketMessage);
-    SOCKET.disconnect();
+export function disconnectSocket(errCode, reason){
+    SOCKET.close(errCode, reason);
 }
 
-function handleSocketMessage(message){
-    console.log('Received message:', message);
+
+export function socketSend(action, payload){
+    SOCKET.send(JSON.stringify({action, ...payload}));
 }
