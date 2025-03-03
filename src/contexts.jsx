@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { AuthContext } from "./auth/AuthContexts";
 import { useAuth } from "./auth/ProtectedRoutes";
 import { apiHost, DevMode } from "./App";
+import { generateKeyPair } from './app/crypt.js';
 
 import noDp from './public/Nagi_0.jpg';
 
@@ -25,9 +25,9 @@ export const UserProvider = ({ children, devData }) => {
 		if (auth) {
 			axiosInstance.get(loadDataUrl)
 			.then( res => {
-				console.log(res.data);
+				const {dp, public_key} = res.data
 
-				const {dp} = res.data 
+				!public_key && setUserKeyPair();
 
 				setUserData({...res.data, dp: dp || noDp})
 			})
@@ -49,3 +49,18 @@ export const UserProvider = ({ children, devData }) => {
         </UserContext.Provider>
     );
 };
+
+
+
+function setUserKeyPair() {
+    const PUBLICKEY_URL = apiHost + "/chat/api/user/me/public-key";
+
+    generateKeyPair()
+        .then(res => {
+            axiosInstance.post(PUBLICKEY_URL, res)
+            .then( console.log("Public Key set") )
+        })
+        .catch(err => {
+            throw err
+        })
+}

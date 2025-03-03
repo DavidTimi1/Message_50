@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
                     await axiosInstance.post(verifyUrl, { token: auth.token });
                     
                 } catch (err) {
+                    console.log(err)
                     logout(); // Logout if token is invalid
                 }
             }

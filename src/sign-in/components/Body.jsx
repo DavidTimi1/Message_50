@@ -33,7 +33,7 @@ const Body = ({isLogin}) => {
         if (status === true){
             setTimeout(() => {
                 navigate("/app");
-            }, 2000)
+            }, 500)
         }
     }, [status])
 
@@ -149,6 +149,7 @@ const Body = ({isLogin}) => {
 
 	function logInWithDetails(data){
 		const loginUrl = apiHost + "/login";
+		console.log("Logging in...")
 
 		axios.post(loginUrl, data)
 		.then((response) => {
@@ -172,9 +173,7 @@ const Body = ({isLogin}) => {
         return axios.post(regUrl, data)
         .then((response) => {
             console.log('Registered successfully:', response.data);
-
-			// const loginData = new FormData();
-			console.log("trying to login")
+			
 			logInWithDetails(data);
 			return data;
 			

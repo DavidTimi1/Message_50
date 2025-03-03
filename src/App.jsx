@@ -24,7 +24,7 @@ import { SignIn } from './sign-in/page';
 
 export const ProdName = "Message50";
 export const DevMode = true;
-export const apiHost = "http://localhost:8000";
+export const apiHost = "http://localhost:5173";
 
 
 export const Msg50 = () => {
