@@ -6,7 +6,7 @@ import { ChatContext, ToggleOverlay, SendMsgContext, StateNavigatorContext } fro
 import { MsgListContext } from '../contexts';
 
 import { once, title, transitionEnd, standardUnit, int, $ } from "../../../utils";
-import { openTrans, getMsg, msgsTable, offlineMsgsTable, loadDB, getContactDetails } from '../../../db';
+import { openTrans, getMsg, msgsTable, offlineMsgsTable, loadDB } from '../../../db';
 import { DevMode } from '../../../App';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,6 +17,7 @@ import { Footer } from './MsgingFooter';
 import { IconBtn } from "../../../components/Button";
 import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
+import { Link } from 'react-router-dom';
 
 
 
@@ -132,6 +133,7 @@ export default function MsgInterface() {
                         <MsgList
                             toggleSelect={toggleSelection}
                             selected={select ?? []}
+                            chatting={chatting}
                         />
 
                         <div className='fw'>
@@ -281,7 +283,7 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
 }
 
 
-const MsgList = ({ selected, toggleSelect }) => {
+const MsgList = ({ selected, toggleSelect, chatting }) => {
     const listElem = useRef();
 
     const { replyTo, cur, pending } = useContext( MsgListContext ), msgList = cur, pendingList = pending;
@@ -305,6 +307,15 @@ const MsgList = ({ selected, toggleSelect }) => {
             onClick={handleClick}
             ref={listElem}
         >
+            <small className='mx-auto banner'>
+                Messages between you and
+                <span style={{color: "var(--btn-col)"}}> {chatting} </span>
+                are
+                <Link className="no-link">
+                    end-to-end encrypted
+                </Link>
+                🔒
+            </small>
             {
                 msgList.map(msg => {
                     let select = selected.includes(msg.id);

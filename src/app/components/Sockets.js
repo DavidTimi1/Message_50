@@ -11,6 +11,12 @@ const socketHost = "ws://127.0.0.1:5173/ws/chat/";
 
 
 export function connectSocket(token){
+    token = localStorage.getItem('jwt');
+
+    if (!token) {
+        console.log("User not Auth")
+    }
+
     SOCKET = new WebSocket(`${ socketHost }?token=${token}`);
 
     SOCKET.onopen = () => {
@@ -35,5 +41,13 @@ export function disconnectSocket(errCode, reason){
 
 
 export function socketSend(action, payload){
-    SOCKET.send(JSON.stringify({action, ...payload}));
+    const func = _ => SOCKET.send(JSON.stringify({action, ...payload}));
+    
+    if (SOCKET.readyState === SOCKET.OPEN){
+        func()
+
+    } else {
+        connectSocket()
+        SOCKET.addEventListener("open", func)
+    }
 }

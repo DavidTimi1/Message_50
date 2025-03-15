@@ -53,7 +53,7 @@ export const UserProvider = ({ children, devData }) => {
 
 
 function setUserKeyPair() {
-    const PUBLICKEY_URL = apiHost + "/chat/api/user/me/public-key";
+    const PUBLICKEY_URL = apiHost + "/chat/api/user/public-key/";
 
     generateKeyPair()
         .then(res => {

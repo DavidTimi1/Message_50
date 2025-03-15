@@ -16,6 +16,8 @@ import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket } from "./components/Sockets";
+import { getUserDetails } from "./contacts/lib";
+import { useOnlineStatus } from "./components/Hooks";
 
 
 
@@ -23,6 +25,7 @@ import { connectSocket, disconnectSocket } from "./components/Sockets";
 export const Msg50App = () => {
     const [chatting, setChatting] = useState({ user: false });
     const [overlays, setOverlays] = useState(new Map());
+    const isOnline = useOnlineStatus();
     const [msgFrom, jumpTo] = useState();
 
     const navigate = useNavigate();
@@ -35,10 +38,11 @@ export const Msg50App = () => {
 
         const socket = connectSocket(authenticated);
 
-        socket.addEventListener('message', async (encryptedMsg) => {
+        socket.addEventListener('message', async (msg) => {
             try {
-                const decryptedMsg = await decryptMessage(encryptedMsg);
-                await storeMessageInDB(decryptedMsg);
+                console.log(msg)
+                // const decryptedMsg = await decryptMessage(encryptedMsg);
+                // await storeMessageInDB(decryptedMsg);
 
             } catch (error) {
                 console.error('Failed to decrypt or store message:', error);
@@ -97,12 +101,21 @@ export const Msg50App = () => {
     )
 
     function toggleMessaging(handle, id) {
-        setChatting({ user: handle, msgId: id });
+        const queryUserExistence = getUserDetails(handle, isOnline);
+        queryUserExistence.then( res => {
+            if (!res.success){
+                // show error
+                return
+            }
+    
+            setChatting({ user: handle, msgId: id });
+    
+            // to navigate from elsewhere
+            if (handle && location.pathname !== '/app') {
+                navigate('/app')
+            }
 
-        // to navigate from elsewhere
-        if (handle && location.pathname !== '/app') {
-            navigate('/app')
-        }
+        }).catch (console.error)
     }
 
     function toggleOverlay(name, value) {

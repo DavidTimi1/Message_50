@@ -167,7 +167,7 @@ export async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
         exportedKey
     );
 
-    return encryptedKey;
+    return arrayBufferToBase64(encryptedKey);
 }
 
 
@@ -200,7 +200,7 @@ export async function encryptMessage(jsonData, file) {
     // Step 3: Encrypt JSON data with the symmetric key
     const { encryptedData, iv } = await encryptJsonData(jsonData, symmetricKey);
 
-    const encryptedFileData = await encryptMediaFile(file, symmetricKey)
+    const encryptedFileData = file && await encryptMediaFile(file, symmetricKey)
 
     // Return the encrypted payload
     return {

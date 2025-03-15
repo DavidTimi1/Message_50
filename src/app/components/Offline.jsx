@@ -8,6 +8,7 @@ import { SendMsgContext } from "../contexts";
 import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../crypt.js";
 import axiosInstance from "../../auth/axiosInstance.js";
 import { apiHost } from "../../App.jsx";
+import { socketSend } from "./Sockets.js";
 
 
 export const SendMsgsProvider = ({children}) => {
@@ -47,10 +48,19 @@ export const SendMsgsProvider = ({children}) => {
 }
 
 
+let singleInstance = null;
+
 export const useOfflineActivities = () => {
     const [running, setRunning] = useState(null);
     const [rerun, setReRun] = useState(null);
     const {updateMsgStatus} = useContext( SendMsgContext );
+    const messageSender = useMessageSender();
+    
+    if (!singleInstance) {
+        singleInstance = {
+            sendMsg: handleCall
+        };
+    }
 
     useEffect(() => {
         if (rerun && !running){
@@ -59,12 +69,16 @@ export const useOfflineActivities = () => {
 
         }
 
-    }, [rerun, running])
+    }, [rerun, running]);
+    
+    useEffect(() => {
+        return () => {
+            singleInstance = null; // Reset on unmount if needed
+        };
+    }, []);
 
 
-    return ({
-        sendMsg: handleCall
-    })
+    return ( singleInstance )
 
     // to avoid race conditions
     function handleCall(){
@@ -79,9 +93,9 @@ export const useOfflineActivities = () => {
     }
 
 
-    function processMessages(){
+    async function processMessages(){
 
-        getMessagesFromStore()
+        return getMessagesFromStore()
         .then(msgs => {
             for (let msg of msgs){
                 msg = {...msg, time: new Date().getTime()}
@@ -89,15 +103,18 @@ export const useOfflineActivities = () => {
             }
 
             msgs.reduce((promise, msg) => {
-                let officialId;
+                const offId = msg.id;
+                const msgId = crypto.randomUUID();
+                const newMsg = {...msg, id: msgId};
 
                 return promise
                 .then( () => {
-                    officialId = useSendMessageToServer(msg);
+                    messageSender.send(newMsg);
                 }) // send the message
-                .then( () => deleteMessageFromStore(msg.id) ) // delete after success
-                .then( () => saveMsgInDb(officialId, msg) ) // save message in db
-                .then( () => updateMsgStatus(msg.id, {id: officialId, success: true}) ) // set status to sent
+                .then( () => deleteMessageFromStore(offId) ) // delete after success
+                .then( () => saveMsgInDb(newMsg) ) // save message in db
+                .then( () => updateMsgStatus(offId, {id: msgId, success: true}) ) // set status to sent
+                .catch(_ => console.log("Back to DB"))
 
             }, new Promise(res => res())) // start the chain of promises
         })
@@ -140,98 +157,103 @@ const deleteMessageFromStore = (id) => {
         )
 }
 
-const useSendMessageToServer = (data) => {
-    const sendUrl = apiHost + "/chats/send";
+
+const useMessageSender = () => {
     const {updateMsgStatus} = useContext( SendMsgContext );
 
-    const fd = new FormData();
-    const {receivers, reply, textContent, file} = {data};
+
+    return {send: run}
+
+    function run(data){
+        const {receivers, reply, textContent, file, id} = data;
+
+        // encrypt data
+        encryptMessage({reply, textContent}, file)
     
-    // encrypt data
-    encryptMessage({reply, textContent}, file)
-
-    .then (async ({encryptedData, iv, encryptedFileData, key}) => {
-        
-        //  upload file(s)
-        new Promise(res => {
-            if (!file){
-                res(null);
-                return
-            }
-
-            const metadata = {
-                type: file.type,
-                size: file.size
-            };
-
-            const jsonData = {data: encryptedFileData, metadata, receivers};
-            const mediaUploadUrl = apiHost + "/chats/media";
+        .then (async ({encryptedData, iv, encryptedFileData, key}) => {
             
-            // send all to server / each
-            axiosInstance.post(mediaUploadUrl, jsonData, {
-                headers: {
-                  'Content-Type': 'application/json', // Ensure the server recognizes JSON data
-                },
-                withCredentials: true,
-                onUploadProgress: (progressEvent) => {
-                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    updateMsgStatus(data.id, progress)
+            //  upload file(s)
+            new Promise(res => {
+                if (!file){
+                    res(null);
+                    return
                 }
-            }).then(res)
-        })
-
-        .then( async(fileId) => {
-
-            // get public keys
-            const publicKeys = await getPubicKeys(receivers)
-
-            // for each receiver
-            for (i = 0; i < receivers.length; i++) {
-                if (!publicKeys[i]) return
-
-                const {uuid, publicKey} = publicKeys[i];
-
-                // encrypt the key to encrypted data
-                const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
-
-                const jsonData = {
-                    uuid, iv,
-                    key: encryptedKey,
-                    file: fileId,
-                    data: encryptedData
-                }
-
+    
+                const metadata = {
+                    type: file.type,
+                    size: file.size
+                };
+    
+                const jsonData = {data: encryptedFileData, metadata, receivers};
+                const mediaUploadUrl = apiHost + "/chats/media";
+                
                 // send all to server / each
-                return axiosInstance.post(sendUrl, jsonData, {
+                axiosInstance.post(mediaUploadUrl, jsonData, {
                     headers: {
-                    'Content-Type': 'application/json', // Ensure the server recognizes JSON data
+                      'Content-Type': 'application/json', // Ensure the server recognizes JSON data
                     },
                     withCredentials: true,
                     onUploadProgress: (progressEvent) => {
-                        const progress = Math.round((progressEvent.loaded * (i+1) * 100) / (progressEvent.total * receivers.length) ) ;
+                        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                         updateMsgStatus(data.id, progress)
                     }
-                });
-            }
+                }).then(response => res( response.data ))
+            })
+    
+            .then( async(fileId) => {
+                // get public keys
+                const publicKeys = await getPubicKeys(receivers)
+    
+                // for each receiver
+                for (let uuid in publicKeys) {
+                    let publicKey = publicKeys[uuid]
+                    if (!publicKey) return
+    
+                    // encrypt the key to encrypted data
+                    const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
+    
+                    const jsonData = {
+                        id,
+                        receiverID: uuid,
+                        data: {
+                            iv, encryptedData,
+                            key: encryptedKey,
+                            file: fileId,
+                        }
+                    }
+    
+                    // send all to server / each using websocket
+                    const sent = socketSend("new-message", jsonData)
+                    
+                    if (sent){
+                        updateMsgStatus(data.id, true)
+                        return res.id
+                    }
+                }
+            })
         })
-    })
+    }
+    
 }
 
 
 async function getPubicKeys(list){
-    const keysUrl = apiHost + "chats/api/public-keys";
+    if (!list) return {}
+    
+    const keysUrl = apiHost + "/chat/api/user/public-key/?username=";
+    const query = list.join("&username=");
 
-    return axiosInstance.post(keysUrl, list)
-    .then(res => res.data)
+    return axiosInstance.get(keysUrl + query)
+    .then(({data}) => data)
 }
 
 
-const saveMsgInDb = (id, msgData) => {
+const saveMsgInDb = (msgData) => {
 
     return loadDB()
         .then( DB => IDBPromise (
                 openTrans(DB, msgsTable, 'readwrite')
-                .put( {...msgData, id:id} )
+                .put( msgData )
             )
         )
 }

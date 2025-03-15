@@ -2,6 +2,15 @@
     
     .msglist {
 
+    .banner {
+        background-color: light-dark(grey, #333);
+        border-radius: 7px;
+        padding: .25em 1em;
+        font-size: smaller;
+        width: max-content;
+        font-weight: 100;
+    }
+
 .msgcont {
     display: block;
     position: relative;

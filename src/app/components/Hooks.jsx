@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react"
 import { on } from "../../utils";
-import { getContactDetails } from "../../db";
+import { getContactDetailsFromDB } from "../../db";
+import { DevMode } from "../../App";
 
 
 
 export const useOnlineStatus = () => {
 
-    const [isOnline, setOnline] = useState(navigator.onLine);
+    const [isOnline, setOnline] = useState(DevMode? true : navigator.onLine);
 
     useEffect(() => {
         const handleOnline = () => setOnline(true);
         const handleOffline = () => setOnline(false);
 
         on('online', handleOnline);
-        on('offline', handleOffline);
+        !DevMode && on('offline', handleOffline);
 
         return () => {
             window.removeEventListener('online', handleOnline)
@@ -31,7 +32,7 @@ export const useContactName = (id) => {
     useEffect(() => {
         if (!id) return
 
-        getContactDetails(id)
+        getContactDetailsFromDB(id)
         .then( res => {
             setName(res?.name ?? id);
         });
