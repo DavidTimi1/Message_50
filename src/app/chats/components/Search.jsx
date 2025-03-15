@@ -13,6 +13,7 @@ import { ContactResultItem, MsgResultItem } from './SearchResults';
 
 const navId = 'searchGeneral';
 
+
 export default function SearchWindow({ closeSearch, initFilters }) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState({});
@@ -201,7 +202,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
     function close() {
         const el = myRef.current;
         once(transitionEnd, el, closeSearch);
-        el.classList.add("close");
+        el?.classList?.add("close");
     }
 }
 
@@ -231,11 +232,11 @@ const ChatUnsaved = ({ searchBoxRef, closeSearch }) => {
                 Chat unsaved contact
             </button>
 
-            <dialog className="dialog-box" ref={diaRef}>
+            <dialog className="dialog-box" ref={diaRef} onClose={close}>
                 <form className="dialog-container" method="dialog">
                     <label>
                         {/* same form type from login */}
-                        <input autoFocus name="handle" placeholder="User handle" defaultValue={token} ref={inputRef} />
+                        <input autoFocus name="handle" placeholder="User handle" value={token} onInput={e => setToken(e.target.value)} ref={inputRef} />
                     </label>
                     <div className="button-set flex mid-align fw">
                         <button value="">Cancel</button>
@@ -248,22 +249,15 @@ const ChatUnsaved = ({ searchBoxRef, closeSearch }) => {
 
     function showDialog() {
         setToken(searchBoxRef.current.value);
-        diaRef.current.onclose = close;
         diaRef.current.showModal();
     }
 
     function close({ target: { returnValue } }) {
+
         if (returnValue) {
             // fetchDetals and chat
-            getDetails(returnValue)
-                .then(() => {
-                    closeSearch();
-                    message(inputRef.current.value);
-
-                })
-                .catch(err => {
-                    console.error(err)
-                })
+            closeSearch();
+            message(token);
         }
     }
 }

@@ -1,19 +1,21 @@
+
+"use strict";
 import './UserCard.css';
 
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconBtn, Button } from "../../../components/Button";
-import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { on, once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../../auth/axiosInstance';
+import { useOnlineStatus } from '../../components/Hooks';
+import { getUserDetails } from '../lib';
 
 
 
 export const UserCard = ({ show, args }) => {
-    const userData = useState({});
     const [err, setError] = useState("An error occured.");
     
     const { pushState, removeState } = useContext( StateNavigatorContext );
@@ -21,8 +23,6 @@ export const UserCard = ({ show, args }) => {
     const navId = 'user-card';
     const ref = useRef(null), winRef = useRef(null), dragZone = useRef(null), contentRef = useRef(null), inMotion = useRef(false), Obj = useRef({ touchY: undefined, lastTop: 0, dir: "down" });
     const toggleOverlay = useContext(ToggleOverlay);
-
-    const devData = useContext(UserContext);
 
 
     // Close function with animation handling
@@ -44,16 +44,6 @@ export const UserCard = ({ show, args }) => {
         }
     }, [toggleOverlay, navId]);
 
-    useEffect(() => {
-        const dataUrl = apiHost + "/chats/api.user/"
-
-        try {
-            const {handle, id} = args;
-
-            const userData = axiosInstance.get(dataUrl + handle)
-            se
-        }
-    })
 
     useEffect(() => {
 
@@ -109,7 +99,9 @@ export const UserCard = ({ show, args }) => {
                             err?
                                 <Retry note={err} retry={retry} />
                             :
-                                <UserDetails navId={navId} closeModal={handleCloseClick} data={devData} />
+                                <Suspense fallback={<LoadingDetails />}>
+                                    <UserDetails navId={navId} closeModal={handleCloseClick} args={args} />
+                                </Suspense>
                         }
                     </div>
                 </div>
@@ -217,9 +209,12 @@ const Retry = ({note, retry}) => {
 }
 
 
-const UserDetails = ({data, closeModal, navId}) => {
+const UserDetails = ({args, closeModal, navId}) => {
+    const isOnline = useOnlineStatus();
+    console.log(args.handle)
+    const data = getUserDetails(args.handle, isOnline);
+    data.then(res =>  console.log(res))
     const {name, handle, dp, bio} = data;
-    const id = 7;
 
 
     return (
@@ -239,7 +234,7 @@ const UserDetails = ({data, closeModal, navId}) => {
                 <small> {handle} </small>
             </div>
 
-            <Actions id={id} navId={navId} handle={handle} closeModal={closeModal} />
+            <Actions id={handle} navId={navId} handle={handle} closeModal={closeModal} />
             
             <div>
                 <small> Bio </small>
@@ -335,30 +330,11 @@ const Actions = ({id, handle, closeModal}) => {
 }
 
 
-// const getUserDetails = async (id, handle) => {
-//     let error, details, csvd = false, done = false;
-
-//     if (isOnline() && handle) {
-//         let req = await fetch("/users/" + handle + "?details")
-//         details = req.status < 400 ? await req.json() : { error: titleCase(req.statusText) }
-//         done = true
-//     }
-//     if (id) {
-//         let res = await IDBPromise(openTrans(db, "people_tb").get(id))
-//         if (res) {
-//             csvd = true;
-//             if (!details) {
-
-//             }
-//             done = true
-//         }
-//     }
-//     if (!done) {
-//         details = { error: "Not Found" }
-//     }
-
-//     return {
-//         saved: csvd,
-//         ...details
-//     }
-// }
+const LoadingDetails = () => (
+    <div className="flex align-center gap-3">
+        <FontAwesomeIcon icon={faSpinner} size="2xl" spin />
+        <span>
+            Loading ...
+        </span>
+    </div>
+)

@@ -96,7 +96,7 @@ IDBrequest.onupgradeneeded = e => {
     }
     if (!DB.objectStoreNames.contains(offlineMsgsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
-        let offlineMessages = DB.createObjectStore(offlineMsgsTable, { autoIncrement: true });
+        let offlineMessages = DB.createObjectStore(offlineMsgsTable, { autoIncrement: true, keyPath: 'id' });
         offlineMessages.createIndex('handle', 'handle', { unique: false });
     }
     // if (!DB.objectStoreNames.contains("offline_tasks")) {
@@ -192,14 +192,26 @@ export const getMsg = async (id) => {
 }
 
 
-export const getContactDetails = async (id) => {
+export const getContactDetailsFromDB = async (handle) => {
     
     return loadDB()
-        .then(DB => IDBPromise( openTrans(DB, contactsTable).get(id)) )
+        .then(DB => IDBPromise( openTrans(DB, contactsTable).get(handle)) )
         .then(res => res)
         .catch(err => {
             console.error(err);
             return null
+        })
+}
+
+export const saveContactToDB = async(user) => {
+    // saves a user's details and returns true if successful else false
+
+    return loadDB()
+        .then(DB => IDBPromise( openTrans(DB, contactsTable, "readwrite").put(user)) )
+        .then(_ => true)
+        .catch(err => {
+            console.error(err);
+            return false
         })
 }
 

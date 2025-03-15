@@ -121,21 +121,6 @@ export const Msg50 = () => {
 // }
 
 
-
-let USERDATA;
-
-fetch("/api/user")
-	.then(res => res.json())
-	.then(json => {
-		USERDATA = json;
-	})
-	.catch(err => {
-		console.error(err)
-		USERDATA = { error: true }
-	})
-
-
-
 export const userDevData = {
 	bio: "Experienced programmer, Full stack web developer, AI enthusiast",
 	name: "David",

@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { ChatContext, SendMsgContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
 import { timePast } from '../../../utils';
-import { chatsTable, offlineMsgsTable, openTrans, loadDB, getContactDetails } from '../../../db';
+import { chatsTable, offlineMsgsTable, openTrans, loadDB } from '../../../db';
 import { useContactName } from '../../components/Hooks';
 
 
@@ -142,7 +142,12 @@ const ChatItem = ({ data, Message }) => {
     function showUserDetails(e) {
         e.stopPropagation();
 
-        toggleOverlay('user-card', true);
+        const args = handle === "multiple" ? {
+            handle, 
+            receivers: data.receivers
+        } : { handle }
+
+        toggleOverlay('user-card', args);
     }
 }
 

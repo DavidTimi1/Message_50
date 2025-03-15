@@ -5,7 +5,7 @@ import { ChatContext } from '../../contexts';
 import { IconBtn } from "../../../components/Button";
 
 import { transitionEnd, runOnComplete } from "../../../utils";
-import { IDBPromise, openTrans, getMsg, offlineMsgsTable } from '../../../db';
+import { IDBPromise, openTrans, getMsg, offlineMsgsTable, loadDB } from '../../../db';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile, faFileAudio, faFilm, faImage, faMicrophone, faPaperPlane, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
