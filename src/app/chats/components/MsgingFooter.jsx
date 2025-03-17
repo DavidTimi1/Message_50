@@ -92,7 +92,7 @@ export const Footer = ({previewFile}) => {
         console.log("recording")
     }
 
-    async function queueToSend(e) {
+    async function queueToSend() {
         let receivers, file, textContent;
 
         receivers = chatting instanceof Array? chatting : [chatting];
@@ -109,8 +109,6 @@ export const Footer = ({previewFile}) => {
 
         let id = await loadDB()
                 .then( DB => IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add(data) ) )
-
-        // TODO offload Queue , addNotSent
 
         addNotSent({...data, id:id})
 
@@ -141,7 +139,7 @@ export const Footer = ({previewFile}) => {
     }
 
     function resize(e) {
-        const { target } = e, { value } = target;
+        const { target } = e;
 
         // set rows to 1
         let cur = 1, threshold = 5;
@@ -171,8 +169,9 @@ const UploadOptions = ({ open, selectFile }) => {
     useEffect(() => {
         let t_id;
 
-        if (open !== opened) {
+        if (Boolean(open) !== Boolean(opened)) {
             toggle(open);
+
         } else {
             t_id = mainRef.current && setTimeout(() => mainRef.current.classList.remove("close"), 20);
         }

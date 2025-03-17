@@ -1,5 +1,5 @@
 
-import { openTrans, IDBPromise, msgsTable, contactsTable, chatsTable, offlineMsgsTable, loadDB } from "../db";
+import { openTrans, IDBPromise, msgsTable, contactsTable, chatsTable, offlineMsgsTable } from "../db";
 
 import msgsData from './messages.json';
 import contactsData from './contacts.json';

@@ -15,7 +15,6 @@ export const getUserDetails = async (handle, isOnline) => {
     }
 
     let user = await getContactDetailsFromDB(handle);
-    console.log(handle)
 
     if (user) {
         isSaved = true; // The user data has been saved previously

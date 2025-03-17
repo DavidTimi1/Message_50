@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance from './axiosInstance.js';
 import { apiHost } from '../App.jsx';
+import { loadDB, restartIDB } from '../db.jsx';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -25,6 +26,10 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('jwt'); // Remove token
         setAuth(null);
+
+        // clear user session data
+        loadDB()
+        .then(restartIDB);
     };
 
     

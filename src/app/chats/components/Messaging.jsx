@@ -125,7 +125,7 @@ export default function MsgInterface() {
                     clearSelection={clearSelection}
                 />
 
-                <div className="fw grow flex-col">
+                <div className="fw grow flex-col" style={{overflow: "hidden"}}>
                     <div className='abs max'>
                     </div>
 
@@ -342,7 +342,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             key={msg.id}
                             id={msg.id}
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
-                            details={msg}
+                            details={{...msg, notSent: true, sent: true}}
                             replyTo={replyTo}
                             blockUp={blockUp}
                         />
@@ -512,7 +512,7 @@ export function getMessages(nowChatting, msgId) {
         .then(DB => new Promise(res => {
 
             openTrans(DB, msgsTable)
-                .index("handle").openCursor(IDBKeyRange.only(nowChatting), "prev")
+                .index("handle_time").openCursor(IDBKeyRange.bound([nowChatting, 0], [nowChatting, Infinity]), "prev")
                 .onsuccess = e => {
                     let cur = e.target.result;
 

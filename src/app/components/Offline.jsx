@@ -97,10 +97,10 @@ export const useOfflineActivities = () => {
 
         return getMessagesFromStore()
         .then(msgs => {
-            for (let msg of msgs){
-                msg = {...msg, time: new Date().getTime()}
+            msgs = msgs.map( msg => {
                 updateMsgStatus(msg.id, 'sending')
-            }
+                return {...msg, time: new Date().getTime()}
+            })
 
             msgs.reduce((promise, msg) => {
                 const offId = msg.id;
@@ -165,10 +165,10 @@ const useMessageSender = () => {
     return {send: run}
 
     function run(data){
-        const {receivers, reply, textContent, file, id} = data;
+        const {receivers, reply, textContent, time, file, id} = data;
 
         // encrypt data
-        encryptMessage({reply, textContent}, file)
+        encryptMessage({reply, textContent, time}, file)
     
         .then (async ({encryptedData, iv, encryptedFileData, key}) => {
             
@@ -251,9 +251,17 @@ async function getPubicKeys(list){
 const saveMsgInDb = (msgData) => {
 
     return loadDB()
-        .then( DB => IDBPromise (
-                openTrans(DB, msgsTable, 'readwrite')
-                .put( msgData )
-            )
-        )
+        .then( DB => (
+            Promise.all( msgData.receivers.map( receiver => (
+                IDBPromise (
+                    openTrans(DB, msgsTable, 'readwrite')
+                    .put( {
+                        ...msgData,
+                        receivers: undefined,
+                        handle: receiver,
+                        sent: true,
+                    } )
+                )
+            )))
+        ))
 }

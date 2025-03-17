@@ -18,6 +18,7 @@ import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket } from "./components/Sockets";
 import { getUserDetails } from "./contacts/lib";
 import { useOnlineStatus } from "./components/Hooks";
+import { hasMessaged } from "../db";
 
 
 
@@ -100,23 +101,42 @@ export const Msg50App = () => {
         </div>
     )
 
-    function toggleMessaging(handle, id) {
-        const queryUserExistence = getUserDetails(handle, isOnline);
-        queryUserExistence.then( res => {
-            if (!res.success){
-                // show error
+    async function toggleMessaging(handle, id) {
+        let success = false;
+
+        if (!handle){
+            setChatting({ user: false });
+            return
+        }
+
+        await hasMessaged(handle)
+        .then( async count => {
+
+            if (count){
+                success = Boolean(count);
                 return
             }
-    
-            setChatting({ user: handle, msgId: id });
-    
-            // to navigate from elsewhere
-            if (handle && location.pathname !== '/app') {
-                navigate('/app')
-            }
 
-        }).catch (console.error)
+            const queryUserExistence = getUserDetails(handle, isOnline);
+            await queryUserExistence.then( res => {
+                success = res.success || success
+
+            }).catch (console.error)
+        })
+
+        if (!success){
+            setChatting({ user: false });
+            return
+        }
+
+        setChatting({ user: handle, msgId: id });
+
+        // to navigate from elsewhere
+        if (handle && location.pathname !== '/app') {
+            navigate('/app')
+        }
     }
+
 
     function toggleOverlay(name, value) {
         // keep history

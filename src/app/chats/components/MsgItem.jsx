@@ -37,7 +37,7 @@ export const MsgItem = (props) => {
 
 
     return (
-        <div data-id={id} className={`msgcont ${ sent ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
+        <div data-id={id} className={`msgcont ${ sent || notSent ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
             <div className="flex-col fw gap-1">
                 <div className="msg-item" ref={itemRef}>
                     {reply && <MsgLink id={reply}></MsgLink>}
@@ -51,6 +51,7 @@ export const MsgItem = (props) => {
                         <IconBtn icon={faShare} className="reply" onClick={replyThis} />
                     </div>
                 </div>
+
                 <small className="timestamp br-1 flex mid-align gap-2">
                     {
                         sent &&

@@ -82,8 +82,7 @@ IDBrequest.onupgradeneeded = e => {
     if (!DB.objectStoreNames.contains(msgsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
         let messagesTable = DB.createObjectStore(msgsTable, { keyPath: 'id' });
-        messagesTable.createIndex('timestamp', 'timestamp', { unique: false });
-        messagesTable.createIndex('handle', 'handle', { unique: false });
+        messagesTable.createIndex('handle_time', ['handle', 'time'], { unique: false });
     }
     if (!DB.objectStoreNames.contains(chatsTable)) {
         // create a table (object store) in athe database and add columns(object indices)
@@ -224,4 +223,15 @@ export const saveFile = async (data) => {
             console.error(err);
             return null
         })
+}
+
+
+export const hasMessaged = (handle) => {
+    // range should start from the first
+    const range = IDBKeyRange.lowerBound([handle, 0]);
+
+    return loadDB()
+    .then( DB => 
+        IDBPromise( openTrans(DB, msgsTable).index("handle_time").count(range) )
+    )
 }
