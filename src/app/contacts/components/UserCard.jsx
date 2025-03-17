@@ -211,9 +211,20 @@ const Retry = ({note, retry}) => {
 
 const UserDetails = ({args, closeModal, navId}) => {
     const isOnline = useOnlineStatus();
-    console.log(args.handle)
-    const data = getUserDetails(args.handle, isOnline);
-    data.then(res =>  console.log(res))
+    let data;
+    
+    if (args == true){
+        data = useContext(UserContext);
+        console.log(data);
+        
+    } else {
+        data = getUserDetails(args.id, isOnline)
+        .then( res => {
+            console.log(res)
+            return res.data 
+        })
+    }
+    
     const {name, handle, dp, bio} = data;
 
 
@@ -234,7 +245,7 @@ const UserDetails = ({args, closeModal, navId}) => {
                 <small> {handle} </small>
             </div>
 
-            <Actions id={handle} navId={navId} handle={handle} closeModal={closeModal} />
+            <Actions id={handle} navId={navId} closeModal={closeModal} />
             
             <div>
                 <small> Bio </small>
@@ -261,7 +272,7 @@ const UserDetails = ({args, closeModal, navId}) => {
 }
 
 
-const Actions = ({id, handle, closeModal}) => {
+const Actions = ({id, closeModal}) => {
     const openMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
 
@@ -304,7 +315,7 @@ const Actions = ({id, handle, closeModal}) => {
         closeModal()
         .then(done => {
             if (done){
-                setTimeout(() => openMessaging(handle), 100)
+                setTimeout(() => openMessaging(id), 100)
             }
         })           
         
@@ -324,7 +335,7 @@ const Actions = ({id, handle, closeModal}) => {
         .then(done => {
             console.log(done)
             if (done)
-                toggleOverlay('manage-contact', {NEW: true, handle: handle})
+                toggleOverlay('manage-contact', {NEW: true, id: id})
         })           
     }
 }

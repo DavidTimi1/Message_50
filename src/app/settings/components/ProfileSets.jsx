@@ -45,11 +45,11 @@ export const ProfileBrief = () => {
     )
 
     function editProfile() {
-        toggleOverlay('profile-edit', 1);
+        toggleOverlay('profile-edit', true);
     }
 
     function showUserCard(){
-        toggleOverlay('user-card', 1);
+        toggleOverlay('user-card', true);
     }
 
     function shareProfile(){
@@ -66,7 +66,7 @@ export const ProfileBrief = () => {
 
 export const ProfileEdit = ({ show }) => {
     const title = "Profile Information";
-    const ref = useRef(null),navId = 'profile-edit';
+    const ref = useRef(null), navId = 'profile-edit';
 
     const toggleOverlay = useContext(ToggleOverlay);
     const userDp = useContext(UserContext).dp;

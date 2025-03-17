@@ -72,10 +72,12 @@ export const ContactList = () => {
 
         const el = target.closest(".contact-cont"), clickedMenu = target.closest(".contact-cont .dropdown");
 
+        if (!el) return;
+
         if (clickedMenu){
             // menu was clicked
         } else {
-            toggleOverlay('user-card', true);
+            toggleOverlay('user-card', {id: el.dataset.id});
         }
     }
 

@@ -43,11 +43,11 @@ export const ContactItem = ({data, Message}) => {
     }
 
     function viewContact(){
-        toggleOverlay('user-card', true);
+        toggleOverlay('user-card', {id: handle});
     }
 
     function editContact(){
-        toggleOverlay('manage-contact', {id: id})
+        toggleOverlay('manage-contact', {id: handle})
     }
 }
 

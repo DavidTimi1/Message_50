@@ -42,7 +42,7 @@ export const SettingsPage = () => {
 
         if (locationState === 'edit-profile'){
             navigate('', {replace: true});
-            toggleOverlay('profile-edit', 1);
+            toggleOverlay('profile-edit', true);
         }
 
     }, [locationState])

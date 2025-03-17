@@ -142,10 +142,10 @@ const ChatItem = ({ data, Message }) => {
     function showUserDetails(e) {
         e.stopPropagation();
 
-        const args = handle === "multiple" ? {
-            handle, 
-            receivers: data.receivers
-        } : { handle }
+        const args = {
+            id: handle, 
+            list: handle === "multiple"? data.receivers : false
+        }
 
         toggleOverlay('user-card', args);
     }
