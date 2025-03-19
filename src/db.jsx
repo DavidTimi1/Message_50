@@ -7,6 +7,7 @@ import { once, runOnComplete } from "./utils";
 let DB;
 
 export let loadedDB = false;
+export let DBrestart = false;
 export const dbEvent = 'loadedDatabase';
 export const dbName = 'messages_db';
 
@@ -63,6 +64,8 @@ IDBrequest.onblocked = _ => {
 // if we upgrade (create new database or add or remove columns and overwrie former database)
 IDBrequest.onupgradeneeded = e => {
     DB = e.target.result;
+    DBrestart = true;
+    
     if (e.oldVersion > 0) {
         console.log(
             `Update needed
@@ -122,12 +125,12 @@ IDBrequest.addEventListener('success', e => {
 
     DB = result;
     seedDB(DB)
-        .then(() => {
-            loadedDB = true;
-            
-            dispatchEvent(new Event(dbEvent));
-            console.log("Indexeddb is ready to go!");
-        })
+    .then(() => {
+        loadedDB = true;
+        
+        dispatchEvent(new Event(dbEvent));
+        console.log("Indexeddb is ready to go!");
+    })
 
 });
 

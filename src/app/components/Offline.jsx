@@ -9,6 +9,7 @@ import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../c
 import axiosInstance from "../../auth/axiosInstance.js";
 import { apiHost } from "../../App.jsx";
 import { socketSend } from "./Sockets.js";
+import { UserContext } from "../../contexts.jsx";
 
 
 export const SendMsgsProvider = ({children}) => {
@@ -160,6 +161,7 @@ const deleteMessageFromStore = (id) => {
 
 const useMessageSender = () => {
     const {updateMsgStatus} = useContext( SendMsgContext );
+    const {username} = useContext(UserContext);
 
 
     return {send: run}
@@ -168,7 +170,7 @@ const useMessageSender = () => {
         const {receivers, reply, textContent, time, file, id} = data;
 
         // encrypt data
-        encryptMessage({reply, textContent, time}, file)
+        encryptMessage({reply, textContent, time, handle: username}, file)
     
         .then (async ({encryptedData, iv, encryptedFileData, key}) => {
             
@@ -223,12 +225,10 @@ const useMessageSender = () => {
                     }
     
                     // send all to server / each using websocket
-                    const sent = socketSend("new-message", jsonData)
+                    socketSend("new-message", jsonData)
                     
-                    if (sent){
-                        updateMsgStatus(data.id, true)
-                        return res.id
-                    }
+                    updateMsgStatus(data.id, true)
+                    return data.id
                 }
             })
         })

@@ -7,7 +7,6 @@ import { ChatContext, ToggleOverlay } from './contexts';
 import { NavBar } from "./components/Navbar";
 import { ChatsPage } from "./chats/page";
 import { MediaPage } from "./media/page";
-import { NotificationsPage } from "./notifications/page";
 import { SettingsPage } from "./settings/page";
 import { ContactsPage } from "./contacts/page";
 
@@ -18,7 +17,8 @@ import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket } from "./components/Sockets";
 import { getUserDetails } from "./contacts/lib";
 import { useOnlineStatus } from "./components/Hooks";
-import { hasMessaged } from "../db";
+import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
+import { decryptMessage } from "./crypt";
 
 
 
@@ -41,9 +41,33 @@ export const Msg50App = () => {
 
         socket.addEventListener('message', async (msg) => {
             try {
-                console.log(msg)
-                // const decryptedMsg = await decryptMessage(encryptedMsg);
-                // await storeMessageInDB(decryptedMsg);
+                const json_data = msg.data;
+                const parsed = json_data && JSON.parse(json_data)
+                console.log(parsed.data)
+
+                try {
+                    const {encryptedData, file, iv, key} = parsed.data
+                    const decryptedMsg = await decryptMessage(key, encryptedData, iv);
+                    const fullMsgData = {
+                        id: parsed.id, sent: false,
+                        ...decryptedMsg
+                    }
+                    console.log(fullMsgData)
+                    
+                    loadDB()
+                    .then( DB => (
+                            IDBPromise (
+                                openTrans(DB, msgsTable, 'readwrite')
+                                .put( fullMsgData )
+                            )
+                        )
+                    )
+                    
+
+                } catch (err){
+                    console.log("Error", err)
+                }
+
 
             } catch (error) {
                 console.error('Failed to decrypt or store message:', error);

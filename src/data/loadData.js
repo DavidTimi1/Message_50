@@ -1,5 +1,5 @@
 
-import { openTrans, IDBPromise, msgsTable, contactsTable, chatsTable, offlineMsgsTable } from "../db";
+import { openTrans, IDBPromise, msgsTable, contactsTable, chatsTable, offlineMsgsTable, DBrestart } from "../db";
 
 import msgsData from './messages.json';
 import contactsData from './contacts.json';
@@ -70,6 +70,10 @@ async function loadOffline(DB) {
 
 
 export function seedDB(DB) {
+    if (!DBrestart){
+        return new Promise(res => res())
+    }
+
     return loadChats(DB)
         .then(() => loadContacts(DB))
         .then(() => loadMsgs(DB))

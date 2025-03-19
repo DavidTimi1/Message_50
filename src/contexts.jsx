@@ -6,6 +6,7 @@ import { generateKeyPair } from './app/crypt.js';
 import noDp from './public/Nagi_0.jpg';
 
 import axiosInstance from "./auth/axiosInstance";
+import { DBrestart } from "./db.jsx";
 
 export const UserContext = createContext(null);
 
@@ -27,7 +28,9 @@ export const UserProvider = ({ children, devData }) => {
 			.then( res => {
 				const {dp, public_key} = res.data
 
-				!public_key && setUserKeyPair();
+				if (!public_key || DBrestart) {
+					setUserKeyPair()
+				}
 
 				setUserData({...res.data, dp: dp || noDp})
 			})

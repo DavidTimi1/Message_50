@@ -7,7 +7,7 @@
     },
     {
         "id": 307,
-        "handle": "multiple",
+        "handle": "test3",
         "textContent": "Sent while offline!!",
         "receivers": ["test3"]
     }

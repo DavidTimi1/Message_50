@@ -1,16 +1,20 @@
-import { IDBPromise, loadDB, openTrans } from "../db";
+import { IDBPromise, keysTable, loadDB, openTrans } from "../db";
+
+
+const RSAKeyAlgorithm = {
+    name: "RSA-OAEP",
+    modulusLength: 2048, // Key size
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: { name: "SHA-256" },
+}
+
 
 // Function to generate an RSA private-public key pair
 export async function generateKeyPair() {
     try {
         // Generate RSA key pair
         const keyPair = await window.crypto.subtle.generateKey(
-            {
-                name: "RSA-OAEP",
-                modulusLength: 2048, // Key size
-                publicExponent: new Uint8Array([1, 0, 1]),
-                hash: { name: "SHA-256" },
-            },
+            RSAKeyAlgorithm,
             true, // Extractable (so we can export the keys)
             ["encrypt", "decrypt"]
         );
@@ -38,9 +42,10 @@ async function storePrivateKeyInIndexedDB(privateKey) {
     .then( async (db) => {
         
         const privateKeyData = await window.crypto.subtle.exportKey("pkcs8", privateKey);
+        const privateKeyBuffer = new Uint8Array(privateKeyData);
         const privateKeyObject = {
             id: "privateKey",
-            key: privateKeyData
+            key: privateKeyBuffer
         };
 
         IDBPromise( 
@@ -54,6 +59,37 @@ async function storePrivateKeyInIndexedDB(privateKey) {
         });
 
     })
+}
+
+// Function to get private key from IndexedDB
+async function getPrivateKey() {
+    
+    return loadDB()
+    .then( DB => (
+
+        IDBPromise( 
+            openTrans(DB, keysTable).get("privateKey")
+
+        ).then(async (privateKeyObject) => {
+            const storedKey = privateKeyObject.key;
+
+            const privateKeyData = await window.crypto.subtle.importKey(
+                "pkcs8", 
+                storedKey,
+                {
+                    name: "RSA-OAEP", hash: { name: "SHA-256" },
+                },
+                true, // Extractable (so we can export the keys)
+                ["decrypt"]
+            );
+            return privateKeyData
+
+        }).catch((error) => {
+            throw ("Failed to get private key:", error);
+
+        })
+
+    ))
 }
 
 
@@ -74,6 +110,17 @@ function arrayBufferToBase64(buffer) {
         binary += String.fromCharCode(byte);
     });
     return window.btoa(binary);
+}
+
+// Function to convert Base64 string to ArrayBuffer
+function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
 }
 
 
@@ -154,6 +201,26 @@ export async function encryptJsonData(jsonData, symmetricKey) {
     return { encryptedData, iv };
 }
 
+// Symmetrically decrypt JSON data
+export async function decryptDataToJSON(encryptedb64JSON, b64iv, symmetricKey) {
+    const decoder = new TextDecoder();
+    const encryptedJSON = base64ToArrayBuffer(encryptedb64JSON), iv = base64ToArrayBuffer(b64iv);
+    
+    const jsonData = await window.crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: iv,
+        },
+        symmetricKey,
+        encryptedJSON
+    );
+
+    const decodedData = decoder.decode(jsonData)
+
+    return JSON.parse(decodedData);
+
+}
+
 
 // Encrypt the symmetric key using the server's public key
 export async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
@@ -168,6 +235,30 @@ export async function encryptSymmetricKey(symmetricKey, serverPublicKey) {
     );
 
     return arrayBufferToBase64(encryptedKey);
+}
+
+// Decrypt the symmetric key using the private key
+export async function decryptSymmetricKey(encryptedKey, privateKey) {
+    const decodedKey = base64ToArrayBuffer(encryptedKey);
+    
+    const decryptedKey = await window.crypto.subtle.decrypt(
+        {
+            name: "RSA-OAEP",
+        },
+        privateKey,
+        decodedKey
+    );
+
+    return window.crypto.subtle.importKey(
+        "raw",
+        decryptedKey,
+        {
+            name: "AES-GCM",
+            length: 256,
+        },
+        true,
+        ["encrypt", "decrypt"]
+    );
 }
 
 
@@ -209,6 +300,20 @@ export async function encryptMessage(jsonData, file) {
         key: symmetricKey,
         encryptedFileData
     };
+}
+
+// Full decryption workflow
+export async function decryptMessage(encryptedKey, encryptedJSON, iv, file) {
+    // Step 1: Get user private key
+    const privateKey = await getPrivateKey();
+
+    // Step 2: Decrypt symmetric key (AES)
+    const symmetricKey = await decryptSymmetricKey(encryptedKey, privateKey);
+
+    // Step 3: Decrypt JSON data with the symmetric key
+    const jsonData = await decryptDataToJSON(encryptedJSON, iv, symmetricKey);
+
+    return jsonData;
 }
 
 
@@ -264,28 +369,3 @@ export async function decryptMediaFile(encryptedBuffer, iv, symmetricKey) {
 
     return decryptedBuffer; // ArrayBuffer
 }
-
-
-// Decrypt the symmetric key using the private key
-export async function decryptSymmetricKey(encryptedKey, privateKey) {
-    const decryptedKey = await window.crypto.subtle.decrypt(
-        {
-            name: "RSA-OAEP",
-        },
-        privateKey,
-        encryptedKey
-    );
-
-    return window.crypto.subtle.importKey(
-        "raw",
-        decryptedKey,
-        {
-            name: "AES-GCM",
-            length: 256,
-        },
-        true,
-        ["encrypt", "decrypt"]
-    );
-}
-
-

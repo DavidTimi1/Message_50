@@ -96,7 +96,7 @@ export const Footer = ({previewFile}) => {
         let receivers, file, textContent;
 
         receivers = chatting instanceof Array? chatting : [chatting];
-        textContent = inputRef.current.value;    
+        textContent = inputRef.current.value.trim();    
         file = fileRef.current;
     
         // if user tries to send a message add it to browser's db
