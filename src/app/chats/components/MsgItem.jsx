@@ -10,6 +10,7 @@ import { on, once, timePast } from "../../../utils";
 import { faArrowDown, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getMsg } from '../../../db';
 import { ChatContext } from '../../contexts';
+import StatusIcon from '../../components/status';
 
 
 export const MsgItem = (props) => {
@@ -54,14 +55,9 @@ export const MsgItem = (props) => {
 
                 <small className="timestamp br-1 flex mid-align gap-2">
                     {
-                        sent &&
-
-                        <FontAwesomeIcon icon={
-                            notSent?
-                                faClock
-                            :
-                                faCheckDouble
-                        } />
+                        notSent ? <FontAwesomeIcon icon={faClock} />
+                        :
+                        sent && <StatusIcon statusChar={status} />
                     }
 
                     <TimePast time={time} />
@@ -128,7 +124,6 @@ export const MsgItem = (props) => {
 
 function MsgLink({ id }) {
     const [status, setStatus] = useState(false);
-    // TODO get name and message
 
     useEffect(() => {
         if (!id) return

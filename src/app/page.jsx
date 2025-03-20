@@ -14,7 +14,7 @@ import { More } from "./components/more";
 import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
-import { connectSocket, disconnectSocket } from "./components/Sockets";
+import { connectSocket, disconnectSocket, newMsgEvent } from "./components/Sockets";
 import { getUserDetails } from "./contacts/lib";
 import { useOnlineStatus } from "./components/Hooks";
 import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
@@ -39,42 +39,10 @@ export const Msg50App = () => {
 
         const socket = connectSocket(authenticated);
 
-        socket.addEventListener('message', async (msg) => {
-            try {
-                const json_data = msg.data;
-                const parsed = json_data && JSON.parse(json_data)
-                console.log(parsed.data)
-
-                try {
-                    const {encryptedData, file, iv, key} = parsed.data
-                    const decryptedMsg = await decryptMessage(key, encryptedData, iv);
-                    const fullMsgData = {
-                        id: parsed.id, sent: false,
-                        ...decryptedMsg
-                    }
-                    console.log(fullMsgData)
-                    
-                    loadDB()
-                    .then( DB => (
-                            IDBPromise (
-                                openTrans(DB, msgsTable, 'readwrite')
-                                .put( fullMsgData )
-                            )
-                        )
-                    )
-                    
-
-                } catch (err){
-                    console.log("Error", err)
-                }
-
-
-            } catch (error) {
-                console.error('Failed to decrypt or store message:', error);
-            }
-        });
+        socket.addEventListener('message', handleMessageReceipt);
 
         return disconnectSocket;
+
     }, [authenticated])
 
 
@@ -171,4 +139,47 @@ export const Msg50App = () => {
             return list
         });
     }
+}
+
+
+async function handleMessageReceipt(msgEvent){
+    const json_data = msgEvent.data;
+    const parsed = json_data && JSON.parse(json_data)
+    const type = parsed.type, payload = parsed.data;
+
+    if (['new-message', 'status-change'].includes(type)){
+        let decryptedMsg;
+
+        try {
+            const {encryptedData, fileId, iv, key} = payload.data
+            decryptedMsg = await decryptMessage(key, encryptedData, iv);
+
+        } catch (error) {
+            console.error('Failed to decrypt message:', error);
+        }
+
+        if (type === 'new-message'){
+            const fullMsgData = {
+                id: payload.id, sent: false,
+                ...decryptedMsg
+            }
+            
+            loadDB()
+            .then( DB => (
+                IDBPromise (
+                    openTrans(DB, msgsTable, 'readwrite')
+                    .put( fullMsgData )
+                )
+            ))
+
+            dispatchEvent( new CustomEvent(newMsgEvent, {detail: fullMsgData}) )
+
+        } else {
+
+        }
+
+    }
+
+        
+
 }

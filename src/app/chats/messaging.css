@@ -52,8 +52,16 @@
     }
 
     .instr {
+        transition: .25s;
+        opacity: 0;
         top: 50%;
         transform: translateY(-50%);
+        visibility: hidden;
+    }
+
+    &:hover .instr {
+        opacity: 1;
+        visibility: visible;
     }
 }
 

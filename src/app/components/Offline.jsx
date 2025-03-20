@@ -24,8 +24,7 @@ export const SendMsgsProvider = ({children}) => {
     )
 
 
-    function updateMsgStatus(msgId, status){
-
+    function updateMsgStatus(msgId, status, args){
         // if completely sent remove from list
         // if (status === true){
         //     setMsgsStatus( prev => {
@@ -41,9 +40,19 @@ export const SendMsgsProvider = ({children}) => {
         //     return 
         // }
 
-        setMsgsStatus( prev => 
-            prev.map( msg => msg.id === msgId? {...msg, status} : msg )
-        )
+        setMsgsStatus( prev => {
+            const clone = [...prev];
+            const index = clone.findIndex(msg => msg.id === msgId);
+            const newStatus = {id: msgId, status, args}
+            
+            if (index >= 0){
+                clone.splice(index, 1, newStatus);
+
+            } else {
+                clone.push({id: msgId, status, args})
+            }
+            return clone
+        })
     }
 
 }
@@ -114,7 +123,7 @@ export const useOfflineActivities = () => {
                 }) // send the message
                 .then( () => deleteMessageFromStore(offId) ) // delete after success
                 .then( () => saveMsgInDb(newMsg) ) // save message in db
-                .then( () => updateMsgStatus(offId, {id: msgId, success: true}) ) // set status to sent
+                .then( () => updateMsgStatus(offId, true, {newID: msgId}) ) // set status to sent
                 .catch(_ => console.log("Back to DB"))
 
             }, new Promise(res => res())) // start the chain of promises
@@ -226,8 +235,6 @@ const useMessageSender = () => {
     
                     // send all to server / each using websocket
                     socketSend("new-message", jsonData)
-                    
-                    updateMsgStatus(data.id, true)
                     return data.id
                 }
             })
@@ -260,6 +267,7 @@ const saveMsgInDb = (msgData) => {
                         receivers: undefined,
                         handle: receiver,
                         sent: true,
+                        status: "s"
                     } )
                 )
             )))

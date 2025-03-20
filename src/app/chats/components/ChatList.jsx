@@ -5,8 +5,9 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { ChatContext, SendMsgContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
 import { timePast } from '../../../utils';
-import { chatsTable, offlineMsgsTable, openTrans, loadDB } from '../../../db';
+import { chatsTable, offlineMsgsTable, openTrans, loadDB, getMsg } from '../../../db';
 import { useContactName } from '../../components/Hooks';
+import StatusIcon from '../../components/status';
 
 
 export const ChatList = () => {
@@ -43,7 +44,6 @@ export const ChatList = () => {
             const index = pendingList.findIndex(val => val.id === status.id);
 
             if (index > -1 && status.status?.success) {
-                console.log("yup its me!!!");
 
                 setPendingList(prev => {
                     const clone = [...prev];
@@ -54,11 +54,13 @@ export const ChatList = () => {
                 })
 
                 // get message and add to list to be displayed
-                getChats()
-                    .then(res => {
-                        setChats(res.data);
-                        setPendingList(res.unsent);
+                const newMsgID = status.args?.newID;
+                if (newMsgID){
+                    getMsg(newMsgID)
+                    .then( msg => {
+                        msg && setChats( prev => [...prev, msg] )
                     })
+                }
             }
         }
 
@@ -97,7 +99,7 @@ export const ChatList = () => {
 
 
 const ChatItem = ({ data, Message }) => {
-    const { id, time, handle, textContent, status } = data;
+    const { id, time, handle, textContent, sent, status } = data;
     const name = useContactName(handle);
 
     const toggleOverlay = useContext(ToggleOverlay);
@@ -124,7 +126,10 @@ const ChatItem = ({ data, Message }) => {
                         </small>
                     </div>
                     <div className="flex chat-msg fw" style={{ alignItems: "baseline" }}>
-                        {status}
+                        {
+                            !sent &&
+                            <StatusIcon statusChar={status} />
+                        }
                         <span> {textContent} </span>
                     </div>
                 </div>

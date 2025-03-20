@@ -4,6 +4,9 @@ import { ChatContext, SendMsgContext } from '../contexts';
 
 import { MsgListContext } from './contexts';
 import { getMessages, loadMoreMessages } from './components/Messaging';
+import { getMsg } from "../../db";
+import { newMsgEvent } from "../components/Sockets";
+import { on } from "../../utils";
 
 
 
@@ -23,8 +26,16 @@ export const MsgListProvider = ({children}) => {
 
     useEffect(() => {
         let t_id, ignore = false;
+        const handleEvent = e => {
+            const data = e.detail;
+            if (data.handle !== chatting) return
+
+            setMsgList( prev => [...prev, data])
+        };
 
         if (chatting) {
+    
+            on(newMsgEvent, handleEvent)
 
             getMessages(chatting, viewMsg)
             .then(res => {
@@ -36,9 +47,43 @@ export const MsgListProvider = ({children}) => {
         return () => {
             t_id && clearTimeout(t_id);
             ignore = true;
+            removeEventListener(newMsgEvent, handleEvent)
         }
 
     }, [chatting]);
+
+    
+    useEffect(() => {
+        if (!chatting) return
+
+        // to effect status changes
+        for (let status of msgsStatus) {
+            const index = pendingList.findIndex(val => val.id === status.id);
+
+            if (index > -1 && status.status === true) {
+
+                // get message and add to list to be displayed
+                const newMsgID = status.args?.newID;
+                if (newMsgID){
+                    getMsg(newMsgID)
+                    .then( msg => {
+                        if (msg){
+                            setMsgList( prev => [...prev, msg] )
+                                
+                            setPendingList(prev => {
+                                const clone = [...prev];
+                                clone.splice(index, 1);
+                                return clone
+                            })
+                        }
+                    })
+                }
+                
+            }
+        }
+
+    }, [chatting, msgsStatus]);
+    
 
 
     return (

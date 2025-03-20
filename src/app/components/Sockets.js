@@ -10,6 +10,10 @@ let SOCKET = null;
 const socketHost = "ws://127.0.0.1:5173/ws/chat/";
 
 
+export const newMsgEvent = "message-receipt";
+export const statusChangeEvent = "message-status-change";
+
+
 export function connectSocket(token){
     token = localStorage.getItem('jwt');
 
@@ -51,3 +55,4 @@ export function socketSend(action, payload){
         SOCKET.addEventListener("open", func)
     }
 }
+
