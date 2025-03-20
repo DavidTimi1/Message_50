@@ -4,10 +4,12 @@ import { useContext, useEffect, useRef, useState } from 'react'
 
 import { ChatContext, SendMsgContext, ToggleOverlay } from '../../contexts';
 import { DevMode } from '../../../App';
-import { timePast } from '../../../utils';
-import { chatsTable, offlineMsgsTable, openTrans, loadDB, getMsg } from '../../../db';
+import { on, timePast } from '../../../utils';
+import { chatsTable, offlineMsgsTable, openTrans, loadDB, getMsg, msgsTable } from '../../../db';
 import { useContactName } from '../../components/Hooks';
 import StatusIcon from '../../components/status';
+import { newMsgEvent } from '../../components/Sockets';
+import { UserProfilePic } from '../../contacts/components/ContactItem';
 
 
 export const ChatList = () => {
@@ -16,7 +18,8 @@ export const ChatList = () => {
     const [chats, setChats] = useState([]), initThreshold = 50;
     const [pendingList, setPendingList] = useState([]);
 
-    const compound = [...pendingList, ...chats].sort((prev, next) => prev.time - next.time)
+    const compound = [...pendingList, ...chats].sort((prev, next) => prev.time - next.time);
+    compound.reverse();
 
     const toggleMessaging = useContext(ChatContext).set;
 
@@ -26,14 +29,49 @@ export const ChatList = () => {
 
 
     useEffect(() => {
-        // if (!DevMode){
         getChats(initThreshold)
-            .then(res => {
-                setChats(res.data);
-                setPendingList(res.unsent);
+        .then(res => {
+            setChats(res.data);
+            setPendingList(res.unsent);
 
+        })
+            
+        // for realtime chats updates
+        const handleEvent = e => {
+            const data = e.detail;
+            const pending = data.notSent;
+
+            //  regardless find the index and replace occurences
+            setChats( prev => {
+                const clone = [...prev];
+                const index = clone.findIndex( msg => msg.handle === data.handle);
+
+                if (index > -1 && !pending)
+                    clone.splice(index, 1, data) // replace message
+                else if (!pending)
+                    clone.push(data); // add message
+                else if (index > -1)
+                    clone.splice(index, 1) // remove it
+                    
+                return clone
             })
-        // }
+
+            // admission for only unsent
+            setPendingList( prev => {
+                const clone = [...prev];
+                const index = clone.findIndex( msg => msg.handle === data.handle);
+
+                if (pending && index > -1) // if pending and exists
+                    clone.splice(index, 1, data)
+                else if (pending) // if it doesnt exits
+                    clone.push(data);
+                else if (index > -1) // not pending - remove
+                    clone.splice(index, 1);
+                    
+                return clone
+            })
+        };
+        on(newMsgEvent, handleEvent)
 
     }, []);
 
@@ -113,9 +151,11 @@ const ChatItem = ({ data, Message }) => {
                 </div>
             </div>
             <div className='max mid-align flex gap-3 br-1' style={{ padding: "10px 5px" }} onClick={handleClick}>
-                <div className='dp-img flex' onClick={showUserDetails}>
 
+                <div className='flex' onClick={showUserDetails}>
+                    <UserProfilePic handle={handle} />
                 </div>
+
                 <div className="flex-col details grow gap-1">
                     <div className="flex fw" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
                         <div className="user grow crop-excess" title={name}>
@@ -125,9 +165,9 @@ const ChatItem = ({ data, Message }) => {
                             <TimePast time={time} />
                         </small>
                     </div>
-                    <div className="flex chat-msg fw" style={{ alignItems: "baseline" }}>
+                    <div className="flex chat-msg mid-align fw">
                         {
-                            !sent &&
+                            sent &&
                             <StatusIcon statusChar={status} />
                         }
                         <span> {textContent} </span>
@@ -178,45 +218,49 @@ function getChats(max) {
 
             // check for any chat that has unsent messages starting getting only the last per user
             openTrans(DB, offlineMsgsTable)
-                .openCursor(null, "prev")
-                .onsuccess = e => {
-                    let cursor = e.target.result;
+            .openCursor(null, "prev")
+            .onsuccess = e => {
+                let cursor = e.target.result;
 
-                    if (cursor) {
-                        const { value } = cursor, { handle } = value;
+                if (cursor) {
+                    const { value } = cursor, { handle } = value;
 
+                    if (!done.includes(handle)){
                         unsent.push(value);
                         done.push(handle);
-
-                        i++;
-                        cursor.continue();
-
-                    } else {
-                        // check the messages sent to each person starting from the person last chatted with
-
-                        openTrans(DB, chatsTable)
-                            .openCursor()
-                            .onsuccess = e => {
-                                let cursor = e.target.result;
-
-                                if (cursor && i < max) {
-                                    const { value } = cursor, { handle } = value;
-
-                                    // if the chat has unsent messages, skip
-                                    if (!done.includes(handle)) {
-                                        list.push(value);
-                                    }
-
-                                    i++;
-                                    cursor.continue();
-
-                                } else
-                                    res({
-                                        unsent: unsent,
-                                        data: list
-                                    })
-                            }
                     }
+
+                    cursor.continue();
+
+                } else {
+                    // check the messages sent to each person starting from the person last chatted with
+
+                    openTrans(DB, msgsTable)
+                    .index('handle_time')
+                    .openCursor(null, 'prev')
+                    .onsuccess = e => {
+                        let cursor = e.target.result;
+
+                        if (cursor && i < max) {
+                            const { value } = cursor, { handle } = value;
+
+                            // if the chat has unsent messages, skip
+                            if (!done.includes(handle)) {
+                                list.push(value);
+                                done.push(handle);
+                                i++;
+                            }
+
+                            cursor.continue();
+
+                        } else
+                            res({
+                                unsent: unsent,
+                                data: list
+                            })
+                    }
+                      
                 }
+            }
         }))
 }

@@ -23,6 +23,6 @@ export default function StatusIcon({statusChar}){
             return <></>
     }
 
-    return <FontAwesomeIcon icon={statusIcon} size="lg" style={{margin: ".25rem"}} />
+    return <FontAwesomeIcon icon={statusIcon} size="sm" style={{margin: ".25rem"}} />
     
 }

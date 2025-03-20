@@ -1,11 +1,15 @@
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons"
 import { IconBtn } from "../../../components/Button"
-import { useContext } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { ChatContext, ToggleOverlay } from "../../contexts";
+import { getUserDetails } from "../lib";
+import { useOnlineStatus } from "../../components/Hooks";
+
+import placeholderImg from '../../../user-icon.svg';
 
 
 export const ContactItem = ({data, Message}) => {
-    const {id, name, handle, bio} = data;
+    const {id, name, handle, bio, dp} = data;
 
     const toggleOverlay = useContext(ToggleOverlay);
 
@@ -13,9 +17,9 @@ export const ContactItem = ({data, Message}) => {
     return (
         <div className="contact-cont br-5" data-id={id}>
             <div className="max gap-3 flex mid-align">
-                <div className="dp-img">
-                    {/* TODO */}
-                </div>
+
+                <UserProfilePic handle={handle} dp={dp}  />
+
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>
                     {
@@ -52,3 +56,21 @@ export const ContactItem = ({data, Message}) => {
 }
 
 
+
+export function UserProfilePic({handle, dp}){
+    const isOnline = useOnlineStatus();
+    const [newDp, setDp] = useState(dp);
+
+    useEffect(() => {
+        if(dp) return 
+
+        getUserDetails(handle, isOnline)
+        .then( res => ( setDp( res.success.dp)) )
+
+    }, [dp, handle])
+
+    return(
+        <div className="dp-img" style={{backgroundImage: `url(${newDp || placeholderImg})`}}></div>
+    )
+
+}

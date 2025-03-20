@@ -26,23 +26,26 @@ export const MsgListProvider = ({children}) => {
 
     useEffect(() => {
         let t_id, ignore = false;
+
+        if (!chatting) return;
+
+        getMessages(chatting, viewMsg)
+        .then(res => {
+            setMsgList(res.data)
+            setPendingList(res.unsent)
+        })
+
+        // for realtime messages updates
         const handleEvent = e => {
             const data = e.detail;
-            if (data.handle !== chatting) return
+            if (data.handle !== chatting || !data.notSent) return
 
-            setMsgList( prev => [...prev, data])
+            if (data.notSent)
+                setPendingList(prev => [...prev, data]);
+            else
+                setMsgList( prev => [...prev, data]);
         };
-
-        if (chatting) {
-    
-            on(newMsgEvent, handleEvent)
-
-            getMessages(chatting, viewMsg)
-            .then(res => {
-                setMsgList(res.data)
-                setPendingList(res.unsent)
-            })
-        }
+        on(newMsgEvent, handleEvent)
 
         return () => {
             t_id && clearTimeout(t_id);

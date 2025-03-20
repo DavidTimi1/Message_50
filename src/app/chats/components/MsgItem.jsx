@@ -41,7 +41,7 @@ export const MsgItem = (props) => {
         <div data-id={id} className={`msgcont ${ sent || notSent ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
             <div className="flex-col fw gap-1">
                 <div className="msg-item" ref={itemRef}>
-                    {reply && <MsgLink id={reply}></MsgLink>}
+                    {reply && <MsgLink id={reply} chatting={cur}></MsgLink>}
                     {file && <MsgAttachment />}
 
                     <div style={{ lineHeight: "20px", padding: "1px 5px" }}>
@@ -122,8 +122,9 @@ export const MsgItem = (props) => {
 }
 
 
-function MsgLink({ id }) {
+function MsgLink({ chatting, id }) {
     const [status, setStatus] = useState(false);
+    const { cur, set } = useContext( ChatContext );
 
     useEffect(() => {
         if (!id) return
@@ -153,7 +154,7 @@ function MsgLink({ id }) {
         <>
             {
                 status ?
-                    <button className="no-btn fw" style={{ overflow: "hidden" }}>
+                    <div className="no-btn fw" style={{ overflow: "hidden" }} onClick={showMsg}>
                         <small className="fw flex-col msg-reply gap-1">
                             <div className="crop-excess" style={{ color: "var(--btn-col)" }}>
                                 {status.name}
@@ -162,12 +163,16 @@ function MsgLink({ id }) {
                                 {status.text}
                             </div>
                         </small>
-                    </button>
+                    </div>
                     :
                     <></>
             }
         </>
     )
+
+    function showMsg(){
+        set(cur, id);
+    }
 }
 
 

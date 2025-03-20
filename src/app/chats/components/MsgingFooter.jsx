@@ -14,6 +14,7 @@ import { useOfflineActivities } from '../../components/Offline';
 import { useContactName, useOnlineStatus } from '../../components/Hooks';
 
 import { MsgListContext } from "../contexts";
+import { newMsgEvent } from "../../components/Sockets";
 
 
 
@@ -101,6 +102,7 @@ export const Footer = ({previewFile}) => {
     
         // if user tries to send a message add it to browser's db
         const data = {
+            handle: receivers[0],
             reply,
             receivers,
             textContent,
@@ -110,7 +112,8 @@ export const Footer = ({previewFile}) => {
         let id = await loadDB()
                 .then( DB => IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add(data) ) )
 
-        addNotSent({...data, id:id})
+        // addNotSent({...data, id:id})
+        dispatchEvent( new CustomEvent(newMsgEvent, {detail: {...data, id:id, notSent: true}}) )
 
         isOnline && offloadQueue();
             
