@@ -14,7 +14,7 @@ import { More } from "./components/more";
 import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
-import { connectSocket, disconnectSocket, newMsgEvent } from "./components/Sockets";
+import { connectSocket, disconnectSocket, newMsgEvent, socketSend } from "./components/Sockets";
 import { getUserDetails } from "./contacts/lib";
 import { useOnlineStatus } from "./components/Hooks";
 import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
@@ -40,6 +40,7 @@ export const Msg50App = () => {
         const socket = connectSocket(authenticated);
 
         socket.addEventListener('message', handleMessageReceipt);
+        socketSend("ready")
 
         return disconnectSocket;
 

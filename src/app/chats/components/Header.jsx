@@ -9,6 +9,8 @@ import { UserContext } from "../../../contexts";
 import { useOnlineStatus } from "../../components/Hooks";
 import { ProdName } from "../../../App";
 
+import placeholderImg from '../../../user-icon.svg';
+
 
 export const Header = ({ startSearch }) => {
     const toggleOverlay = useContext(ToggleOverlay);
@@ -22,7 +24,7 @@ export const Header = ({ startSearch }) => {
                 <div className='flex gap-2 mid-align'>
                     <button className="no-btn" type="button" onClick={openNavBar}>
                         <div className='dp-img' style={{
-                                backgroundImage: `url(${userDp})`,
+                                backgroundImage: `url(${userDp || placeholderImg})` ,
                                 width: "35px" 
                             }}
                         />

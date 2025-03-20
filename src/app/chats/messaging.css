@@ -1,6 +1,12 @@
 #chats {
     
     .msglist {
+        padding-bottom: 50px;
+        scrollbar-gutter: stable;
+
+        &.blockscroll {
+            overflow: hidden;
+        }
 
     .banner {
         background-color: light-dark(grey, #333);
@@ -84,15 +90,11 @@
 }
 
 
-.reply-cont,
+.msg-reply,
 .msg-atth {
+    background-color: #22222270;
     border-radius: 0.5rem;
     min-width: 50vw;
-
-    .msg-reply {
-        padding: 5px 10px;
-        border-left: .3rem solid var(--btn-col);
-    }
 
     /* .received & {
         background-color: light-dark( var(--body2-col), var(--head2-col) );
@@ -101,6 +103,11 @@
     .sent & {
         background-color: var(--blue2);
     } */
+}
+
+.msg-reply {
+    padding: 5px 10px;
+    border-left: .3rem solid var(--btn-col);
 }
     
 

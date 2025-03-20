@@ -3,8 +3,6 @@ import { useAuth } from "./auth/ProtectedRoutes";
 import { apiHost, DevMode } from "./App";
 import { generateKeyPair } from './app/crypt.js';
 
-import noDp from './public/Nagi_0.jpg';
-
 import axiosInstance from "./auth/axiosInstance";
 import { DBrestart } from "./db.jsx";
 
@@ -32,7 +30,7 @@ export const UserProvider = ({ children, devData }) => {
 					setUserKeyPair()
 				}
 
-				setUserData({...res.data, dp: dp || noDp})
+				setUserData({...res.data, dp: dp})
 			})
 			.catch((error) => {
 				console.error('Error Loading Data:', error);

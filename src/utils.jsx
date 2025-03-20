@@ -174,7 +174,6 @@ export const progressUpload = (url, upId, progressFunc, data, responseType = "js
 export const standardUnit = (quantity, value) => {
     switch (quantity) {
         case "timestamp":
-            value *= 1000;
             let time = new Date(value);
 
             return {
@@ -266,7 +265,7 @@ export function csrf() {
 }
 
 export function timePast(timestamp) {
-    const data = standardUnit('timestamp', (new Date().getTime() - timestamp) / 1000);
+    const data = standardUnit('timestamp', new Date().getTime() - timestamp);
 
     if (!data) throw Error("Invalid timestamp value");
     let { year, month, day, hr, min } = data;
@@ -285,7 +284,7 @@ export function timePast(timestamp) {
         return `${day} day${day > 1 ? 's' : ''}`
     }
 
-    if (hr)
+    if (--hr)
         return `${hr} hour${hr > 1 ? 's' : ''}`
 
     if (min)

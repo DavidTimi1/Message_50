@@ -14,13 +14,14 @@ import StatusIcon from '../../components/status';
 
 
 export const MsgItem = (props) => {
-    const { details, id, select, blockUp, replyTo } = props;
+    const { details, id, select, replyTo } = props;
     const { reply, file, textContent, sent, time, notSent, status } = details;
 
     const chatContext = useContext( ChatContext ), {cur} = chatContext; 
     const highlightMe = chatContext.id === id, unRequest = () => chatContext.set(cur);
 
     const itemRef = useRef(null), msgElem = useRef(null);
+    select.cur && console.log(select)
 
 
     useEffect(() => {
@@ -88,7 +89,6 @@ export const MsgItem = (props) => {
             if (((disp.x < 30 || disp.y > 10) && !inMotion) || disp.x > 170) return
 
             inMotion = true;
-            blockUp(true);
 
             if (disp.x > 100 && !vibrated) {
                 navigator.vibrate(50);
@@ -100,7 +100,6 @@ export const MsgItem = (props) => {
 
 
         let endMsgTouch = e => {
-            blockUp(false);
             msgItem.classList.remove("no-trans");
 
             let displacement = Math.abs(e.changedTouches[0].clientX - touch.x);
@@ -155,7 +154,7 @@ function MsgLink({ chatting, id }) {
             {
                 status ?
                     <div className="no-btn fw" style={{ overflow: "hidden" }} onClick={showMsg}>
-                        <small className="fw flex-col msg-reply gap-1">
+                        <small className="fw flex-col msg-reply">
                             <div className="crop-excess" style={{ color: "var(--btn-col)" }}>
                                 {status.name}
                             </div>

@@ -109,9 +109,9 @@ function getContacts(){
 
             if (cursor) {
 
-                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name }
+                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name: name ?? handle }
                 
-                let char = name.charAt(0).toUpperCase();
+                let char = (name ?? handle).charAt(0).toUpperCase();
                 char = char.toLowerCase() == char ? '#' : char
 
                 if (!(char in contactsHashTable))
@@ -134,21 +134,3 @@ function getContacts(){
 function sortByName(a, b){
     return ( a.name > b.name ? 1 : a.name == b.name ? 0 : -1 )
 }
-
-// const devContacts = [
-//     {
-//         id: 3,
-//         name: "Jacob",
-//         handle: "@Jayjay",
-//     },
-//     {
-//         id: 7,
-//         name: "John",
-//         handle: "@J_ohn",
-//     },
-//     {
-//         id: 30,
-//         name: "John, Peace",
-//         handle: "multiple",
-//     },
-// ]

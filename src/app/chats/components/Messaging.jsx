@@ -10,7 +10,7 @@ import { openTrans, getMsg, msgsTable, offlineMsgsTable, loadDB } from '../../..
 import { DevMode } from '../../../App';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faCircleInfo, faCopy, faFile, faShare, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faArrowDown, faCircleInfo, faCopy, faFile, faShare, faTentArrowsDown, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import { MsgItem } from './MsgItem';
 import { Footer } from './MsgingFooter';
@@ -162,7 +162,6 @@ export default function MsgInterface() {
     function toggleSelection(id) {
         if (!id) return
 
-        id = int(id);
         let curSelection = select ?? [];
 
         setState(prevState => {
@@ -284,26 +283,16 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
 
 
 const MsgList = ({ selected, toggleSelect, chatting }) => {
-    const listElem = useRef();
+    const listElem = useRef(), bottomBtn = useRef();
 
     const { replyTo, cur, pending } = useContext( MsgListContext ), msgList = cur, pendingList = pending;
-    // const viewMsg = useContext( ChatContext ).id;
 
     const selectOn = Boolean(selected.length);
 
-    // const isLoaded = Boolean(msgList.length);
-
-    // useEffect(() => {
-    //     if (isLoaded && viewMsg) {
-    //         showRequested();
-    //     }
-
-    // }, [isLoaded, viewMsg])
-
-
     return (
-        <div className={`${styles.content} msglist fw grow custom-scroll`}
+        <div className={`${styles.content} ${selectOn? 'blockscroll' : ''} msglist fw grow custom-scroll`}
             onContextMenu={handleContextMenu}
+            onScroll={handleScroll}
             onClick={handleClick}
             ref={listElem}
         >
@@ -327,7 +316,6 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
                             details={msg}
                             replyTo={replyTo}
-                            blockUp={blockUp}
                         />
                     )
                 })
@@ -344,12 +332,15 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
                             details={{...msg, notSent: true, sent: true}}
                             replyTo={replyTo}
-                            blockUp={blockUp}
                         />
                     )
                 })
 
             }
+
+            <div className='flex' ref={bottomBtn} style={{position: "sticky", bottom: "-20px", justifyContent: "flex-end"}}>
+                <IconBtn icon={faArrowDown} onClick={scrollToBtm} bg="var(--body-col)" />
+            </div>
 
         </div>
     )
@@ -375,20 +366,18 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
         }
     }
 
-
-    function blockUp(bool) {
-        if (bool) {
-            if (listElem.scrollHeight !== listElem.clientHeight) // if there is a scrollbar
-                listElem.classList.add("blockscroll");
-        }
+    function scrollToBtm(){
+        listElem.current.scrollTop = listElem.current.scrollHeight;
     }
 
-    // function showRequested(){
-    //     const elem = $("q.requested", listElem.current);
-    //     console.log(elem);
-        
-    //     elem && elem.scrollIntoView({ behaviour: "smooth", inline: "start" });
-    // }
+    function handleScroll(e){
+        if (listElem.current.scrollHeight - (listElem.current.scrollTop + listElem.current.clientHeight) < 30){
+            bottomBtn?.current?.classList?.add("disappear");
+
+        } else {
+            bottomBtn?.current?.classList?.remove("disappear");
+        }
+    }
 
 }
 

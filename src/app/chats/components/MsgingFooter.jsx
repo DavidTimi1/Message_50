@@ -113,7 +113,9 @@ export const Footer = ({previewFile}) => {
                 .then( DB => IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add(data) ) )
 
         // addNotSent({...data, id:id})
-        dispatchEvent( new CustomEvent(newMsgEvent, {detail: {...data, id:id, notSent: true}}) )
+        dispatchEvent( new CustomEvent(newMsgEvent, {detail: {
+            ...data, id, notSent: true, time: new Date().getTime()
+        }}) )
 
         isOnline && offloadQueue();
             

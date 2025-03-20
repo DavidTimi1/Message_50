@@ -29,7 +29,7 @@ export const Blocked = ({isActive, toggleActive}) => {
                                     {
                                         blocked.map( user =>
                                             <li key={user.handle}>
-                                                <button className="fw">{user.name}</button>
+                                                <button className="fw">{User.username}</button>
                                             </li>
                                         )
                                     }

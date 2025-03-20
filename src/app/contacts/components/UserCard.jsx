@@ -2,7 +2,7 @@
 "use strict";
 import './UserCard.css';
 
-import { Suspense, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconBtn, Button } from "../../../components/Button";
@@ -13,10 +13,12 @@ import { useNavigate } from 'react-router-dom';
 import { useOnlineStatus } from '../../components/Hooks';
 import { getUserDetails } from '../lib';
 
+import placeholderImg from '../../../user-icon.svg';
+
 
 
 export const UserCard = ({ show, args }) => {
-    const [err, setError] = useState("An error occured.");
+    const [err, setError] = useState();
     
     const { pushState, removeState } = useContext( StateNavigatorContext );
 
@@ -90,18 +92,11 @@ export const UserCard = ({ show, args }) => {
                     <div className="custom-scroll grow fw" ref={contentRef} onClick={
                         e => e.stopPropagation()
                     }>
-                        {/* <div className="x flex">
-                            <IconBtn icon={faXmark} onClick={close}>
-                                <span className="sr-only"> Close </span>
-                            </IconBtn>
-                        </div> */}
                         {
                             err?
                                 <Retry note={err} retry={retry} />
                             :
-                                <Suspense fallback={<LoadingDetails />}>
-                                    <UserDetails navId={navId} closeModal={handleCloseClick} args={args} />
-                                </Suspense>
+                                <UserDetails navId={navId} closeModal={handleCloseClick} args={args} showError={setError} />
                         }
                     </div>
                 </div>
@@ -209,65 +204,71 @@ const Retry = ({note, retry}) => {
 }
 
 
-const UserDetails = ({args, closeModal, navId}) => {
+const UserDetails = ({args, closeModal, navId, showError}) => {
     const isOnline = useOnlineStatus();
-    let data;
-    
-    if (args == true){
-        data = useContext(UserContext);
-        console.log(data);
-        
-    } else {
-        data = getUserDetails(args.id, isOnline)
-        .then( res => {
-            console.log(res)
-            return res.data 
+    const [data, setData] = useState(args === true? useContext(UserContext) : undefined);
+
+    useEffect(() => {
+        if (data) return;
+
+        getUserDetails(args.id, isOnline)
+        .then( async res => {
+            if (res.success){
+                setTimeout( () => setData(res.data), 1000 )
+                
+            } else
+            showError(res.error)
         })
-    }
+        .catch(_ => showError("An error occured"))
+
+    }, [isOnline]);
     
-    const {name, handle, dp, bio} = data;
+    const {name, handle, username, dp, bio} = data || {};
 
 
     return (
-        <div className="body fw flex-col gap-4">
-            <div className="mx-auto thmb">
-                <div className="img-dp" style={{width: "150px"}}>
-                    <img src={dp} alt='user profile picture' className="max" />
-                </div>
-                <div className="abs">
-                    <div className="dp-img" style={{width: "20px", backgroundColor: "var(--btn-col)"}}>
+        data ?
+            <div className="body fw flex-col gap-4">
+                <div className="mx-auto thmb">
+                    <div className="img-dp" style={{width: "150px"}}>
+                        <img src={dp ?? placeholderImg} alt='user profile picture' className="max" />
+                    </div>
+                    <div className="abs">
+                        <div className="dp-img" style={{width: "20px", backgroundColor: "var(--btn-col)"}}>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className='flex-col mx-auto'>
-                <span className="fs-3 fw-800"> {name} </span>
-                <small> {handle} </small>
-            </div>
+                <div className='flex-col mx-auto'>
+                    <span className="fs-3 fw-800"> {name} </span>
+                    <small> {args === true? username : handle} </small>
+                </div>
 
-            <Actions id={handle} navId={navId} closeModal={closeModal} />
-            
-            <div>
-                <small> Bio </small>
-                <div className="fs-5 fw-200">
-                    { bio }
+                <Actions id={handle} navId={navId} closeModal={closeModal} />
+                
+                <div>
+                    <small> Bio </small>
+                    <div className="fs-5 fw-200">
+                        { bio }
+                    </div>
+                </div>
+
+                <div> <hr></hr> </div>
+                
+                <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
+                    <label className="flex mid-align gap-3">
+                        <FontAwesomeIcon icon={faEraser} size="lg" />
+                        <span> Clear Chats with {name} </span>
+                    </label>
+                    
+                    <label className="flex mid-align gap-3 fs-5">
+                        <FontAwesomeIcon icon={faFlag} size="lg" />
+                        <span> Report {name} </span>
+                    </label>
                 </div>
             </div>
-
-            <div> <hr></hr> </div>
-            
-            <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
-                <label className="flex mid-align gap-3">
-                    <FontAwesomeIcon icon={faEraser} size="lg" />
-                    <span> Clear Chats with {name} </span>
-                </label>
-                
-                <label className="flex mid-align gap-3 fs-5">
-                    <FontAwesomeIcon icon={faFlag} size="lg" />
-                    <span> Report {name} </span>
-                </label>
-            </div>
-        </div>
+            :
+            <LoadingDetails />
     )
 }
 
@@ -324,7 +325,6 @@ const Actions = ({id, closeModal}) => {
     function editContact(){
         closeModal()
         .then(done => {
-            console.log(done)
             if (done)
                 toggleOverlay('manage-contact', {NEW: false, id: id})
         })
@@ -333,7 +333,6 @@ const Actions = ({id, closeModal}) => {
     function saveContact(){
         closeModal()
         .then(done => {
-            console.log(done)
             if (done)
                 toggleOverlay('manage-contact', {NEW: true, id: id})
         })           
@@ -342,8 +341,8 @@ const Actions = ({id, closeModal}) => {
 
 
 const LoadingDetails = () => (
-    <div className="flex align-center gap-3">
-        <FontAwesomeIcon icon={faSpinner} size="2xl" spin />
+    <div className="flex align-center gap-3" style={{justifyContent: "center"}}>
+        <FontAwesomeIcon icon={faSpinner} size="xl" spin />
         <span>
             Loading ...
         </span>

@@ -6,6 +6,8 @@ import { faAngleLeft, faCamera, faNoteSticky, faPencil, faShare, faUser } from "
 import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import placeholderImg from '../../../user-icon.svg';
+
 
 
 export const ProfileBrief = () => {
@@ -18,12 +20,12 @@ export const ProfileBrief = () => {
         <div className="settings-sec fw br-5">
             <div className="flex mid-align gap-2">
                 <button className="no-btn flex mid-align grow gap-4" onClick={showUserCard}>
-                    <div className="dp-img" style={{ width: "70px", backgroundImage: `url(${User.dp})`, backgroundSize: "cover" }}>
+                    <div className="dp-img" style={{ width: "70px", backgroundImage: `url(${User.dp || placeholderImg})`, backgroundSize: "cover" }}>
                     </div>
                     <div className="grow">
-                        <div className="flex-col mid-align">
-                            <div className="left-text"> {User.name} </div>
-                            <small className="fw crop-excess"> {User.handle} </small>
+                        <div className="flex-col">
+                            <div className="left-text"> {User.username} </div>
+                            <small className="fw crop-excess"> {User.email} </small>
                         </div>
                     </div>
                 </button>
@@ -54,9 +56,9 @@ export const ProfileBrief = () => {
 
     function shareProfile(){
         const shareData = {
-            title: `${User.name}'s profile`,
+            title: `${User.username}'s profile`,
             text: "You can contact me on this quick and secure messaging platform",
-            url: `https://localhost:3000/users/${User.handle.slice(1)}`
+            url: `https://localhost:3000/users/${User.username}`
         }
 
         navigator.share(shareData)
@@ -131,7 +133,7 @@ export const ProfileEdit = ({ show }) => {
                 <form method="post" action="" className="fw pad grow">
                     <div className="mx-auto thmb">
                         <div className="img-dp" style={{width: "150px"}} >
-                            <img src={dp} alt="user profile picture" className="max" />
+                            <img src={dp ?? placeholderImg} alt="user profile picture" className="max" />
                         </div>
                         <div className='abs'>
                             <DPBtn setProfile={setProfile} />
@@ -188,14 +190,14 @@ const DPBtn = ({setProfile}) => {
 
 
 const ProfileForm = () => {
-    const { name, bio } = useContext(UserContext);
+    const { username, bio } = useContext(UserContext);
     const nameRef = useRef(null), bioRef = useRef(null);
 
     useEffect(() => {
-        nameRef.current.value = name;
+        nameRef.current.value = username;
         bioRef.current.value = bio;
 
-    }, [bio, name])
+    }, [bio, username])
 
     useEffect(() => {
         let f;

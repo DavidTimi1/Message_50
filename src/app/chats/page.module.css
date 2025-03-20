@@ -38,10 +38,5 @@
         padding: 10px;
         overflow: hidden auto;
         scroll-behavior: smooth;
-
-        &.blockscroll {
-            overflow: hidden;
-            padding-right: 5px;
-        }
     }
 }

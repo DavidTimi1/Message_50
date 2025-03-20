@@ -162,11 +162,10 @@
     height: 0;
 }
 
-
 .custom-scroll::-webkit-scrollbar {
     appearance: none;
     background-color: inherit;
-    width: 2px;
+    width: 3px;
 }
 
 
@@ -188,7 +187,7 @@
     .custom-scroll::-webkit-scrollbar {
         appearance: none;
         background-color: inherit;
-        width: 7px;
+        width: 8px;
     }
 
 }

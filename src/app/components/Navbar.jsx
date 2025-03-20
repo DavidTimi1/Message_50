@@ -9,6 +9,7 @@ import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMo
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IconBtn } from "../../components/Button.jsx";
+import { UserProfilePic } from "../contacts/components/ContactItem.jsx";
 
 
 export function NavBar({ open }) {
@@ -47,9 +48,10 @@ export function NavBar({ open }) {
                     <div className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw">
                             <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
-                                <div className='dp-img' style={{backgroundImage: `url(${User.dp})`}}>
-                                </div>
-                                <div> Hi, {User.name} </div>
+                                
+                                <UserProfilePic dp={User.dp} handle={User.username} />
+                                
+                                <div> Hi, {User.username} </div>
                             </button>
                         </div>
                         <div className="fw">

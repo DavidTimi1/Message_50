@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { timePast } from "../../../utils";
 import { useContactName } from "../../components/Hooks";
+import { UserProfilePic } from "../../contacts/components/ContactItem";
+import StatusIcon from "../../components/status";
 
 
 
@@ -24,8 +26,8 @@ export const MsgResultItem = ({ data }) => {
                             <TimeBadge time={time} />
                         </small>
                     </div>
-                    <div className="flex chat-msg fw" style={{ alignItems: "baseline" }}>
-                        {status}
+                    <div className="flex chat-msg fw mid-align" style={{ alignItems: "baseline" }}>
+                        <StatusIcon statusChar={status} />
                         <span> {textContent} </span>
                     </div>
                 </div>
@@ -36,15 +38,14 @@ export const MsgResultItem = ({ data }) => {
 
 
 export const ContactResultItem = ({data}) => {
-    const {id, name, handle, bio} = data;
+    const {id, name, handle, bio, dp} = data;
 
 
     return (
         <div className="contact-res br-5" data-user={id}>
             <div className="max gap-3 flex mid-align">
-                <div className="dp-img">
-                    {/* TODO */}
-                </div>
+                <UserProfilePic dp={dp} handle={handle} />
+
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>
                     {
