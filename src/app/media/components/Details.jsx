@@ -1,7 +1,11 @@
 
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useContext, useEffect } from "react";
+import { SendMsgContext } from "../../contexts";
+import axiosInstance from "../../../auth/axiosInstance";
+import { apiHost } from "../../../App";
+import { decryptMediaFile } from "../../crypt";
 
 
 
@@ -144,3 +148,43 @@ export const Details = forwardRef((props, ref) => {
         </div>
     )
 })
+
+
+export function useFileDownload(){
+    const {updateMsgStatus}  = useContext(SendMsgContext);
+
+    return {download}
+
+
+    async function download(src, key, id){
+        if (!src) return
+
+        const mediaDownloadUrl = apiHost + "/chat/api/media/" + src;
+
+        // get media metadata
+        const metadata = await axiosInstance.get( `${mediaDownloadUrl}?metadata`, {
+            withCredentials: true,
+        }).then(response => response.data )
+
+        // get media metadata
+        await axiosInstance.get( mediaDownloadUrl, {
+            responseType: 'arraybuffer',
+            withCredentials: true,
+            onDownloadProgress: (progressEvent) => {
+                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                updateMsgStatus(id, progress / 100, undefined, "download");
+            }
+        }).then(async response => {
+            const arraybuffer = response.data;
+            const {type, iv, name} = metadata;
+            const fileData = await decryptMediaFile(arraybuffer, iv, key);
+
+            const blob = new Blob([fileData], {type});
+            const file = new File([blob], name ?? "file", {type});
+            console.log(file)
+
+            updateMsgStatus(id, true, undefined, "download");
+        })
+    }
+    
+}

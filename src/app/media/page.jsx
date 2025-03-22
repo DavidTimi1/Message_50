@@ -13,6 +13,8 @@ import { OthersList } from './components/Files';
 import { Heading } from './components/Heading';
 import { useNavigate } from 'react-router-dom';
 import { filesTable, loadDB, openTrans } from '../../db';
+import { faFile, faImage, faMicrophone, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const viewName = "Storage and Media";
@@ -127,7 +129,29 @@ export const MediaPage = () => {
 
 
 
+export function TextualFile({fileInfo}){
+    if (!fileInfo) return <></>
 
+    const fileType = fileInfo.metadata.type;
+    let JSXFrag;
+
+    switch(fileType){
+        case "image": JSXFrag = <small> <FontAwesomeIcon icon={faImage} size="sm" /> Photo </small>
+        break;
+        
+        case "video": JSXFrag = <small> <FontAwesomeIcon icon={faVideo} size="sm" /> Video </small>
+        break;
+        
+        case "audio": JSXFrag = <small> <FontAwesomeIcon icon={faMicrophone} size="sm" /> Audio </small>
+        break;
+        
+        default: JSXFrag = <small> <FontAwesomeIcon icon={faFile} size="sm" /> File </small>
+        break;
+    }
+
+    return JSXFrag
+
+}
 
 
 function MediaNav({ active, goTo }) {
@@ -158,7 +182,6 @@ function MediaNav({ active, goTo }) {
         )
     }
 }
-
 
 
 async function getFilesByType(type, limit = 50) {

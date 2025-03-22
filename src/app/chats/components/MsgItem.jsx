@@ -7,10 +7,11 @@ import { IconBtn } from "../../../components/Button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
 
-import { faArrowDown, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faArrowUp, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { dbName, getFile, getMsg, IDBPromise } from '../../../db';
 import { ChatContext, SendMsgContext } from '../../contexts';
 import StatusIcon from '../../components/status';
+import { useFileDownload } from '../../media/components/Details';
 
 
 export const MsgItem = (props) => {
@@ -175,9 +176,10 @@ function MsgLink({ chatting, id }) {
 }
 
 
-function MsgAttachment({id, fileInfo, loadType, status }) {
-    const {fileId, src, metadata} = fileInfo;
-    const uuid = loadType + 'load_' + id;  // id for tracking updates
+function MsgAttachment({msgId, fileInfo, loadType, status }) {
+    const {fileId, src, metadata, key} = fileInfo;
+    const uuid = loadType + 'load_' + msgId;  // id for tracking updates
+    const fileDownloader = useFileDownload();
 
     const [file, setFile] = useState();
 
@@ -219,10 +221,11 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
     switch (type) {
         case 'image': {
             Frag =
-                <div className="img-cont max-child">
+                localUrl?
+                <div className="img-cont max">
                     <img src={localUrl} alt="" />
                     <div className="dropdown">
-                        <button data-bs-toggle="dropdown" aria-expanded="false">
+                        <button className="no-btn" data-bs-toggle="dropdown" aria-expanded="false">
                             <FontAwesomeIcon icon={faEllipsisVertical} />
                         </button>
 
@@ -230,13 +233,11 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
                             <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
                         </ul>
                     </div>
-                    {
-                        !localUrl &&
-                        <>
-                            <img className="timg" alt="" />
-                            <LoadVeil loadProgress={loadProgress} loadType={loadType} />
-                        </>
-                    }
+                </div>
+                :
+                <div className="img-cont max">
+                    <img className="timg fw" style={{aspectRatio: "1/1", backgroundColor: "grey"}} alt="" />
+                    <LoadVeil size={size} loadProgress={loadProgress} loadType={loadType} handleClick={handleIconClick} />
                 </div>
             break;
         }
@@ -251,17 +252,17 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
                                 <FontAwesomeIcon icon={faCirclePause} size='xl' />
                             </button>
                             :
-                            <button className="no-btn p-but">
+                            <button className="no-btn">
                                 {
-                                    status === false ?
-                                    <FontAwesomeIcon icon={faCircleArrowDown} size="xl" className="down-icon" aria-label="Click to download audio" />
+                                    loadProgress === undefined ?
+                                    <FontAwesomeIcon icon={faArrowDown} size="xl" className="down-icon" aria-label="Click to download audio" />
                                     :
-                                    <span className="hide block">
+                                    <div className="fw">
                                         <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" stroke-width="7px" stroke-linecap="round"></circle>
+                                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
                                         </svg>
                                         <FontAwesomeIcon icon={faXmark} size="xl" className="down-icon" aria-label="Click to download audio" />
-                                    </span>
+                                    </div>
                                 }
                             </button>
                     }
@@ -278,24 +279,27 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
         }
         case 'video': {
             Frag =
-            <div className="vid-cont max-child">
-                <video src={localUrl}></video>
-                <FontAwesomeIcon icon={faCirclePlay} className='abs-mid' size="2xl" />
-
-                <div className="dropdown">
-                    <button className='abs-mid' data-bs-toggle="dropdown" aria-expanded="false">
-                        <FontAwesomeIcon icon={faEllipsisVertical} size="2xl" />
-                    </button>
-
-                    <ul className="dropdown-menu">
-                        <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
-                    </ul>
-                </div>
+            <div className="vid-cont max">
                 {
-                    !localUrl &&
+                    localUrl ?
                     <>
-                        <img alt="" className="timg" src="" />
-                        <LoadVeil loadProgress={loadProgress} loadType={loadType} />
+                    <video src={localUrl}></video>
+                    <FontAwesomeIcon icon={faCirclePlay} className='abs-mid' size="2xl" />
+
+                    <div className="dropdown">
+                        <button  className="no-btn abs-mid" data-bs-toggle="dropdown" aria-expanded="false">
+                            <FontAwesomeIcon icon={faEllipsisVertical} size="2xl" />
+                        </button>
+
+                        <ul className="dropdown-menu">
+                            <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
+                        </ul>
+                    </div>
+                    </>
+                    :
+                    <>
+                        <img className="timg fw" style={{aspectRatio: "1/1", backgroundColor: "grey"}} alt="" />
+                        <LoadVeil size={size} loadProgress={loadProgress} loadType={loadType}  handleClick={handleIconClick} />
                     </>
                 }
             </div>
@@ -310,7 +314,7 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
                             <>
                                 <div className="icon">
                                     <div aria-hidden="true">
-                                        <FontAwesomeIcon icon={faFile} size="xl" />
+                                        <FontAwesomeIcon icon={faFile} />
                                     </div>
                                 </div>
                                 <div className="flex-col fw" style={{ margin: "0 10px" }}>
@@ -326,8 +330,8 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
                                     </div>
                                 </div>
                                 <div className="dropdown abs">
-                                    <button data-bs-toggle="dropdown" aria-expanded="false">
-                                        <FontAwesomeIcon icon={faEllipsisVertical} size="2xl" />
+                                    <button className="no-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <FontAwesomeIcon icon={faEllipsisVertical} size="xl" />
                                     </button>
 
                                     <ul className="dropdown-menu">
@@ -337,28 +341,28 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
                             </>
                             :
                             <>
-                                <div className="file-icon">
+                                <div className="icon">
                                     {
-                                        status === false ?
-                                            <button aria-label="Click to download file">
-                                                <FontAwesomeIcon icon={faArrowDown} className='down-icon' />
+                                        loadProgress === undefined ?
+                                            <button className="no-btn" aria-label="Click to download file">
+                                                <FontAwesomeIcon icon={faArrowDown} />
                                             </button>
                                             :
                                             <div>
                                                 <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                                                    <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" stroke-width="7px" stroke-linecap="round"></circle>
+                                                    <circle cx="25px" cy="25px" r="20px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
                                                 </svg>
 
-                                                <button className='abs-mid' aria-label="Click to download file">
+                                                <button  className="no-btn mid-align" aria-label="Click to download file">
                                                     <FontAwesomeIcon icon={faXmark} className='down-icon' />
                                                 </button>
                                             </div>
                                     }
                                 </div>
-                                <div className="file-details flex-col">
+                                <div className="flex-col">
                                     <div>{name}</div>
-                                    <div className="file-details-down fw">
-                                        <small className="dets">
+                                    <div className="fw">
+                                        <small className="meta">
                                             <span>{size}</span>
                                             <span>•</span>
                                             <span>{ext}</span>
@@ -375,13 +379,19 @@ function MsgAttachment({id, fileInfo, loadType, status }) {
     return (
         <div className="msg-atth fw">
             {
-                file === undefined?
+                !localUrl && !src?
                 <div className='fw' style={{aspectRatio: "1/1", backgroundColor: "grey"}}></div>
                 :
                 Frag
             }
         </div>
     )
+
+    function handleIconClick(){
+        if (loadType === "down"){
+            fileDownloader.download(src, key, uuid)
+        }
+    }
 }
 
 
@@ -396,27 +406,33 @@ function TimePast({ time }) {
 
 }
 
-function LoadVeil({ loadType, loadProgress, handleClick }) {
+function LoadVeil({ loadType, size, loadProgress, handleClick }) {
 
-    <div className="veil max-child">
-        <div className="abs-mid">
-            {
-                loadProgress !== false ?
+    return (
+        <div className="veil max flex mid-align" style={{justifyContent: "center"}}>
+            <div className="">
+                {
+                loadProgress !== undefined ?
 
                     <div onClick={_ => handleClick("cancel")}>
                         <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" stroke-width="7px" stroke-linecap="round"></circle>
+                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" strokeWidth="7px" strokeLinecap="round"></circle>
                         </svg>
 
                         <button className='abs-mid ds' aria-label="Click to download file">
-                            <FontAwesomeIcon icon={faXmark} className='down-icon' />
+                            <FontAwesomeIcon icon={faXmark} />
                         </button>
                     </div>
                     :
-                    <button aria-label="Click to download file">
-                        <FontAwesomeIcon icon={faArrowDown} className='down-icon' />
-                    </button>
-            }
+
+                    <label> {/* To capture clicks on the label too */}
+                        <IconBtn onClick={handleClick} icon={loadType == 'up'? faArrowUp : faArrowDown} size="xl" />
+                        <span> {size} </span>
+
+                    </label>
+                }
+            </div>
         </div>
-    </div>
+    )
 }
+
