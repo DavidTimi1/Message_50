@@ -73,6 +73,10 @@ export const ChatList = () => {
         };
         on(newMsgEvent, handleEvent)
 
+        return ()=> {
+            removeEventListener(newMsgEvent, handleEvent)
+        }
+
     }, []);
 
 
@@ -137,7 +141,7 @@ export const ChatList = () => {
 
 
 const ChatItem = ({ data, Message }) => {
-    const { id, time, handle, textContent, sent, status } = data;
+    const { id, time, handle, textContent, sent, file, status } = data;
     const name = useContactName(handle);
 
     const toggleOverlay = useContext(ToggleOverlay);
@@ -169,6 +173,9 @@ const ChatItem = ({ data, Message }) => {
                         {
                             sent &&
                             <StatusIcon statusChar={status} />
+                        }
+                        {
+                            file && <small> File </small>
                         }
                         <span> {textContent} </span>
                     </div>

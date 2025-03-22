@@ -23,8 +23,9 @@ import { SignIn } from './sign-in/page';
 
 
 export const ProdName = "Message50";
-export const DevMode = true;
-export const apiHost = "http://localhost:5173";
+export const DevMode = import.meta.env.MODE === 'development';
+
+export const apiHost = DevMode? "http://localhost:5173" : process.env.BACKEND_HOST;
 
 
 export const Msg50 = () => {

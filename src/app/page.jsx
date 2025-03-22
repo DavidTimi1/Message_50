@@ -40,9 +40,12 @@ export const Msg50App = () => {
         const socket = connectSocket(authenticated);
 
         socket.addEventListener('message', handleMessageReceipt);
-        socketSend("ready")
+        setTimeout(()=> {socketSend("ready")}, 2000);
 
-        return disconnectSocket;
+        return () => {
+            socket.removeEventListener('message', handleMessageReceipt)
+            disconnectSocket();
+        }
 
     }, [authenticated])
 
@@ -152,18 +155,21 @@ async function handleMessageReceipt(msgEvent){
         let decryptedMsg;
 
         try {
-            const {encryptedData, fileId, iv, key} = payload.data
+            const {encryptedData, iv, key} = payload.data
             decryptedMsg = await decryptMessage(key, encryptedData, iv);
 
         } catch (error) {
             console.error('Failed to decrypt message:', error);
+            return
+
         }
 
         if (type === 'new-message'){
             const fullMsgData = {
-                id: payload.id, sent: false,
+                id: payload.id, sent: false, file: payload.data.file,
                 ...decryptedMsg
             }
+            console.log(fullMsgData)
             
             loadDB()
             .then( DB => (

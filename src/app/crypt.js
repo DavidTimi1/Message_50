@@ -303,7 +303,7 @@ export async function encryptMessage(jsonData, file) {
 }
 
 // Full decryption workflow
-export async function decryptMessage(encryptedKey, encryptedJSON, iv, file) {
+export async function decryptMessage(encryptedKey, encryptedJSON, iv) {
     // Step 1: Get user private key
     const privateKey = await getPrivateKey();
 
@@ -353,7 +353,7 @@ export async function encryptMediaFile(file, symmetricKey) {
         arrayBuffer
     );
 
-    return { encryptedBuffer, iv };
+    return { data: encryptedBuffer, iv };
 }
 
 

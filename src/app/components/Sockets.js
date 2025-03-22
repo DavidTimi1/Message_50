@@ -4,10 +4,11 @@
 // add received message to msgs and chat lists
 // receive socket message when user goes off or online
 
+import { apiHost } from "../../App";
+
 
 // Connect to socket server
 let SOCKET = null;
-const socketHost = "ws://127.0.0.1:5173/ws/chat/";
 
 
 export const newMsgEvent = "message-receipt";
@@ -15,6 +16,8 @@ export const statusChangeEvent = "message-status-change";
 
 
 export function connectSocket(token){
+    const socketHost = `ws${apiHost.slice(4)}/ws/chat/`;
+
     token = localStorage.getItem('jwt');
 
     if (!token) {
