@@ -7,6 +7,7 @@ import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import placeholderImg from '../../../user-icon.svg';
+import { apiHost } from "../../../App";
 
 
 
@@ -58,7 +59,7 @@ export const ProfileBrief = () => {
         const shareData = {
             title: `${User.username}'s profile`,
             text: "You can contact me on this quick and secure messaging platform",
-            url: `https://localhost:3000/users/${User.username}`
+            url: `${apiHost}/users/${User.username}`
         }
 
         navigator.share(shareData)

@@ -38,7 +38,7 @@ export const MsgListProvider = ({children}) => {
         // for realtime messages updates
         const handleEvent = e => {
             const data = e.detail;
-            if (data.handle !== chatting || !data.notSent) return
+            if (data.handle !== chatting) return
 
             if (data.notSent)
                 setPendingList(prev => [...prev, data]);

@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
 
 import { faArrowDown, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { getMsg } from '../../../db';
-import { ChatContext } from '../../contexts';
+import { dbName, getFile, getMsg, IDBPromise } from '../../../db';
+import { ChatContext, SendMsgContext } from '../../contexts';
 import StatusIcon from '../../components/status';
 
 
@@ -43,7 +43,7 @@ export const MsgItem = (props) => {
             <div className="flex-col fw gap-1">
                 <div className="msg-item" ref={itemRef}>
                     {reply && <MsgLink id={reply} chatting={cur}></MsgLink>}
-                    {file && <MsgAttachment />}
+                    {file && <MsgAttachment msgId={id} fileInfo={file} loadType={sent? 'up':'down'} />}
 
                     <div style={{ lineHeight: "20px", padding: "1px 5px" }}>
                         <div className="text"> {textContent} </div>
@@ -175,120 +175,138 @@ function MsgLink({ chatting, id }) {
 }
 
 
-function MsgAttachment({ type, isSaved, loadType }) {
-    const [saved, setSaved] = useState(isSaved);
-    const [loadProgress, setProgress] = useState(false);
-    // const chatting = useContext(ChatContext).cur;
+function MsgAttachment({id, fileInfo, loadType, status }) {
+    const {fileId, src, metadata} = fileInfo;
+    const uuid = loadType + 'load_' + id;  // id for tracking updates
 
-    let fileName, fileSize, fileExt;
+    const [file, setFile] = useState();
 
-    function startLoad() {
-        setSaved(false);
-        setProgress(0)
-    }
+    const {loadStatus} = useContext(SendMsgContext);
+    const statusMsg = loadStatus.find(msg => msg.id === uuid);
+    const loadProgress = statusMsg //status of each file
 
-    let frag;
+    const {name, size, ext, type, duration, localUrl} = file || metadata || {} ;
+
+    useEffect(() => {
+        if (loadProgress === undefined) return
+
+        console.log(loadProgress);
+    }, [loadProgress]);
+
+
+    useEffect(() => {
+        if (!fileId) return
+
+        getFile(fileId)
+        .then(res => {
+            if (res?.data){
+                setFile({
+                    type: res.type,
+                    name: res.data.name, 
+                    size: res.data.size, 
+                    ext: res.data.ext,
+                    localUrl: URL.createObjectURL(res.data)
+                })
+            } else {
+                setFile(false)
+            }
+        })
+
+    }, [fileId])
+
+
+    let Frag;
     switch (type) {
         case 'image': {
-            frag =
+            Frag =
                 <div className="img-cont max-child">
-                    {
-                        saved ?
-                            <>
-                                {/* TODO */}
-                                <img src="" alt="" />
-                                <div className="dropdown">
-                                    <button data-bs-toggle="dropdown" aria-expanded="false">
-                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                    </button>
+                    <img src={localUrl} alt="" />
+                    <div className="dropdown">
+                        <button data-bs-toggle="dropdown" aria-expanded="false">
+                            <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </button>
 
-                                    <ul className="dropdown-menu">
-                                        <li><button className="dropdown-item">Save to device</button></li>
-                                    </ul>
-                                </div>
-                            </>
-                            :
-                            <>
-                                <img className="timg" alt="" />
-                                <LoadVeil loadProgress={loadProgress} loadType={loadType} />
-                            </>
+                        <ul className="dropdown-menu">
+                            <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
+                        </ul>
+                    </div>
+                    {
+                        !localUrl &&
+                        <>
+                            <img className="timg" alt="" />
+                            <LoadVeil loadProgress={loadProgress} loadType={loadType} />
+                        </>
                     }
                 </div>
             break;
         }
         case 'audio': {
-            frag =
-                <div className="audio-cont flex-col">
-                    <div className="fw flex mid-align">
-                        {
-                            saved ?
-                                <>
-                                    <button className="no-btn p-but">
-                                        <FontAwesomeIcon icon={faCirclePlay} size='xl' />
-                                        <FontAwesomeIcon icon={faCirclePause} size='xl' />
-                                    </button>
-                                </>
-                                :
-                                <>
-                                    <button className="no-btn p-but">
-                                        {
-                                            loadProgress === false ?
-                                                <FontAwesomeIcon icon={faCircleArrowDown} size="xl" className="down-icon" aria-label="Click to download audio" />
-                                                :
-                                                <span className="hide block">
-                                                    <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                                                        <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" stroke-width="7px" stroke-linecap="round"></circle>
-                                                    </svg>
-                                                    <FontAwesomeIcon icon={faXmark} size="xl" className="down-icon" aria-label="Click to download audio" />
-                                                </span>
-                                        }
-                                    </button>
-                                </>
-                        }
-                    </div>
-                    <div>
-                        <small className="aud-dets">
-                            <span className="audio-duration"></span>
-                            <span>•</span>
-                            <span className="audio-size"></span>
-                        </small>
-                    </div>
+            Frag =
+            <div className="audio-cont flex-col">
+                <div className="fw flex mid-align">
+                    {
+                        localUrl ?
+                            <button className="no-btn p-but">
+                                <FontAwesomeIcon icon={faCirclePlay} size='xl' />
+                                <FontAwesomeIcon icon={faCirclePause} size='xl' />
+                            </button>
+                            :
+                            <button className="no-btn p-but">
+                                {
+                                    status === false ?
+                                    <FontAwesomeIcon icon={faCircleArrowDown} size="xl" className="down-icon" aria-label="Click to download audio" />
+                                    :
+                                    <span className="hide block">
+                                        <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
+                                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" stroke-width="7px" stroke-linecap="round"></circle>
+                                        </svg>
+                                        <FontAwesomeIcon icon={faXmark} size="xl" className="down-icon" aria-label="Click to download audio" />
+                                    </span>
+                                }
+                            </button>
+                    }
                 </div>
+                <div>
+                    <small className="aud-dets">
+                        <span className="audio-duration"> {duration} </span>
+                        <span>•</span>
+                        <span className="audio-size"> {size} </span>
+                    </small>
+                </div>
+            </div>
             break;
         }
         case 'video': {
-            frag =
-                <div className="vid-cont max-child">
-                    {
-                        saved ?
-                            <>
-                                <video src=""></video>
-                                <FontAwesomeIcon icon={faCirclePlay} className='abs-mid' size="2xl" />
+            Frag =
+            <div className="vid-cont max-child">
+                <video src={localUrl}></video>
+                <FontAwesomeIcon icon={faCirclePlay} className='abs-mid' size="2xl" />
 
-                                <div className="dropdown">
-                                    <button className='abs-mid' data-bs-toggle="dropdown" aria-expanded="false">
-                                        <FontAwesomeIcon icon={faEllipsisVertical} size="2xl" />
-                                    </button>
+                <div className="dropdown">
+                    <button className='abs-mid' data-bs-toggle="dropdown" aria-expanded="false">
+                        <FontAwesomeIcon icon={faEllipsisVertical} size="2xl" />
+                    </button>
 
-                                    <ul className="dropdown-menu">
-                                        <li><button className="dropdown-item">Save to device</button></li>
-                                    </ul>
-                                </div>
-                            </>
-                            :
-                            <>
-                                <img alt="" className="timg" src="" />
-                                <LoadVeil loadProgress={loadProgress} loadType={loadType} />
-                            </>
-                    }
+                    <ul className="dropdown-menu">
+                        <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
+                    </ul>
                 </div>
-            break
+                {
+                    !localUrl &&
+                    <>
+                        <img alt="" className="timg" src="" />
+                        <LoadVeil loadProgress={loadProgress} loadType={loadType} />
+                    </>
+                }
+            </div>
+            break;
         }
+
         default: {
-            frag =
+            Frag =
                 <div className="file-cont flex mid-align fw" style={{ padding: "10px" }}>
                     {
-                        saved ?
+                        localUrl ?
                             <>
                                 <div className="icon">
                                     <div aria-hidden="true">
@@ -297,13 +315,13 @@ function MsgAttachment({ type, isSaved, loadType }) {
                                 </div>
                                 <div className="flex-col fw" style={{ margin: "0 10px" }}>
                                     <div className="crop-excess2" style={{ lineHeight: "20px", maxHeight: "41px" }}>
-                                        {fileName}
+                                        {name}
                                     </div>
                                     <div className="fw">
                                         <small className="meta">
-                                            <span>{fileSize}</span>
-                                            <span>•</span>
-                                            <span>{fileExt}</span>
+                                            <span> {size} </span>
+                                            <span> • </span>
+                                            <span> {ext} </span>
                                         </small>
                                     </div>
                                 </div>
@@ -313,7 +331,7 @@ function MsgAttachment({ type, isSaved, loadType }) {
                                     </button>
 
                                     <ul className="dropdown-menu">
-                                        <li><button className="dropdown-item">Save to device</button></li>
+                                        <li><a href={localUrl} className="dropdown-item" download={name} >Save to device</a></li>
                                     </ul>
                                 </div>
                             </>
@@ -321,7 +339,7 @@ function MsgAttachment({ type, isSaved, loadType }) {
                             <>
                                 <div className="file-icon">
                                     {
-                                        loadProgress === false ?
+                                        status === false ?
                                             <button aria-label="Click to download file">
                                                 <FontAwesomeIcon icon={faArrowDown} className='down-icon' />
                                             </button>
@@ -338,12 +356,12 @@ function MsgAttachment({ type, isSaved, loadType }) {
                                     }
                                 </div>
                                 <div className="file-details flex-col">
-                                    <div>{fileName}</div>
+                                    <div>{name}</div>
                                     <div className="file-details-down fw">
                                         <small className="dets">
-                                            <span>{fileSize}</span>
+                                            <span>{size}</span>
                                             <span>•</span>
-                                            <span>{fileExt}</span>
+                                            <span>{ext}</span>
                                         </small>
                                     </div>
                                 </div>
@@ -356,7 +374,12 @@ function MsgAttachment({ type, isSaved, loadType }) {
 
     return (
         <div className="msg-atth fw">
-            {frag}
+            {
+                file === undefined?
+                <div className='fw' style={{aspectRatio: "1/1", backgroundColor: "grey"}}></div>
+                :
+                Frag
+            }
         </div>
     )
 }

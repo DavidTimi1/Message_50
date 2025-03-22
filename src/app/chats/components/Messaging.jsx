@@ -384,7 +384,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
 
 
 const PreviewFile = ({ data, closePreview }) => {
-    let { type, name, size } = data;
+    let { type, name, size, localSrc } = data;
     type = type.split('/')[0];
 
     const mainRef = useRef(null);
@@ -392,10 +392,9 @@ const PreviewFile = ({ data, closePreview }) => {
     const { pushState } = useContext(StateNavigatorContext);
     const chatting = useContext(ChatContext).cur;
 
-
     const ext = name.split('.').slice(-1)[0];
 
-    let jsx, src = URL.createObjectURL(data);
+    let jsx;
 
 
     useEffect(() => {
@@ -422,7 +421,7 @@ const PreviewFile = ({ data, closePreview }) => {
         case "video": {
             jsx =
                 <div className="media-opt max">
-                    <video src={src} controls className="abs-mid" alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
+                    <video src={localSrc} controls className="abs-mid" alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
                 </div>
             break;
         }
@@ -430,7 +429,7 @@ const PreviewFile = ({ data, closePreview }) => {
         case "image": {
             jsx =
                 <div className="media-opt max">
-                    <img src={src} className="abs-mid" alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
+                    <img src={localSrc} className="abs-mid" alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
                 </div>
             break;
         }

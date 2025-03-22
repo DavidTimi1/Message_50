@@ -5,7 +5,7 @@ import { ChatContext } from '../../contexts';
 import { IconBtn } from "../../../components/Button";
 
 import { transitionEnd, runOnComplete } from "../../../utils";
-import { IDBPromise, openTrans, getMsg, offlineMsgsTable, loadDB } from '../../../db';
+import { IDBPromise, openTrans, getMsg, offlineMsgsTable, loadDB, filesTable } from '../../../db';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile, faFileAudio, faFilm, faImage, faMicrophone, faPaperPlane, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -15,15 +15,16 @@ import { useContactName, useOnlineStatus } from '../../components/Hooks';
 
 import { MsgListContext } from "../contexts";
 import { newMsgEvent } from "../../components/Sockets";
+import { ALLOWED_MEDIA_TYPES } from "../../media/page";
 
 
 
 export const Footer = ({previewFile}) => {
 
-    const { reply, replyTo, addNotSent} = useContext( MsgListContext );
+    const { reply, replyTo} = useContext( MsgListContext );
 
     const [UI, setUI] = useState({});
-    const fileRef = useRef(null), inputRef = useRef(null);
+    const fileRef = useRef(null), inputRef = useRef(null), optsToggleRef = useRef(null);
     const showOpts = UI.opts, canSend = UI.ready;
 
     const chatting = useContext(ChatContext).cur;
@@ -37,7 +38,7 @@ export const Footer = ({previewFile}) => {
                 <UploadOptions open={showOpts} selectFile={selectFile} />
 
                 <div className="form flex fw gap-2" style={{ alignItems: "last baseline", justifyContent: "space-around" }}>
-                    <div className="xmark plus">
+                    <div ref={optsToggleRef} className="xmark plus">
                         <IconBtn icon={faXmark} onClick={toggleOpts}>
                             Add attachment
                         </IconBtn>
@@ -71,8 +72,8 @@ export const Footer = ({previewFile}) => {
     )
 
 
-    function toggleOpts(e) {
-        const { target } = e, parent = target.closest(".xmark");
+    function toggleOpts() {
+        const parent = optsToggleRef.current;
 
         if (fileRef.current){
             fileRef.current = null;
@@ -105,34 +106,58 @@ export const Footer = ({previewFile}) => {
             handle: receivers[0],
             reply,
             receivers,
-            textContent,
-            file
+            textContent
         }
 
-        let id = await loadDB()
-                .then( DB => IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add(data) ) )
+        let fileObj;
 
-        // addNotSent({...data, id:id})
+        let id = await loadDB()
+                .then(async  DB => {
+
+                    if (file){
+                        let type = file.type.split("/")[0];
+                        type = ALLOWED_MEDIA_TYPES.includes(type) ? type : "other"
+                        
+                        const fileId = await IDBPromise( openTrans(DB, filesTable, 'readwrite')
+                            .add({ type, data: file }) 
+                        )
+
+                        fileObj = {fileId, metadata: {type, size: file.size}};
+                    }
+                        
+                    return IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add({...data, rawFile: file, file: fileObj}) ) 
+                    
+            })
+
         dispatchEvent( new CustomEvent(newMsgEvent, {detail: {
-            ...data, id, notSent: true, time: new Date().getTime()
+            ...data, id, file: fileObj , notSent: true, time: new Date().getTime()
         }}) )
 
         isOnline && offloadQueue();
-            
-        // remove reply
-        removeReply();
-        // remove image
-        fileRef.current = undefined;
-        // remove text
-        inputRef.current.value = '';
-        setUI({ ...UI, opts: false, ready: false });
-        // scroll to bottom
+        resetUI();
+    }
+
+    function resetUI(){
+        const parentToggler = optsToggleRef.current;
+        const msgList = document.getElementsByClassName('msglist')[0];
+        
+        removeReply(); // remove reply
+
+        fileRef.current = null;
+        previewFile();
+        parentToggler.classList.add("plus")
+
+        inputRef.current.value = ''; // remove text
+        setUI({ ...UI, opts: false, ready: false }); 
+        msgList.scrollTop = msgList.scrollHeight;   // scroll to bottom
     }
 
     function selectFile(value) {
-        fileRef.current = value.files[0];
+        const file = value.files[0];
+        file.localSrc = URL.createObjectURL(value.files[0]);
+        fileRef.current = file;
         setUI({ ...UI, opts: false, ready: true });
-        previewFile(value.files[0]);
+        previewFile(file);
     }
 
     function updatedCanSend(){

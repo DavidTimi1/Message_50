@@ -15,16 +15,17 @@ import { UserContext } from "../../contexts.jsx";
 export const SendMsgsProvider = ({children}) => {
     // to hold all status of unsent messages
     const [msgsStatus, setMsgsStatus] = useState([]);
+    const [loadStatus, setloadStatus] = useState([]);
 
     return (
-        <SendMsgContext.Provider value={{msgsStatus, updateMsgStatus}}>
+        <SendMsgContext.Provider value={{msgsStatus, loadStatus, updateMsgStatus}}>
             <OnOnlineMsgSender />
             { children }
         </SendMsgContext.Provider>
     )
 
 
-    function updateMsgStatus(msgId, status, args){
+    function updateMsgStatus(msgId, status, args, type="msg"){
         // if completely sent remove from list
         // if (status === true){
         //     setMsgsStatus( prev => {
@@ -39,8 +40,7 @@ export const SendMsgsProvider = ({children}) => {
 
         //     return 
         // }
-
-        setMsgsStatus( prev => {
+        const updatedFromPrevious = prev => {
             const clone = [...prev];
             const index = clone.findIndex(msg => msg.id === msgId);
             const newStatus = {id: msgId, status, args}
@@ -52,7 +52,14 @@ export const SendMsgsProvider = ({children}) => {
                 clone.push({id: msgId, status, args})
             }
             return clone
-        })
+        }
+
+        if (type !== 'msg'){
+            setloadStatus( updatedFromPrevious )
+            return
+        }
+
+        setMsgsStatus(  updatedFromPrevious )
     }
 
 }
@@ -176,42 +183,61 @@ const useMessageSender = () => {
     return {send: run}
 
     function run(data){
-        const {receivers, reply, textContent, time, file, id} = data;
+        const {receivers, reply, textContent, time, rawFile, id} = data;
 
         // encrypt data
-        encryptMessage({reply, textContent, time, handle: username}, file)
+        encryptMessage({reply, textContent, time, handle: username}, rawFile)
     
         .then (async ({encryptedData, iv, encryptedFileData, key}) => {
             
             //  upload file(s)
-            new Promise(res => {
-                if (!file){
+            new Promise( async res => {
+                if (!rawFile){
                     res(null);
                     return
                 }
+
+                const fd = new FormData();
+
+                const blob = new Blob([encryptedFileData.data], { type: "application/octet-stream" });
+                const file = new File([blob], "file", { type: "application/octet-stream" });
     
                 const metadata = {
-                    type: file.type,
-                    size: file.size
+                    name: rawFile.name,
+                    type: rawFile.type,
+                    size: rawFile.size,
+                    recipients: receivers,
+                    iv: encryptedFileData.iv
                 };
+                
+                fd.append("file", file)
+                fd.append("metadata", JSON.stringify(metadata))
     
-                const jsonData = {data: encryptedFileData, metadata, receivers};
-                const mediaUploadUrl = apiHost + "/chats/media";
+                const mediaUploadUrl = apiHost + "/chat/api/media/upload/";
+                
+                updateMsgStatus(`upload_${data.id}`, 0)
                 
                 // send all to server / each
-                axiosInstance.post(mediaUploadUrl, jsonData, {
-                    headers: {
-                      'Content-Type': 'application/json', // Ensure the server recognizes JSON data
-                    },
+                await axiosInstance.post( mediaUploadUrl, fd, {
                     withCredentials: true,
                     onUploadProgress: (progressEvent) => {
                         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        updateMsgStatus(data.id, progress)
+                        updateMsgStatus(`upload_${data.id}`, progress / 100, undefined, "upload");
                     }
-                }).then(response => res( response.data ))
+
+                }).then(response => {
+                    updateMsgStatus(`upload_${data.id}`, true, undefined, "upload");
+
+                    const md = {
+                        type: rawFile.type,
+                        size: rawFile.size
+                    };
+
+                    res( {...response.data, metadata: md} );
+                })
             })
     
-            .then( async(fileId) => {
+            .then( async(fileObj) => {
                 // get public keys
                 const publicKeys = await getPubicKeys(receivers)
     
@@ -222,14 +248,14 @@ const useMessageSender = () => {
     
                     // encrypt the key to encrypted data
                     const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
-    
+                    
                     const jsonData = {
                         id,
                         receiverID: uuid,
                         data: {
                             iv, encryptedData,
                             key: encryptedKey,
-                            file: fileId,
+                            file: fileObj,
                         }
                     }
     
@@ -267,7 +293,8 @@ const saveMsgInDb = (msgData) => {
                         receivers: undefined,
                         handle: receiver,
                         sent: true,
-                        status: "s"
+                        status: "s",
+                        rawFile: null
                     } )
                 )
             )))

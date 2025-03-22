@@ -229,6 +229,18 @@ export const saveFile = async (data) => {
 }
 
 
+export const getFile = async (fileID) => {
+    
+    return loadDB()
+        .then( DB => IDBPromise( openTrans(DB, filesTable).get(fileID) ) )
+        .then(res => res)
+        .catch(err => {
+            console.error(err);
+            return null
+        })
+}
+
+
 export const hasMessaged = (handle) => {
     // range should start from the first
     const range = IDBKeyRange.lowerBound([handle, 0]);

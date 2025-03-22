@@ -16,13 +16,14 @@ import { filesTable, loadDB, openTrans } from '../../db';
 
 
 const viewName = "Storage and Media";
+export const ALLOWED_MEDIA_TYPES = ["image", "video", "audio", "other"]
 
 
 export const MediaPage = () => {
 
     const [view, setView] = useState();
     const viewObserver = initObserver();
-    const mainRef = useRef(null), heighter = useRef(null), detailsRef = useRef(null), imgsRef = useRef(null), vidsRef = useRef(null), audsRef = useRef(null), othsRef = useRef(null);
+    const mainRef = useRef(null), detailsRef = useRef(null), imgsRef = useRef(null), vidsRef = useRef(null), audsRef = useRef(null), othsRef = useRef(null);
 
     const [files, setFiles] = useState({})
 
@@ -31,7 +32,6 @@ export const MediaPage = () => {
     useEffect(() => {
         let t_id = setTimeout(() => {
             mainRef.current.classList.remove("close");
-            adjustHeight();
         });
 
 
@@ -48,9 +48,8 @@ export const MediaPage = () => {
         <RouteContainer id="media" heading={<Heading close={close} />} ref={mainRef}>
             
             <div className='max flex-col'>
-                <div className="grow">
-                    <div className='max' ref={heighter}>
-                        <div className='flex max side-scroll hid-scroll' style={{ display: "none" }}>
+                <div className="grow" style={{overflow: "hidden"}}>
+                        <div className='flex max side-scroll hid-scroll'>
 
                             {/* if not active ...  show nothing
                             After activating, load resources,
@@ -62,7 +61,6 @@ export const MediaPage = () => {
                             <AudiosList ref={audsRef} viewObserver={viewObserver} data={files.audios} />
                             <OthersList ref={othsRef} viewObserver={viewObserver} data={files.others} />
                         </div>
-                    </div>
                 </div>
                 <MediaNav active={view} goTo={goTo} />
             </div>
@@ -118,12 +116,6 @@ export const MediaPage = () => {
             threshold: 0.8 // 80% of the element's visibility triggers the callback
         });
         return observer
-    }
-
-    function adjustHeight() {
-        const el = heighter.current, h = el.clientHeight, child = $("q.side-scroll", el);
-        child.style.height = `${h}px`;
-        child.style.display = '';
     }
 
     function close() {
@@ -185,7 +177,9 @@ async function getFilesByType(type, limit = 50) {
                 const cursor = e.target.result;
 
                 if (cursor && results.length < limit) {
-                    results.push(cursor.value);
+                    const data = cursor.value.data;
+                    data.id = cursor.primaryKey;
+                    results.push(data);
                     cursor.continue();
 
                 } else {

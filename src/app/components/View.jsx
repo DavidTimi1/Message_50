@@ -26,7 +26,7 @@ export const RouteContainer = forwardRef(({ children, heading, id }, ref) => {
             <div className="max">
                 <div className="flex-col max">
                     {heading}
-                    <div className="fw grow">
+                    <div className="fw grow" style={{overflow: "hidden"}}>
                         {children}
                     </div>
                 </div>
