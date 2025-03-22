@@ -122,7 +122,7 @@ export const Footer = ({previewFile}) => {
                             .add({ type, data: file }) 
                         )
 
-                        fileObj = {fileId, metadata: {type, size: file.size}};
+                        fileObj = {fileId, metadata: {type, size: file.size, name: file.name}};
                     }
                         
                     return IDBPromise( openTrans(DB, offlineMsgsTable, 'readwrite').add({...data, rawFile: file, file: fileObj}) ) 

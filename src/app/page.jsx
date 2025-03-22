@@ -155,8 +155,8 @@ async function handleMessageReceipt(msgEvent){
         let decryptedMsg;
 
         try {
-            const {encryptedData, iv, key} = payload.data
-            decryptedMsg = await decryptMessage(key, encryptedData, iv);
+            const {encryptedData, iv, key, file} = payload.data
+            decryptedMsg = await decryptMessage(key, encryptedData, iv, Boolean(file));
 
         } catch (error) {
             console.error('Failed to decrypt message:', error);
@@ -165,11 +165,13 @@ async function handleMessageReceipt(msgEvent){
         }
 
         if (type === 'new-message'){
+            const file = payload.data.file;
+
             const fullMsgData = {
-                id: payload.id, sent: false, file: payload.data.file,
-                ...decryptedMsg
+                id: payload.id, sent: false, key: undefined,
+                ...decryptedMsg,
+                file: file? {...file, key: decryptedMsg.key} : file
             }
-            console.log(fullMsgData)
             
             loadDB()
             .then( DB => (

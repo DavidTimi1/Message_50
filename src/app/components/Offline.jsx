@@ -183,7 +183,7 @@ const useMessageSender = () => {
     return {send: run}
 
     function run(data){
-        const {receivers, reply, textContent, time, rawFile, id} = data;
+        const {receivers, reply, textContent, time, file, rawFile, id} = data;
 
         // encrypt data
         encryptMessage({reply, textContent, time, handle: username}, rawFile)
@@ -200,17 +200,15 @@ const useMessageSender = () => {
                 const fd = new FormData();
 
                 const blob = new Blob([encryptedFileData.data], { type: "application/octet-stream" });
-                const file = new File([blob], "file", { type: "application/octet-stream" });
+                const filedBlob = new File([blob], "file", { type: "application/octet-stream" });
     
                 const metadata = {
-                    name: rawFile.name,
-                    type: rawFile.type,
-                    size: rawFile.size,
+                    ...file.metadata,
                     recipients: receivers,
                     iv: encryptedFileData.iv
                 };
                 
-                fd.append("file", file)
+                fd.append("file", filedBlob)
                 fd.append("metadata", JSON.stringify(metadata))
     
                 const mediaUploadUrl = apiHost + "/chat/api/media/upload/";
@@ -228,12 +226,7 @@ const useMessageSender = () => {
                 }).then(response => {
                     updateMsgStatus(`upload_${data.id}`, true, undefined, "upload");
 
-                    const md = {
-                        type: rawFile.type,
-                        size: rawFile.size
-                    };
-
-                    res( {...response.data, metadata: md} );
+                    res( {...response.data, metadata: file.metadata} );
                 })
             })
     

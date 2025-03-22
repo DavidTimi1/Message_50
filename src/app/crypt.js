@@ -303,7 +303,7 @@ export async function encryptMessage(jsonData, file) {
 }
 
 // Full decryption workflow
-export async function decryptMessage(encryptedKey, encryptedJSON, iv) {
+export async function decryptMessage(encryptedKey, encryptedJSON, iv, hasFile) {
     // Step 1: Get user private key
     const privateKey = await getPrivateKey();
 
@@ -312,6 +312,11 @@ export async function decryptMessage(encryptedKey, encryptedJSON, iv) {
 
     // Step 3: Decrypt JSON data with the symmetric key
     const jsonData = await decryptDataToJSON(encryptedJSON, iv, symmetricKey);
+
+    if (hasFile){
+        const exportedKey = await window.crypto.subtle.exportKey("raw", symmetricKey);
+        jsonData.key = exportedKey;
+    }
 
     return jsonData;
 }
@@ -353,11 +358,27 @@ export async function encryptMediaFile(file, symmetricKey) {
         arrayBuffer
     );
 
-    return { data: encryptedBuffer, iv };
+    return { data: encryptedBuffer, iv: arrayBufferToBase64(iv) };
 }
 
 
-export async function decryptMediaFile(encryptedBuffer, iv, symmetricKey) {
+
+export async function decryptMediaFile(encryptedBuffer, ivBuffer, rawKey) {
+    const iv = base64ToArrayBuffer(ivBuffer);
+    console.log(rawKey, iv)
+
+    const symmetricKey = await window.crypto.subtle.importKey(
+        "raw",
+        rawKey,
+        {
+            name: "AES-GCM",
+            length: 256,
+        },
+        true,
+        ["encrypt", "decrypt"]
+    );
+
+        
     const decryptedBuffer = await window.crypto.subtle.decrypt(
         {
             name: "AES-GCM",

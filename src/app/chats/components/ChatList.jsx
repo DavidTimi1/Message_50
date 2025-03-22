@@ -10,6 +10,7 @@ import { useContactName } from '../../components/Hooks';
 import StatusIcon from '../../components/status';
 import { newMsgEvent } from '../../components/Sockets';
 import { UserProfilePic } from '../../contacts/components/ContactItem';
+import { TextualFile } from '../../media/page';
 
 
 export const ChatList = () => {
@@ -175,7 +176,7 @@ const ChatItem = ({ data, Message }) => {
                             <StatusIcon statusChar={status} />
                         }
                         {
-                            file && <small> File </small>
+                            file && <TextualFile fileInfo={file} />
                         }
                         <span> {textContent} </span>
                     </div>
