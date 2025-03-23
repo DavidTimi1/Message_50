@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { on, once, timePast } from "../../../utils";
 
 import { faArrowDown, faArrowUp, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { dbName, getFile, getMsg, IDBPromise } from '../../../db';
+import { dbName, getFile, getMsg, IDBPromise, updateMessage } from '../../../db';
 import { ChatContext, SendMsgContext } from '../../contexts';
 import StatusIcon from '../../components/status';
 import { useFileDownload } from '../../media/components/Details';
@@ -177,7 +177,7 @@ function MsgLink({ chatting, id }) {
 
 
 function MsgAttachment({msgId, fileInfo, loadType, status }) {
-    const {fileId, src, metadata, key} = fileInfo;
+    const [{fileId, src, metadata, key}, setFileInfo] = useState(fileInfo);
     const uuid = loadType + 'load_' + msgId;  // id for tracking updates
     const fileDownloader = useFileDownload();
 
@@ -185,15 +185,23 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
 
     const {loadStatus} = useContext(SendMsgContext);
     const statusMsg = loadStatus.find(msg => msg.id === uuid);
-    const loadProgress = statusMsg //status of each file
+    const loadProgress = statusMsg?.status //status of each file
 
     const {name, size, ext, type, duration, localUrl} = file || metadata || {} ;
 
     useEffect(() => {
+        const loadProgress = statusMsg?.status;
+
         if (loadProgress === undefined) return
 
-        console.log(loadProgress);
-    }, [loadProgress]);
+        if (loadProgress === true && loadType === "down"){
+            // update file info
+            statusMsg.args && setFileInfo({...fileInfo, ...statusMsg.args})
+            updateMessage(msgId, 'file', statusMsg.args)
+            .then(console.log)
+        }
+
+    }, [statusMsg]);
 
 
     useEffect(() => {
@@ -258,8 +266,8 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                                     <FontAwesomeIcon icon={faArrowDown} size="xl" className="down-icon" aria-label="Click to download audio" />
                                     :
                                     <div className="fw">
-                                        <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
+                                        <svg height="40px" width="40px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
+                                            <circle cx="20px" cy="20px" r="17px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
                                         </svg>
                                         <FontAwesomeIcon icon={faXmark} size="xl" className="down-icon" aria-label="Click to download audio" />
                                     </div>
@@ -349,8 +357,8 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                                             </button>
                                             :
                                             <div>
-                                                <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                                                    <circle cx="25px" cy="25px" r="20px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
+                                                <svg height="40px" width="40px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
+                                                    <circle cx="20px" cy="20px" r="17px" fill="none" stroke="white" strokeWidth="3px" strokeLinecap="round"></circle>
                                                 </svg>
 
                                                 <button  className="no-btn mid-align" aria-label="Click to download file">
@@ -407,6 +415,16 @@ function TimePast({ time }) {
 }
 
 function LoadVeil({ loadType, size, loadProgress, handleClick }) {
+    const progressRef = useRef();
+    const circumference = 2 * Math.PI * 17;
+
+    useEffect(() => {
+        if (progressRef.current && loadProgress !== undefined) {
+            const offset = circumference - loadProgress * circumference;
+            progressRef.current.style.strokeDashoffset = offset;
+        }
+    }, [loadProgress]);
+
 
     return (
         <div className="veil max flex mid-align" style={{justifyContent: "center"}}>
@@ -414,14 +432,17 @@ function LoadVeil({ loadType, size, loadProgress, handleClick }) {
                 {
                 loadProgress !== undefined ?
 
-                    <div onClick={_ => handleClick("cancel")}>
-                        <svg height="50px" width="50px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
-                            <circle cx="25px" cy="25px" r="20px" fill="none" stroke="green" strokeWidth="7px" strokeLinecap="round"></circle>
+                    <div>
+                        <svg height="40px" width="40px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
+                            <circle cx="20px" cy="20px" ref={progressRef} r="17px" fill="none" stroke="white" 
+                                strokeWidth="3px" strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                                strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={circumference}
+                            ></circle>
                         </svg>
 
-                        <button className='abs-mid ds' aria-label="Click to download file">
-                            <FontAwesomeIcon icon={faXmark} />
-                        </button>
+                        <div className='abs-mid ds' aria-label="Click to download file">
+                            <IconBtn icon={faXmark} size="xl" />
+                        </div>
                     </div>
                     :
 

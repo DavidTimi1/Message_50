@@ -1,5 +1,6 @@
 // USING INDEXED DATABASE
 
+import { ALLOWED_MEDIA_TYPES } from "./app/media/page";
 import { seedDB } from "./data/loadData";
 import { once, runOnComplete } from "./utils";
 
@@ -217,10 +218,12 @@ export const saveContactToDB = async(user) => {
         })
 }
 
-export const saveFile = async (data) => {
+export const saveFile = async (file) => {
+    let type = file.type.split("/")[0];
+    type = ALLOWED_MEDIA_TYPES.includes(type) ? type : "other"
     
     return loadDB()
-        .then( DB => IDBPromise( openTrans(DB, filesTable, 'readwrite').add(data) ) )
+        .then( DB => IDBPromise( openTrans(DB, filesTable, 'readwrite').add({ type, data: file }) ) )
         .then(res => res)
         .catch(err => {
             console.error(err);
@@ -249,4 +252,32 @@ export const hasMessaged = (handle) => {
     .then( DB => 
         IDBPromise( openTrans(DB, msgsTable).index("handle_time").count(range) )
     )
+}
+
+
+export const updateMessage = (id, property, args) => {
+
+    return loadDB()
+        .then(DB => {
+            const objectStore = openTrans(DB, msgsTable, 'readwrite')
+
+            return IDBPromise(objectStore.get(id))
+            .then(msg => {
+                // if it is continue else remove
+                if (msg && msg.status === 'x') {
+                    return null
+                }
+                if (property === 'file' && msg.file){
+                    msg.file.fileId = args.fileId;
+
+                    return IDBPromise(objectStore.put(msg));
+                }
+            })
+            .then(_ => ({success: true}))
+            .catch(err => {
+                console.error(err);
+                return null
+            })
+        })
+
 }

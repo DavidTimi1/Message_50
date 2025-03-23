@@ -170,13 +170,13 @@ const ChatItem = ({ data, Message }) => {
                             <TimePast time={time} />
                         </small>
                     </div>
-                    <div className="flex chat-msg mid-align fw">
+                    <div className="flex chat-msg gap-1 mid-align fw">
                         {
                             sent &&
                             <StatusIcon statusChar={status} />
                         }
                         {
-                            file && <TextualFile fileInfo={file} />
+                            file && <TextualFile fileInfo={file} hasText={Boolean(textContent)} />
                         }
                         <span> {textContent} </span>
                     </div>

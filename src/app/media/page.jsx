@@ -129,23 +129,23 @@ export const MediaPage = () => {
 
 
 
-export function TextualFile({fileInfo}){
+export function TextualFile({fileInfo, hasText}){
     if (!fileInfo) return <></>
 
     const fileType = fileInfo.metadata.type;
     let JSXFrag;
 
     switch(fileType){
-        case "image": JSXFrag = <small> <FontAwesomeIcon icon={faImage} size="sm" /> Photo </small>
+        case "image": JSXFrag = <small> <FontAwesomeIcon icon={faImage} size="sm" /> {hasText? '': "Photo"} </small>
         break;
         
-        case "video": JSXFrag = <small> <FontAwesomeIcon icon={faVideo} size="sm" /> Video </small>
+        case "video": JSXFrag = <small> <FontAwesomeIcon icon={faVideo} size="sm" /> {hasText? '': "Video"} </small>
         break;
         
-        case "audio": JSXFrag = <small> <FontAwesomeIcon icon={faMicrophone} size="sm" /> Audio </small>
+        case "audio": JSXFrag = <small> <FontAwesomeIcon icon={faMicrophone} size="sm" /> {hasText? '': "Audio"} </small>
         break;
         
-        default: JSXFrag = <small> <FontAwesomeIcon icon={faFile} size="sm" /> File </small>
+        default: JSXFrag = <small> <FontAwesomeIcon icon={faFile} size="sm" /> {hasText? '': "File"} </small>
         break;
     }
 

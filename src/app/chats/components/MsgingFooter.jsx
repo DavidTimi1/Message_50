@@ -5,7 +5,7 @@ import { ChatContext } from '../../contexts';
 import { IconBtn } from "../../../components/Button";
 
 import { transitionEnd, runOnComplete } from "../../../utils";
-import { IDBPromise, openTrans, getMsg, offlineMsgsTable, loadDB, filesTable } from '../../../db';
+import { IDBPromise, openTrans, getMsg, offlineMsgsTable, loadDB, saveFile } from '../../../db';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile, faFileAudio, faFilm, faImage, faMicrophone, faPaperPlane, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -118,9 +118,7 @@ export const Footer = ({previewFile}) => {
                         let type = file.type.split("/")[0];
                         type = ALLOWED_MEDIA_TYPES.includes(type) ? type : "other"
                         
-                        const fileId = await IDBPromise( openTrans(DB, filesTable, 'readwrite')
-                            .add({ type, data: file }) 
-                        )
+                        const fileId = await saveFile(file)
 
                         fileObj = {fileId, metadata: {type, size: file.size, name: file.name}};
                     }

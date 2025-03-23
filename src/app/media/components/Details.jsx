@@ -6,6 +6,7 @@ import { SendMsgContext } from "../../contexts";
 import axiosInstance from "../../../auth/axiosInstance";
 import { apiHost } from "../../../App";
 import { decryptMediaFile } from "../../crypt";
+import { saveFile } from "../../../db";
 
 
 
@@ -174,6 +175,7 @@ export function useFileDownload(){
                 const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 updateMsgStatus(id, progress / 100, undefined, "download");
             }
+            
         }).then(async response => {
             const arraybuffer = response.data;
             const {type, iv, name} = metadata;
@@ -181,9 +183,12 @@ export function useFileDownload(){
 
             const blob = new Blob([fileData], {type});
             const file = new File([blob], name ?? "file", {type});
-            console.log(file)
+                    
+            const fileId = await saveFile(file)
+            const fileObj = {fileId};
+    
+            updateMsgStatus(id, true, fileObj, "download");
 
-            updateMsgStatus(id, true, undefined, "download");
         })
     }
     

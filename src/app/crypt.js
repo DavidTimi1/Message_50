@@ -365,7 +365,6 @@ export async function encryptMediaFile(file, symmetricKey) {
 
 export async function decryptMediaFile(encryptedBuffer, ivBuffer, rawKey) {
     const iv = base64ToArrayBuffer(ivBuffer);
-    console.log(rawKey, iv)
 
     const symmetricKey = await window.crypto.subtle.importKey(
         "raw",
