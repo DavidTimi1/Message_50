@@ -11,7 +11,7 @@ export const UserContext = createContext(null);
 
 // AuthProvider Component
 export const UserProvider = ({ children, devData }) => {
-	const [userData, setUserData] = useState(devData);
+	const [userData, setUserData] = useState({});
     const { auth } = useAuth();
 
 	const loadDataUrl = apiHost + "/chat/api/user/me";

@@ -44,8 +44,7 @@ const Footer = () => {
   
 
 
-export const Input = ({type, name, label, required, placeholder, children}) => {
-    type = type ?? 'text';
+export const Input = ({type='text', name, label, required, placeholder, children}) => {
     required = required ?? label.slice(-1) === '*';
 
     return (

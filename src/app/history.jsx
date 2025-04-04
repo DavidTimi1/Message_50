@@ -98,8 +98,7 @@ export const useStateNavigation = () => {
 
         const index = stackClone.lastIndexOf(state);
         if (index > -1){
-            navigate(-1-index); // to go back [index + 1] many times 
-            console.log(index);
+            navigate(-1-index); // to go back [index + 1] many times
             return true
         }
 

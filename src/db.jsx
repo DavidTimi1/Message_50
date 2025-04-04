@@ -1,5 +1,6 @@
 // USING INDEXED DATABASE
 
+import { DevMode } from "./App";
 import { ALLOWED_MEDIA_TYPES } from "./app/media/page";
 import { seedDB } from "./data/loadData";
 import { once, runOnComplete } from "./utils";
@@ -125,13 +126,21 @@ IDBrequest.addEventListener('success', e => {
     const { target: { result } } = e;
 
     DB = result;
-    seedDB(DB)
-    .then(() => {
+    if (DevMode){
+        seedDB(DB)
+        .then(() => {
+            loadedDB = true;
+            
+            dispatchEvent(new Event(dbEvent));
+            console.log("Indexeddb is ready to go!");
+        })
+
+    } else {
         loadedDB = true;
         
         dispatchEvent(new Event(dbEvent));
         console.log("Indexeddb is ready to go!");
-    })
+    }
 
 });
 
@@ -156,8 +165,7 @@ export const deleteDatabase = () => {
 
         return IDBPromise( indexedDB.deleteDatabase(dbName) )
         .then(() => {
-            console.log("worked")
-            alert("Deleted Successfully!")
+            alert("Deleted DB Successfully!")
         })
         .catch(() => alert("Failed to delete DB!"))
     }

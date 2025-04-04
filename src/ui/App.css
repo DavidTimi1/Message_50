@@ -123,6 +123,19 @@ small {
   }
 }
 
+.upgrade-required:after {
+  content: 'PLUS✨';
+  bottom: 75%;
+  right: 50%;
+  transform: translateX(50%);
+  background-color: white;
+  font-weight: 500;
+  padding: .25rem .5rem;
+  position: absolute;
+  color: var(--btn-col);
+  border-radius: .5rem;
+}
+
 .pad {
   padding-left: 10px;
   padding-right: 10px;

@@ -81,7 +81,7 @@ export function NavBar({ open }) {
                             </button>
                             <div className="fw">
                                 <div className='flex fw mid-align even-space' style={{ flexWrap: "wrap" }}>
-                                    <IconBtn icon={faBoltLightning} onClick={handleCloseClick}>
+                                    <IconBtn icon={faBoltLightning} onClick={() => alert("Plus✨ not available in your region")}>
                                         Upgrade to plus
                                     </IconBtn>
 

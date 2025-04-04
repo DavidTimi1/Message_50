@@ -11,7 +11,7 @@ export const SideShelf = () => {
     return (
         <div className="sideshelf abs">
             <div className="gap-2 flex-col mob">
-                <button className="no-btn icon-btn" onClick={bulkImport}>
+                <button className="no-btn icon-btn upgrade-required" onClick={bulkImport}>
                     <div className="abs-mid btn-bg fw"></div>
                     <FontAwesomeIcon icon={faUsers} size="xl" />
                     <span className='abs xtra'>

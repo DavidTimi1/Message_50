@@ -4,13 +4,16 @@ import { Rating } from "./Rating";
 import { faCircleCheck, faSpinner, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "../../../components/Button";
+import { apiHost, ProdName } from "../../../App";
+import axios, { formToJSON } from "axios";
+import { Input } from "../../../sign-in/page";
 
 
 
 export const Form = ({closeModal}) => {
     const [mode, setMode] = useState('')
     const [status, setStatus] = useState(false);
-    const [files, setFiles] = useState({}), count = useRef(null);
+    const [files, setFiles] = useState([]);
 
     const ref = useRef(null);
 
@@ -21,7 +24,7 @@ export const Form = ({closeModal}) => {
     }, [status])
 
     return (
-        <form method="post" action="/feedback" className="feedback-body flex-col gap-3 grow"
+        <form method="post" action="/feedback/message50" className="feedback-body flex-col gap-3 grow"
             ref={ref}
             onDragEnter={handleDragOver}
             onDragOver={handleDragOver} 
@@ -43,18 +46,32 @@ export const Form = ({closeModal}) => {
                 :
 
                     <>
+                    {
+                        status.error &&
+                        <div className="err-msg center-text">
+                            {status.error}
+                        </div>
+                    }
+
                     <SelectMode handleChange={changeMode} selected={mode} />
+
+                    <Input name="email" type="email" className="fw"
+                        label="Email (optional, for follow-up):"
+                        placeholder="Enter your email"
+                        style={{ backgroundColor: "var(--body2-col)" }} 
+                    />
+
                     <textarea name="text" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
-                    <Attachment files={files} remove={removeFile} add={addFile} />
+                    {/* <Attachment files={files} remove={removeFile} add={addFile} /> */}
 
                     {mode === 'comment' && <Rating />}
 
                     <Button type="submit">
                         {
-                            status === false ?
-                            "Send"
-                            : 
+                            status === 'loading' ?
                             <FontAwesomeIcon icon={faSpinner} spin />
+                            :
+                            "Send"
                         }
                     </Button>
 
@@ -104,8 +121,8 @@ export const Form = ({closeModal}) => {
         img && URL.revokeObjectURL(img);
 
         setFiles(prevFiles => {
-            const newFiles = { ...prevFiles }
-            delete newFiles[id];
+            const newFiles = [ ...prevFiles ]
+            newFiles.splice(id, 1)
 
             return newFiles
         })
@@ -115,25 +132,56 @@ export const Form = ({closeModal}) => {
         for (let file of files) {
             let imgURL = URL.createObjectURL(file);
 
-            setFiles(prevFiles => {
-                ++count.current;
-
-                const nextFiles = {
-                    ...prevFiles, [count.current]: {
+            setFiles( prevFiles => [
+                    ...prevFiles, {
                         img: imgURL, file
                     }
-                };
-
-                return nextFiles;
-            })
+                ]
+            )
         }
     }
 
     function handleSubmit(e){
         e.preventDefault();
+        const FBendpoint = apiHost + "/feedback/message50?format=json";
+        setStatus('loading');
+        
+        const form = e.target;
+        // const fd = new FormData();
+        
+        // const xtraData = {
+        //     rating: form["rating"].value,
+        //     mode: form["type"].value,
+        // }
+        const email = form["email"]?.value?.trim();
 
-        const fd = new FormData(e.target);
-        setStatus(true);
+        // fd.set("email", email);
+        // fd.set("message", form["text"].value.trim());
+        // fd.set("subscribed", Boolean(email))
+        // // files.length && fd.set("image", files[0]);
+        // fd.set("extraData", JSON.stringify(xtraData))
+
+        const jsonData = {
+            email,
+            message: form["text"].value.trim(),
+            subscribed: Boolean(email),
+            extraData: {
+                rating: form["rating"]?.value,
+                mode: form["type"].value,
+            },
+        }
+
+        axios.post(FBendpoint, jsonData)
+        .then( ({data}) => {
+            if (data.success){
+                setStatus(true);
+            }
+        }).catch( error => {
+            console.log(error)
+            setStatus({
+                error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
+            })
+        })
     }
 }
 

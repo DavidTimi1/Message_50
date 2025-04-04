@@ -61,9 +61,10 @@ export const Footer = ({previewFile}) => {
                         {canSend ?
                             <IconBtn type="submit" icon={faPaperPlane} onClick={queueToSend} />
                             :
-                            <label onContextMenu={recordVN}>
-                                <IconBtn icon={faMicrophone} />
-                            </label>
+                            // <label onContextMenu={recordVN}>
+                            //     <IconBtn icon={faMicrophone} />
+                            // </label>
+                            <></>
                         }
                     </div>
                 </div>

@@ -26,11 +26,8 @@ export const ProdName = "Message50";
 export const DevMode = import.meta.env.MODE === 'development';
 
 export const apiHost = DevMode? "http://localhost:5173" : import.meta.env.VITE_BACKEND_HOST;
-console.log(apiHost);
-
 
 export const Msg50 = () => {
-	console.log("apiHost", apiHost, "devmode", DevMode);
 
 	return (
 		<div className='max App'>

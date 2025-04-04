@@ -1,6 +1,5 @@
 import './ui/chats.css';
 import './ui/views.css';
-import wallpaper from './public/Nagi_8.jpg'
 
 import React, { useEffect, useState, useContext, useRef } from "react";
 
@@ -9,8 +8,8 @@ import { runOnComplete, standardUnit } from '../helpers';
 import { ChatContext } from '../contexts';
 import { IconBut } from "../buttons";
 import ProfilePic from "./contacts";
-import { on, once, sanitize, title, transitionEnd } from "../ui/helpers";
-import { IDBPromise, openTrans, DB, getMsg } from '../db';
+import { on, once, title, transitionEnd } from "../ui/helpers";
+import { openTrans, DB, getMsg } from '../db';
 import { DevMode } from '../App';
 import { BgImg, TimePast } from './more';
 
@@ -82,9 +81,9 @@ export default function MsgInterface({ viewMsg }) {
                     }
                 </div>
                 <div className='fw grow flex-col'>
-                    <div className='abs max'>
+                    {/* <div className='abs max'>
                         <BgImg src={wallpaper} />
-                    </div>
+                    </div> */}
                     {chatting &&
                         <MsgList
                             replyTo={replyTo}

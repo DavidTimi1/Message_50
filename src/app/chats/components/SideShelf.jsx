@@ -10,7 +10,7 @@ export const SideShelf = ({ searchContacts }) => {
 
     return (
         <div className="sideshelf abs gap-2 flex-col mob">
-            <button className="no-btn icon-btn" onClick={openAIChat}>
+            <button className="no-btn icon-btn upgrade-required" disabled onClick={openAIChat}>
                 <div className="abs-mid btn-bg fw"></div>
                 <div className='img-txt'>
                     <img src={aiChatIcon} alt='' className='fw' style={{objectFit: "contain"}} />
@@ -29,6 +29,6 @@ export const SideShelf = ({ searchContacts }) => {
 
 
     function openAIChat() {
-        toggleOverlay('ai-chat', true);
+        // toggleOverlay('ai-chat', true);
     }
 }

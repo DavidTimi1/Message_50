@@ -1,7 +1,7 @@
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons"
 import { IconBtn } from "../../../components/Button"
-import { Suspense, useContext, useEffect, useState } from "react";
-import { ChatContext, ToggleOverlay } from "../../contexts";
+import { useContext, useEffect, useState } from "react";
+import { ToggleOverlay } from "../../contexts";
 import { getUserDetails } from "../lib";
 import { useOnlineStatus } from "../../components/Hooks";
 

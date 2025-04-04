@@ -81,7 +81,7 @@ const Body = ({isLogin}) => {
 							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={8} />
 
 							<div className='flex fw' style={{justifyContent: "flex-end"}}>
-								<Link className='no-link' to='/lily/reset'>
+								<Link className='no-link' to='/reset'>
 									Forgot Password?
 								</Link>
 							</div>
@@ -140,9 +140,7 @@ const Body = ({isLogin}) => {
 			logInWithDetails(formData);
 
 		} else {
-			registerWithDetails(e.target)
-			.then (console.log);
-
+			registerWithDetails(e.target);
 		}
 
 	}
@@ -161,7 +159,7 @@ const Body = ({isLogin}) => {
 			console.error('Error signing in:', error);
 
 			setStatus({
-				error: error.response?.data?.error || "An error occurred. Please try again."
+                error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
 			});
 		});
 	}
@@ -172,8 +170,7 @@ const Body = ({isLogin}) => {
 
         return axios.post(regUrl, data)
         .then((response) => {
-            console.log('Registered successfully:', response.data);
-			
+            console.log('Registered successfully:', response.data);			
 			logInWithDetails(data);
 			return data;
 			
@@ -182,7 +179,7 @@ const Body = ({isLogin}) => {
             console.error('Error signing in:', error);
 
             setStatus({
-                error: error.response?.data?.error || "An error occurred. Please try again."
+                error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
             });
         });
 	}

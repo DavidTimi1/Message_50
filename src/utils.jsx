@@ -284,7 +284,7 @@ export function timePast(timestamp) {
         return `${day} day${day > 1 ? 's' : ''}`
     }
 
-    if (--hr)
+    if (hr)
         return `${hr} hour${hr > 1 ? 's' : ''}`
 
     if (min)

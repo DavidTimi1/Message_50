@@ -22,7 +22,6 @@ export const MsgItem = (props) => {
     const highlightMe = chatContext.id === id, unRequest = () => chatContext.set(cur);
 
     const itemRef = useRef(null), msgElem = useRef(null);
-    select.cur && console.log(select)
 
 
     useEffect(() => {
@@ -198,7 +197,6 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
             // update file info
             statusMsg.args && setFileInfo({...fileInfo, ...statusMsg.args})
             updateMessage(msgId, 'file', statusMsg.args)
-            .then(console.log)
         }
 
     }, [statusMsg]);
