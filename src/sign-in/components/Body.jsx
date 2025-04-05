@@ -126,6 +126,7 @@ const Body = ({isLogin}) => {
 	function handleGuestSignIn(){
 		const guestUrl = apiHost + "/guest-login";
 		console.log("Logging in as guest...")
+		setStatus("pending");
 
 		axios.post(guestUrl)
 		.then((response) => {

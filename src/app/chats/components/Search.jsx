@@ -4,12 +4,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import { once, title, transitionEnd } from "../../../ui/helpers";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
-import { IconBtn } from "../../../components/Button";
+import { Button, IconBtn } from "../../../components/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { contactsTable, loadDB, msgsTable, openTrans } from '../../../db';
 import { ContactResultItem, MsgResultItem } from './SearchResults';
+import { DevMode } from '../../../App';
 
 const navId = 'searchGeneral';
 
@@ -132,10 +133,13 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
                     <div className="search-result fw results-contacts" onClick={handleCLClick}>
                         <div>
-                            <ChatUnsaved searchBoxRef={inputRef} closeSearch={close} />
-                            <button>
-                                Create New  Contact
-                            </button>
+                            { 
+                                DevMode && <ChatUnsaved searchBoxRef={inputRef} closeSearch={close} />
+                            }
+                            
+                            <Button className="br-5" onClick={ () => toggleOverlay('manage-contact', {NEW: true}) } >
+                                Create New Contact
+                            </Button>
                         </div>
 
                         {
