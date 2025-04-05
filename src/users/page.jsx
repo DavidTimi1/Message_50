@@ -7,7 +7,7 @@ import { apiHost } from "../App";
 import Navbar from "../landing/Navbar";
 import { useTransitionOnLoad } from "../app/components/Hooks";
 
-const placeholderImg = '/user-icon.svg'; 
+const placeholderDp = '/user-icon.svg'; 
 
 const UserProfilePage = () => {
     const { username } = useParams(); // Get the username from the URL
