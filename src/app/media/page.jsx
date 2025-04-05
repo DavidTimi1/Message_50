@@ -1,6 +1,4 @@
 import './page.css';
-import placeholderImg from '../../placeholder-img.jpg';
-import placeholderVid from '../../placeholder-vid.jpg';
 
 import { useContext, useEffect, useRef, useState } from "react";
 
@@ -20,6 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ToggleOverlay } from '../contexts';
 
 
+const placeholderImg = '/placeholder-img.jpg';
+const placeholderVid = '/placeholder-vid.jpg';
 const viewName = "Storage and Media";
 export const ALLOWED_MEDIA_TYPES = ["image", "video", "audio", "other"]
 

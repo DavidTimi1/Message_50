@@ -6,7 +6,7 @@ import { faAngleLeft, faCamera, faNoteSticky, faPencil, faShare, faUser } from "
 import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import placeholderImg from '../../../user-icon.svg?url';
+const placeholderImg = '/user-icon.svg'; 
 import { apiHost } from "../../../App";
 import axiosInstance from "../../../auth/axiosInstance";
 

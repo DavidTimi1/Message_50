@@ -9,7 +9,7 @@ import { UserContext } from "../../../contexts";
 import { useOnlineStatus } from "../../components/Hooks";
 import { ProdName } from "../../../App";
 
-import placeholderImg from '../../../user-icon.svg?url';
+const placeholderImg = '/user-icon.svg'; 
 
 
 export const Header = ({ startSearch }) => {

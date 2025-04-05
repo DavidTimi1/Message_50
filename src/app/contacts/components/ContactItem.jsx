@@ -5,7 +5,7 @@ import { ToggleOverlay } from "../../contexts";
 import { getUserDetails } from "../lib";
 import { useOnlineStatus } from "../../components/Hooks";
 
-import placeholderImg from '../../../user-icon.svg?url';
+const placeholderImg = '/user-icon.svg'; 
 
 
 export const ContactItem = ({data, Message}) => {

@@ -12,7 +12,7 @@ import { UserContext } from "../../../contexts";
 import { useOnlineStatus } from '../../components/Hooks';
 import { getUserDetails } from '../lib';
 
-import placeholderImg from '../../../user-icon.svg';
+const placeholderImg = '/user-icon.svg'; 
 
 
 
