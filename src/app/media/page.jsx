@@ -1,6 +1,8 @@
 import './page.css';
+import placeholderImg from '../../placeholder-img.jpg';
+import placeholderVid from '../../placeholder-vid.jpg';
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { RouteContainer } from "../components/View";
 import { $, title } from '../../utils';
@@ -12,9 +14,10 @@ import { AudiosList } from './components/Audios';
 import { OthersList } from './components/Files';
 import { Heading } from './components/Heading';
 import { useNavigate } from 'react-router-dom';
-import { filesTable, loadDB, openTrans } from '../../db';
-import { faFile, faImage, faMicrophone, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { filesTable, getFile, loadDB, openTrans } from '../../db';
+import { faFile, faImage, faMicrophone, faPlay, faVideo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ToggleOverlay } from '../contexts';
 
 
 const viewName = "Storage and Media";
@@ -184,7 +187,7 @@ function MediaNav({ active, goTo }) {
 }
 
 
-async function getFilesByType(type, limit = 50) {
+async function getFilesByType(type, limit = 20) {
 
     return loadDB()
     .then( DB => 
@@ -200,8 +203,15 @@ async function getFilesByType(type, limit = 50) {
                 const cursor = e.target.result;
 
                 if (cursor && results.length < limit) {
-                    const data = cursor.value.data;
+                    const fileData = cursor.value.data;
+                    const data = cursor.value.thmb ?? {} ;
                     data.id = cursor.primaryKey;
+                    data.ext = fileData?.name?.split('.')?.slice(-1)?.[0] ?? "txt";
+
+                    if (type === 'other') {
+                        data.name = fileData?.name ?? "File";
+                        data.size = fileData?.size ?? "...KB";
+                    }
                     results.push(data);
                     cursor.continue();
 
@@ -222,17 +232,108 @@ async function loadFiles() {
     return new Promise( async (resolve, reject) => {
 
         try {
-            const [images, videos, audio, other] = await Promise.all([
+            const [images, videos, audios, others] = await Promise.all([
                 getFilesByType("image"),
                 getFilesByType("video"),
                 getFilesByType("audio"),
                 getFilesByType("other"),
             ]);
 
-            resolve({ images, videos, audio, other });
+            resolve({ images, videos, audios, others });
         } catch (error) {
             reject(error);
         }
     })
 
+}
+
+export const ImgThmb = ({data}) => {
+    const thmbSrc = URL.createObjectURL(data);
+    const toggleOverlay = useContext(ToggleOverlay);
+
+    return (
+        <div className="img-thmb max" onClick={handleClick}>
+            <img src={thmbSrc || placeholderImg} alt='' style={{objectFit: "cover"}} />
+        </div>
+    )
+
+    async function handleClick(){
+        const fileInfo = await getFile(data.id), fileData = fileInfo.data, type = fileInfo.type;
+        const src = URL.createObjectURL(fileData);
+
+        toggleOverlay('media-viewer', {src, type})
+    }
+}
+
+export const VidThmb = ({data}) => {
+    const thmbSrc = URL.createObjectURL(data);
+    const toggleOverlay = useContext(ToggleOverlay);
+
+    return (
+        <div className="vid-thmb max" onClick={handleClick}>
+            <img src={thmbSrc || placeholderVid} alt='' style={{objectFit: "cover"}} />
+            <div className='abs-mid'>
+                <FontAwesomeIcon icon={faPlay} />
+            </div>
+        </div>
+    )
+
+    async function handleClick(){
+        const fileInfo = await getFile(data.id), fileData = fileInfo.data, type = fileInfo.type;
+        const src = URL.createObjectURL(fileData);
+
+        toggleOverlay('media-viewer', {src, type})
+    }
+}
+
+export const AudThmb = ({data}) => {
+    const toggleOverlay = useContext(ToggleOverlay);
+
+    return (
+        <div className="file-thmb max" onClick={handleClick}>
+            <div className='abs-mid flex-col mid-align gap-2'>
+                <FontAwesomeIcon icon={ faMicrophone } size="lg" />
+                <span className='text-sm'>{data.ext}</span>
+            </div>
+        </div>
+    )
+
+    async function handleClick(){
+        const fileInfo = await getFile(data.id), fileData = fileInfo.data, type = fileInfo.type;
+        const src = URL.createObjectURL(fileData);
+
+        toggleOverlay('media-viewer', {src, type})
+    }
+}
+
+export const FileThmb = ({data}) => {
+    return (
+        <div className="fw flex mid-align gap-2" style={{ padding: "5px" }} onClick={handleClick}>
+            <div>
+                <FontAwesomeIcon icon={faFile} size="xl" />
+            </div>
+            <div className="flex-col grow gap-1">
+                <div className="crop-excess">
+                    {data.name}
+                </div>
+                <div className="fw">
+                    <small>
+                        <span>{data.size}</span>
+                        <span>•</span>
+                        <span>{data.ext}</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    )
+
+    async function handleClick(){
+        const fileData = await getFile(data.id).data;
+        const src = URL.createObjectURL(fileData);
+        // auto click download link
+        const a = document.createElement('a');
+        a.href = src;
+        a.download = data.name;
+        a.click();
+    }
 }

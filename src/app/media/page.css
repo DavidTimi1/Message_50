@@ -184,3 +184,55 @@ nav.media-nav {
 }
 
 }
+
+
+#media-viewer {
+    background-color: var(--body2-col);
+    transition: .3s;
+    opacity: 1;
+    
+    @starting-style {
+        & {
+            opacity: 0;
+        }
+    }
+
+    &.close {
+        opacity: 0;
+    }
+
+    .top-banner {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        background-color: #55555550;
+        padding: 5px;
+        display: flex;
+        transition: .3s;
+        justify-content: flex-start;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .bottom-banner {
+        position: absolute;
+        text-align: center;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        background-color: #55555550;
+        padding: 5px;
+        text-align: center;
+        transition: .3s;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &.fullscreen {
+        .bottom-banner, .top-banner {
+            opacity: 0;
+            visibility: hidden;
+        }
+    }
+}

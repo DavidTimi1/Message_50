@@ -1,5 +1,6 @@
 
 import { forwardRef, useEffect } from "react";
+import { AudThmb } from "../page";
 
 
 export const AudiosList = forwardRef((props, ref) => {
@@ -19,7 +20,7 @@ export const AudiosList = forwardRef((props, ref) => {
                             <div className='flex' style={{ flexWrap: "wrap" }}>
                                 {
                                     data?.map?.(aud =>
-                                        <div key={aud.id} className="media-grid-item br-5">{aud.src}</div>
+                                        <div key={aud.id} className="media-grid-item br-5"> <AudThmb data={aud} /> </div>
                                     )
                                 }
                             </div>

@@ -306,6 +306,12 @@
     transition: .25s;
     opacity: 1;
     left: 0;
+    
+    @starting-style {
+        & {
+            opacity: 0;
+        }
+    }
 
     &.close {
         opacity: 0;

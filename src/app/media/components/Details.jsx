@@ -7,6 +7,9 @@ import axiosInstance from "../../../auth/axiosInstance";
 import { apiHost } from "../../../App";
 import { decryptMediaFile } from "../../crypt";
 import { saveFile } from "../../../db";
+import { AudThmb, ImgThmb, VidThmb } from "../page";
+import { useState } from "react";
+import { standardUnit } from "../../../utils";
 
 
 
@@ -14,6 +17,19 @@ export const Details = forwardRef((props, ref) => {
     const { data, viewObserver, goTo } = props;
 
     const {images, videos, audios, others} = data;
+    const [storage, setStorage] = useState({used: 0, left: 0})
+
+    useEffect(() => {
+        async function calculateSpace() {
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                const { usage, quota } = await navigator.storage.estimate();
+                const used = standardUnit('data', usage);
+                const left = standardUnit('data', quota);
+                setStorage({ used, left });
+            }
+        }
+        calculateSpace();
+    }, []);
 
     useEffect(() => {
         viewObserver.observe(ref.current);
@@ -28,12 +44,12 @@ export const Details = forwardRef((props, ref) => {
                     <div className="fw">
                         <div className="fw flex" style={{ alignItems: "baseline", color: "var(--btn-col)" }}>
                             <span style={{ fontSize: "50px" }}>
-                                55
+                                {storage.used}
                             </span>
-                            <small>GB</small>
+                            {/* <small>GB</small> */}
                         </div>
                         <div className="fw">
-                            <small> Out of </small> 100GB <small> Allocated Space </small>
+                            <small> Out of </small> {storage.left} <small> Allocated Space </small>
                         </div>
                     </div>
                     <div className="fw">
@@ -56,7 +72,7 @@ export const Details = forwardRef((props, ref) => {
                                 </button>
                                 <div className="vl-items-cont max gap-2">
                                     { 
-                                        images.slice(0, 6).map(img => <div key={img.id} className="vl-item br-5"></div>)
+                                        images.slice(0, 6).map(img => <div key={img.id} className="vl-item br-5"> <ImgThmb data={img} /> </div>)
                                     }
                                     { 
                                         images.length > 4 &&
@@ -82,7 +98,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {videos.slice(0, 6).map(vid => <div key={vid.id} className="vl-item br-5"></div>)}
+                                    {videos.slice(0, 6).map(vid => <div key={vid.id} className="vl-item br-5">  <VidThmb data={vid} />  </div>)}
 
                                     {videos.length > 4 &&
                                         <div className="view-all">
@@ -106,7 +122,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {audios.slice(0, 6).map(aud => <div key={aud.id} className="vl-item br-5"></div>)}
+                                    {audios.slice(0, 6).map(aud => <div key={aud.id} className="vl-item br-5"> <AudThmb data={aud} /> </div>)}
 
                                     {audios.length > 4 &&
                                         <div className="view-all">
@@ -130,7 +146,7 @@ export const Details = forwardRef((props, ref) => {
                                     </small>
                                 </button>
                                 <div className="vl-items-cont max gap-2">
-                                    {others.slice(0, 6).map(oth => <div key={oth.id} className="vl-item br-5"></div>)}
+                                    {others.slice(0, 6).map(oth => <div key={oth.id} className="vl-item br-5"> <AudThmb data={oth} /> </div>)}
 
                                     {others.length > 4 &&
                                         <div className="view-all">
@@ -149,6 +165,7 @@ export const Details = forwardRef((props, ref) => {
         </div>
     )
 })
+
 
 
 export function useFileDownload(){

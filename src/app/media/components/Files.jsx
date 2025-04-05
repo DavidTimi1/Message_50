@@ -3,6 +3,7 @@
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { forwardRef, useEffect } from "react";
+import { FileThmb } from "../page";
 
 
 export const OthersList = forwardRef((props, ref) => {
@@ -20,31 +21,11 @@ export const OthersList = forwardRef((props, ref) => {
                     
                         <div className='fw flex-col gap-1' style={{padding: "10px"}}>
                             {
-                                data.map(oth => {
-                                    const { fileSize, fileExt, name } = oth;
-
-                                    return (
-                                        <div key={oth.id} className="fw br-5 media-list-item">
-                                            <div className="fw flex mid-align gap-2" style={{ padding: "5px" }}>
-                                                <div>
-                                                    <FontAwesomeIcon icon={faFile} size="xl" />
-                                                </div>
-                                                <div className="flex-col grow gap-1">
-                                                    <div className="crop-excess">
-                                                        {name}
-                                                    </div>
-                                                    <div className="fw">
-                                                        <small>
-                                                            <span>{fileSize}</span>
-                                                            <span>•</span>
-                                                            <span>{fileExt}</span>
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })
+                                data.map(oth => (
+                                    <div key={oth.id} className="fw br-5 media-list-item">
+                                        <FileThmb data={oth} type='other' />
+                                    </div>
+                                ))
                             }
                         </div>
                     :

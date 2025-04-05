@@ -18,6 +18,7 @@ import { IconBtn } from "../../../components/Button";
 import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
 import { Link } from 'react-router-dom';
+import { UserProfilePic } from '../../contacts/components/ContactItem';
 
 
 
@@ -237,11 +238,10 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
                     <IconBtn icon={faAngleLeft} onClick={closeMsging}>
                         Back
                     </IconBtn>
-                    <div className="flex-col fw mid-align grow gap-1" onClick={showUserProfile} style={{ justifyContent: "center" }}>
-                        <div className="dp-img" style={{ width: "40px" }}>
-                        </div>
+                    <div className="flex fw mid-align grow gap-2" onClick={showUserProfile} style={{ justifyContent: "center" }}>
+                        <UserProfilePic handle={chatting} />
 
-                        <div className="flex gap-2" style={{ justifyContent: "space-between" }}>
+                        <div className="flex gap-2 mid-align" style={{ justifyContent: "space-between" }}>
                             <div className="fs-3 fw-800"> {chatting && title(name)} </div>
                             <small style={{ color: online ? "green" : "var(--text2-col)" }}>
                                 {online ? "Online" : online}
@@ -471,7 +471,6 @@ const PreviewFile = ({ data, closePreview }) => {
     )
 
 
-    // Close function with animation handling
     function close() {
         // Trigger animation class
 

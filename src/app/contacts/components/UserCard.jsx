@@ -9,7 +9,6 @@ import { IconBtn, Button } from "../../../components/Button";
 import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { on, once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
-import { useNavigate } from 'react-router-dom';
 import { useOnlineStatus } from '../../components/Hooks';
 import { getUserDetails } from '../lib';
 

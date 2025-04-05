@@ -3,7 +3,7 @@
 import { DevMode } from "./App";
 import { ALLOWED_MEDIA_TYPES } from "./app/media/page";
 import { seedDB } from "./data/loadData";
-import { once, runOnComplete } from "./utils";
+import { createImgThumbnail, createVideoThumbnail, once, runOnComplete } from "./utils";
 
 // global table database
 let DB;
@@ -229,9 +229,15 @@ export const saveContactToDB = async(user) => {
 export const saveFile = async (file) => {
     let type = file.type.split("/")[0];
     type = ALLOWED_MEDIA_TYPES.includes(type) ? type : "other"
+    let thmb = null
+
+    if (type === "image")
+        thmb = await createImgThumbnail(file);
+    else if (type === "video")
+        thmb = await createVideoThumbnail(file);
     
     return loadDB()
-        .then( DB => IDBPromise( openTrans(DB, filesTable, 'readwrite').add({ type, data: file }) ) )
+        .then( DB => IDBPromise( openTrans(DB, filesTable, 'readwrite').add({ type, data: file, thmb }) ) )
         .then(res => res)
         .catch(err => {
             console.error(err);

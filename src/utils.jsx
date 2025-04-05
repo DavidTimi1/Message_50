@@ -292,3 +292,66 @@ export function timePast(timestamp) {
 
     return `Just now`
 }
+
+
+
+export const createVideoThumbnail = (videoFile, width = 100, height = 100, seekTime = 0) => {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.crossOrigin = "anonymous";
+        video.src = URL.createObjectURL(videoFile);
+
+        video.onloadedmetadata = () => {
+            video.currentTime = seekTime;
+        };
+
+        video.onseeked = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject('Error creating thumbnail blob');
+                }
+            }, 'image/jpeg', 0.8);
+        };
+
+        video.onerror = (error) => {
+            reject(`Error processing video: ${error.message}`);
+        };
+    });
+};
+
+export const createImgThumbnail = (fileData, width = 100, height = 100) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const context = canvas.getContext('2d');
+            context.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject('Error creating thumbnail blob');
+                }
+            }, 'image/jpeg', 0.8);
+        };
+
+        img.onerror = (error) => {
+            reject(`Error loading image: ${error.message}`);
+        };
+
+        img.src = URL.createObjectURL(fileData);
+    });
+};

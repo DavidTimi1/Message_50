@@ -5,7 +5,7 @@ import { useEffect, useState, useRef, useContext } from "react";
 import { IconBtn } from "../../../components/Button";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { on, once, timePast } from "../../../utils";
+import { on, once, standardUnit, timePast } from "../../../utils";
 
 import { faArrowDown, faArrowUp, faCheckDouble, faCircleArrowDown, faCirclePause, faCirclePlay, faClock, faEllipsisVertical, faFile, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { dbName, getFile, getMsg, IDBPromise, updateMessage } from '../../../db';
@@ -212,7 +212,7 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                     type: res.type,
                     name: res.data.name, 
                     size: res.data.size, 
-                    ext: res.data.ext,
+                    ext: res.data.ext ?? res.data.name.split('.').pop(),
                     localUrl: URL.createObjectURL(res.data)
                 })
             } else {
@@ -253,10 +253,7 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                 <div className="fw flex mid-align">
                     {
                         localUrl ?
-                            <button className="no-btn p-but">
-                                <FontAwesomeIcon icon={faCirclePlay} size='xl' />
-                                <FontAwesomeIcon icon={faCirclePause} size='xl' />
-                            </button>
+                            <audio src={localUrl} controls className="audio-player fw" />
                             :
                             <button className="no-btn">
                                 {
@@ -275,9 +272,9 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                 </div>
                 <div>
                     <small className="aud-dets">
-                        <span className="audio-duration"> {duration} </span>
+                        <span className="audio-duration"> {ext} </span>
                         <span>•</span>
-                        <span className="audio-size"> {size} </span>
+                        <span className="audio-size"> { standardUnit('data', size) } </span>
                     </small>
                 </div>
             </div>
@@ -329,7 +326,7 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                                     </div>
                                     <div className="fw">
                                         <small className="meta">
-                                            <span> {size} </span>
+                                            <span> { standardUnit('data', size) } </span>
                                             <span> • </span>
                                             <span> {ext} </span>
                                         </small>
@@ -369,7 +366,7 @@ function MsgAttachment({msgId, fileInfo, loadType, status }) {
                                     <div>{name}</div>
                                     <div className="fw">
                                         <small className="meta">
-                                            <span>{size}</span>
+                                            <span>{ standardUnit('data', size) }</span>
                                             <span>•</span>
                                             <span>{ext}</span>
                                         </small>
@@ -446,7 +443,7 @@ function LoadVeil({ loadType, size, loadProgress, handleClick }) {
 
                     <label> {/* To capture clicks on the label too */}
                         <IconBtn onClick={handleClick} icon={loadType == 'up'? faArrowUp : faArrowDown} size="xl" />
-                        <span> {size} </span>
+                        <span> {standardUnit('data', size)} </span>
 
                     </label>
                 }
