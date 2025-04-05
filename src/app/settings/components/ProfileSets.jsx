@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import placeholderImg from '../../../user-icon.svg';
 import { apiHost } from "../../../App";
+import axiosInstance from "../../../auth/axiosInstance";
 
 
 
@@ -59,7 +60,7 @@ export const ProfileBrief = () => {
         const shareData = {
             title: `${User.username}'s profile`,
             text: "You can contact me on this quick and secure messaging platform",
-            url: `${apiHost}/users/${User.username}`
+            url: `/user/${User.username}`
         }
 
         navigator.share(shareData)
@@ -72,7 +73,8 @@ export const ProfileEdit = ({ show }) => {
     const ref = useRef(null), navId = 'profile-edit';
 
     const toggleOverlay = useContext(ToggleOverlay);
-    const userDp = useContext(UserContext).dp;
+    const User = useContext(UserContext), userDp = User.dp;
+    const [error, setError] = useState();
 
     const { pushState, removeState } = useContext( StateNavigatorContext );
 
@@ -131,7 +133,15 @@ export const ProfileEdit = ({ show }) => {
                     </IconBtn>
                     <h3> {title} </h3>
                 </div>
-                <form method="post" action="" className="fw pad grow">
+
+                {
+                    error &&
+                    <div className="err-msg">
+                        {error}
+                    </div>
+                }
+
+                <form method="post" onSubmit={handleSubmit} action="" className="fw pad grow">
                     <div className="mx-auto thmb">
                         <div className="img-dp" style={{width: "150px"}} >
                             <img src={dp ?? placeholderImg} alt="user profile picture" className="max" />
@@ -165,6 +175,23 @@ export const ProfileEdit = ({ show }) => {
         setDp(url);
 
     }
+
+    function handleSubmit(e){
+        e.preventDefault();
+        const endpoint = apiHost + "/chat/api/profile-edit";
+
+        const fd = new FormData(e.target);
+
+        axiosInstance.post(endpoint, fd)
+        .then(response => {
+            console.log(response.data.success);
+            User.reload();
+
+        }).catch( err => {
+            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
+            console.error(err);
+        })
+    }
 }
 
 
@@ -174,7 +201,7 @@ const DPBtn = ({setProfile}) => {
         <label className="no-btn icon-btn" >
             <div className="abs-mid btn-bg fw" style={{"--bg": "var(--btn-col)"}}></div>
             <FontAwesomeIcon icon={faCamera} size="xl" color="white" />
-            <input onInput={handleInput} type="file" accept="image/*" className="hide" />
+            <input onInput={handleInput} type="file" accept="image/*" name="dp" className="hide" />
 
             <span className="sr-only"> 
                 Take a picture
@@ -235,7 +262,7 @@ const ProfileForm = () => {
                                 <span> bio </span>
                                 <span> 100 characters </span>
                             </small>
-                            <textarea className="fw" ref={bioRef} maxLength="100"></textarea>
+                            <textarea className="fw" name="bio" ref={bioRef} maxLength="100" placeholder="Enter a short bio ..."></textarea>
                         </div>
                     </div>
                 </label>

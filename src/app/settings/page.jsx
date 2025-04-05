@@ -16,6 +16,9 @@ import { Heading } from "./components/Heading";
 import { ToggleOverlay } from '../contexts';
 
 import { deleteDatabase } from '../../db';
+import { UserContext } from '../../contexts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 const viewName = "Settings";
 
@@ -102,17 +105,33 @@ export const SettingsPage = () => {
 
 
 const Invite = () => {
+    const User = useContext(UserContext);
 
     return (
         <div className="settings-sec fw br-5">
-            <button className="no-btn fw">
-                <h3 className='flex-col'>
-                    {/* <SetIcon src="#TODO" /> */}
+            <button className="no-btn fw" onClick={handleClick}>
+                <h3 className='flex gap-4 mid-align'>
+
+                    <span className='flex mid-align'>
+                        <FontAwesomeIcon icon={faPlus} size="sm" />
+                        <FontAwesomeIcon icon={faUsers} />
+                    </span>
+
                     <span> Invite Friends </span>
                 </h3>
             </button>
         </div>
     )
+
+    function handleClick(){
+        const shareData = {
+            title: `${User.username}'s invite`,
+            text: "Join me and let's chat on this quick and secure messaging platform",
+            url: `/user/${User.username}`
+        }
+
+        navigator.share(shareData)
+    }
 }
 
 

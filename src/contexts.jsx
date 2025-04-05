@@ -30,14 +30,14 @@ export const UserProvider = ({ children, devData }) => {
 					setUserKeyPair()
 				}
 
-				setUserData({...res.data, dp: dp})
+				setUserData({...res.data, dp: dp, reload: reloadUserData})
 			})
 			.catch((error) => {
 				console.error('Error Loading Data:', error);
 			});
 
 		} else {
-			setUserData(devData);
+			DevMode && setUserData(devData);
 
 		}
 
@@ -49,6 +49,20 @@ export const UserProvider = ({ children, devData }) => {
             {children}
         </UserContext.Provider>
     );
+
+	function reloadUserData(){
+		if (auth) {
+			axiosInstance.get(loadDataUrl)
+			.then( res => {
+				console.log(res.data)
+				setUserData({...res.data, reload: reloadUserData})
+			})
+			.catch((error) => {
+				console.error('Error Loading Data:', error);
+			});
+
+		}
+	}
 };
 
 

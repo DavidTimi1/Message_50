@@ -58,7 +58,7 @@ const Body = ({isLogin}) => {
 								</div>
 							}
 
-							<Button className="br-5" onClick={handleGoogleSignIn}>
+							<Button className="br-5" onClick={handleGuestSignIn}>
 								{
 									status === "pending" ? 
 									<FontAwesomeIcon icon={faSpinner} spin />
@@ -66,7 +66,7 @@ const Body = ({isLogin}) => {
 									status === true ?
 									<FontAwesomeIcon icon={faCheckCircle} />
 									:
-									"Sign in with Google"
+									"Continue as Guest User"
 								}
 							</Button>
 
@@ -123,10 +123,23 @@ const Body = ({isLogin}) => {
 		</div>
 	)
 
-	function handleGoogleSignIn(){
-		setStatus("pending");
+	function handleGuestSignIn(){
+		const guestUrl = apiHost + "/guest-login";
+		console.log("Logging in as guest...")
 
-		setTimeout(() => setStatus(true), 2000)
+		axios.post(guestUrl)
+		.then((response) => {
+			console.log(response.data.message);
+			logUIIn(response.data.access_token);
+			setStatus(true);
+		})
+		.catch((error) => {
+			console.error('Error signing in:', error);
+
+			setStatus({
+                error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
+			});
+		});
 	}
 
 	function handleSubmit(e){

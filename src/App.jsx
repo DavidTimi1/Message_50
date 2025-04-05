@@ -20,6 +20,7 @@ import LandingPage from './landing/page';
 import { Msg50App } from './app/page';
 import { AppRoutes } from './Routes';
 import { SignIn } from './sign-in/page';
+import UserProfilePage from './users/page';
 
 
 export const ProdName = "Message50";
@@ -39,6 +40,7 @@ export const Msg50 = () => {
 					<Route path='/register' element={<SignIn isLogin={false} />} />
 					<Route path='/login' element={<SignIn isLogin={true} />} />
 					<Route path='/app/*' element={<Msg50App />} />
+					<Route path='/user/:username' element={<UserProfilePage />} />
 					<Route path='/routes' element={<AppRoutes />} />
 					<Route path='*' element={<Navigate to='/' replace />} />
 				</Routes>

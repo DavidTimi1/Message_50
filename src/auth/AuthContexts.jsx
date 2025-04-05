@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
                     
                 } catch (err) {
                     console.log(err)
-                    logout(); // Logout if token is invalid
+                    // logout(); // Logout if token is invalid
                 }
             }
         }

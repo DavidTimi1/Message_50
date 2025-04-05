@@ -30,7 +30,7 @@ export const Msg50App = () => {
     const [msgFrom, jumpTo] = useState();
 
     const navigate = useNavigate();
-    const location = useLocation();
+    const location = useLocation(), locationState = location.state;
     const authenticated = useAuth().auth?.token;
 
 
@@ -48,6 +48,15 @@ export const Msg50App = () => {
         }
 
     }, [authenticated])
+
+    useEffect(() => {
+        const queriedUser = locationState?.showUser;
+        if (queriedUser) {
+            // same route jsut remove the state
+            navigate(window.location.pathname, { replace: true, state: null });
+            toggleOverlay('user-card', {id: queriedUser});
+        }
+    }, [locationState])
 
 
     return (

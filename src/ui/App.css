@@ -127,6 +127,7 @@ small {
   content: 'PLUS✨';
   bottom: 75%;
   right: 50%;
+  box-shadow: 0 0 2px var(--btn-col);
   transform: translateX(50%);
   background-color: white;
   font-weight: 500;

@@ -177,7 +177,7 @@ export const Form = ({closeModal}) => {
                 setStatus(true);
             }
         }).catch( error => {
-            console.log(error)
+            console.error(error)
             setStatus({
                 error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
             })

@@ -1,7 +1,6 @@
 import './page.css';
 
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from "react-router-dom";
 
 
 import { SideShelf } from './components/SideShelf';
