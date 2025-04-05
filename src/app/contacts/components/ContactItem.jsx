@@ -60,7 +60,7 @@ export const ContactItem = ({data, Message}) => {
 export function UserProfilePic({handle, dp}){
     const isOnline = useOnlineStatus();
     const [newDp, setDp] = useState(dp);
-    print(placeholderImg)
+    console.log(placeholderImg)
 
     useEffect(() => {
         if(dp) return 
