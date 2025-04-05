@@ -5,7 +5,7 @@ import { ToggleOverlay } from "../../contexts";
 import { getUserDetails } from "../lib";
 import { useOnlineStatus } from "../../components/Hooks";
 
-import placeholderImg from '../../../user-icon.svg';
+import placeholderImg from '../../../user-icon.svg?url';
 
 
 export const ContactItem = ({data, Message}) => {
@@ -60,7 +60,6 @@ export const ContactItem = ({data, Message}) => {
 export function UserProfilePic({handle, dp}){
     const isOnline = useOnlineStatus();
     const [newDp, setDp] = useState(dp);
-    console.log(placeholderImg)
 
     useEffect(() => {
         if(dp) return 

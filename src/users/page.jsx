@@ -3,7 +3,7 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import { UserContext } from "../contexts";
 import axios from "axios";
 
-import placeholderDp from '../user-icon.svg';
+import placeholderDp from '../user-icon.svg?url';
 import { apiHost } from "../App";
 import Navbar from "../landing/Navbar";
 import { useTransitionOnLoad } from "../app/components/Hooks";
