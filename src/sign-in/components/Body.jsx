@@ -14,7 +14,7 @@ const Body = ({isLogin}) => {
 	const ref = useRef(null);
 
 	const navigate = useNavigate();
-	const pathname = useLocation().pathname;
+	const {pathname, search} = useLocation(), nextRoute = new URLSearchParams(search).get("next");
 
 	const logUIIn = useContext(AuthContext).login;
 
@@ -32,7 +32,7 @@ const Body = ({isLogin}) => {
     useEffect(() => {
         if (status === true){
             setTimeout(() => {
-                navigate("/app");
+                navigate(nextRoute ?? '/app');
             }, 500)
         }
     }, [status])
@@ -103,14 +103,14 @@ const Body = ({isLogin}) => {
 									isLogin?
 									<>
 										<span>Don't have an account? </span>
-										<Link className='no-link' to='/register'>
+										<Link className='no-link' to={`/register${search? `?${search}` : ""}`}>
 											Register here
 										</Link>
 									</>
 									:
 									<>
 										<span>Already registered? </span>
-										<Link className='no-link' to='/login'>
+										<Link className='no-link' to={`/login${search? `?${search}` : ""}`}>
 											Login here
 										</Link>
 									</>

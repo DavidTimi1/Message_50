@@ -116,32 +116,35 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                     </label>
                 </div>
 
-                <div className="filters-list fw flex mid-align gap-1 side-scroll hid-scroll">
-                    {
-                        !onlyContacts && (
-                            searchFilters.map(filter =>
-                                <FilterButton key={filter} id={filter} state={filters.includes(filter)} change={toggleFilter} />
-                            )
-                        )
-                    }
-                </div>
+                {
+                    !onlyContacts && (
+                        <div className="filters-list fw flex mid-align gap-1 side-scroll hid-scroll">
+                            {
+                                searchFilters.map(filter =>
+                                    <FilterButton key={filter} id={filter} state={filters.includes(filter)} change={toggleFilter} />
+                                )
+                            }
+                        </div>
+                    )
+                }
             </div>
 
-            <div className="fw">
+            <div className="fw p-2">
+                {
+                    (!filters.length || filters.includes("contacts")) &&
+                        <div className='flex-col gap-2'>
+                            <ChatUnsaved searchBoxRef={inputRef} closeSearch={close} />
+                            
+                            <Button className="br-5 fw" onClick={ () => toggleOverlay('manage-contact', {NEW: true}) } >
+                                Create New Contact
+                            </Button>
+                        </div>
+                }
+                <hr />
                 {
                     results.contacts &&
 
                     <div className="search-result fw results-contacts" onClick={handleCLClick}>
-                        <div>
-                            { 
-                                DevMode && <ChatUnsaved searchBoxRef={inputRef} closeSearch={close} />
-                            }
-                            
-                            <Button className="br-5" onClick={ () => toggleOverlay('manage-contact', {NEW: true}) } >
-                                Create New Contact
-                            </Button>
-                        </div>
-
                         {
                             results.contacts.map( (data, key) => <ContactResultItem key={key} data={data} /> )
                         }
@@ -232,9 +235,9 @@ const ChatUnsaved = ({ searchBoxRef, closeSearch }) => {
 
     return (
         <>
-            <button className="no-btn fw" type="button" onClick={showDialog}>
+            <Button className="no-btn fw" type="button" onClick={showDialog}>
                 Chat unsaved contact
-            </button>
+            </Button>
 
             <dialog className="dialog-box" ref={diaRef} onClose={close}>
                 <form className="dialog-container" method="dialog">

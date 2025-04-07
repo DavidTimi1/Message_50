@@ -30,6 +30,10 @@
 }
 
 
+*:has(> .crop-excess){
+    overflow-x: hidden;
+  }
+
 .crop-excess {
     text-overflow: ellipsis;
     overflow: hidden;

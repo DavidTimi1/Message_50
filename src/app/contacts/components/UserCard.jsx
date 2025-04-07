@@ -238,7 +238,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                     </div>
                 </div>
 
-                <div className='flex-col mx-auto'>
+                <div className='flex-col mx-auto mid-align'>
                     <span className="fs-3 fw-800"> {name} </span>
                     <small> {args === true? username : handle} </small>
                 </div>

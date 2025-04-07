@@ -172,9 +172,10 @@ export const progressUpload = (url, upId, progressFunc, data, responseType = "js
 }
 
 export const standardUnit = (quantity, value) => {
+    let time;
     switch (quantity) {
         case "timestamp":
-            let time = new Date(value);
+            time = new Date(value);
 
             return {
                 sec: time.getSeconds(),
@@ -187,14 +188,9 @@ export const standardUnit = (quantity, value) => {
             }
 
         case "time":
-            value = Math.floor(value);
-            let hrs = Math.floor(value / 3600);
-            let val2 = value % 3600;
-            let mins = Math.floor(val2 / 60);
-            let secs = val2 % 60;
-            let str = (hrs && mins < 10 ? "0" + mins : mins) + ":" + ((secs >= 10) ? secs : "0" + secs);
-
-            return hrs ? `${hrs}:${str}` : str;
+            time = new Date(value);
+            // show time in fromat hour:mins
+            return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
         case "data":
             if (!value) return value;
@@ -265,7 +261,8 @@ export function csrf() {
 }
 
 export function timePast(timestamp) {
-    const data = standardUnit('timestamp', new Date().getTime() - timestamp);
+    const currentTime = new Date().getTime();
+    const data = standardUnit('timestamp', currentTime - timestamp);
 
     if (!data) throw Error("Invalid timestamp value");
     let { year, month, day, hr, min } = data;
@@ -284,11 +281,8 @@ export function timePast(timestamp) {
         return `${day} day${day > 1 ? 's' : ''}`
     }
 
-    if (hr)
-        return `${hr} hour${hr > 1 ? 's' : ''}`
-
-    if (min)
-        return `${min} min${min > 1 ? 's' : ''}`
+    if (hr || min)
+        return standardUnit('time', timestamp)
 
     return `Just now`
 }

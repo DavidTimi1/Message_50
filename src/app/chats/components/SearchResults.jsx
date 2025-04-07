@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { timePast } from "../../../utils";
+import { standardUnit, timePast } from "../../../utils";
 import { useContactName } from "../../components/Hooks";
 import { UserProfilePic } from "../../contacts/components/ContactItem";
 import StatusIcon from "../../components/status";
+import { TimePast } from "./ChatList";
 
 
 
@@ -14,16 +15,15 @@ export const MsgResultItem = ({ data }) => {
     return (
         <div className='msg-res br-1' data-id={id} data-user={handle}>
             <div className='max mid-align flex gap-3 br-1' style={{ padding: "10px 5px" }}>
-                <div className='dp-img flex'>
+                <UserProfilePic handle={handle} />
 
-                </div>
                 <div className="flex-col details grow gap-1">
                     <div className="flex fw" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
                         <div className="user grow crop-excess" title={name}>
                             {handle !== "multiple" ? name : "Broadcast List"}
                         </div>
                         <small className='tl'>
-                            <TimeBadge time={time} />
+                            <TimePast time={time} />
                         </small>
                     </div>
                     <div className="flex chat-msg fw mid-align" style={{ alignItems: "baseline" }}>
@@ -38,8 +38,8 @@ export const MsgResultItem = ({ data }) => {
 
 
 export const ContactResultItem = ({data}) => {
-    const {id, name, handle, bio, dp} = data;
-
+    const {id, handle, bio, dp} = data;
+    const name = useContactName(handle);
 
     return (
         <div className="contact-res br-5" data-user={id}>
@@ -56,15 +56,4 @@ export const ContactResultItem = ({data}) => {
             </div>
         </div>
     )
-}
-
-function TimeBadge({ time }) {
-    const [value, setValue] = useState(time);
-
-    setTimeout(() => setValue(time), 60000);
-
-    return (
-        <>{value}</>
-    )
-
 }

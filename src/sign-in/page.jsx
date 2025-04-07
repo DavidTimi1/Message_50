@@ -53,7 +53,7 @@ export const Input = ({type='text', name, label, required, placeholder, children
                 <small className="lb">
                     {label}
                 </small>
-                <input className="fw" type={type} name={name} placeholder={placeholder} required={required} autoComplete="e" />
+                <input className="fw" type={type} name={name} placeholder={placeholder} required={required} autoComplete={autoComplete} />
             </div>
 
             <small> {children} </small>

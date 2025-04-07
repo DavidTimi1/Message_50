@@ -92,6 +92,10 @@ input[type=range] {
   }
 }
 
+*:has(> .crop-excess2){
+  overflow-x: hidden;
+}
+
 small {
   font-size: 80%;
 }

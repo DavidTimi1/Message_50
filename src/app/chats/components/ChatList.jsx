@@ -204,10 +204,15 @@ const ChatItem = ({ data, Message }) => {
     }
 }
 
-function TimePast({ time }) {
+export function TimePast({ time }) {
     const [value, setValue] = useState(timePast(time));
 
-    setTimeout(() => setValue(timePast(time)), 60000);
+    useEffect(() => {
+        if (value === 'Just now'){
+            setValue(timePast(time), 120000) // after 2 mins
+        }
+
+    })
 
     return (
         <>{value}</>
