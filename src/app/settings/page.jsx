@@ -19,6 +19,7 @@ import { deleteDatabase } from '../../db';
 import { UserContext } from '../../contexts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { AuthContext } from '../../auth/AuthContexts';
 
 const viewName = "Settings";
 
@@ -136,24 +137,34 @@ const Invite = () => {
 
 
 const Danger = () => {
+    const {logout} = useContext(AuthContext);
 
     return (
         <div className='fw'>
             <div className="settings-sec">
                 <label className="no-accordion fw">
-                    <button className="no-btn btn mixed btn-outline-secondary fw" onClick={deleteDatabase}>
-                        Log out
+                    <button className="no-btn btn mixed btn-outline-danger fw"  onClick={deleteDatabase}>
+                        Clear All Chats
                     </button>
                 </label>
             </div>
-            <hr></hr>
+            <hr />
             <div className="settings-sec">
                 <label className="no-accordion fw">
-                    <button className="no-btn btn mixed btn-outline-danger fw">
-                        Clear All Chats
+                    <button className="no-btn btn mixed btn-outline-secondary fw" onClick={handleLogoutClick}>
+                        Log out
                     </button>
                 </label>
             </div>
         </div>
     )
+
+    function handleLogoutClick(){
+        const vert = confirm(
+            `Logging out will also delete your current info and messages form this device for security purposes.
+        Do you wish to continue?`
+        );
+        if (!vert) return 
+        logout();
+    }
 }

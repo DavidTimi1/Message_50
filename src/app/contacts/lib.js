@@ -27,7 +27,8 @@ export const getUserDetails = async (handle, isOnline) => {
                 const transData = {
                     id: data.id,
                     handle: data.username,
-                    dp: data.dp
+                    dp: data.dp,
+                    bio: data.bio
                 }
 
                 if (!user)
@@ -35,8 +36,8 @@ export const getUserDetails = async (handle, isOnline) => {
                 
                 return {...user, ...transData}
             })
-            .catch(_ => {
-                error = "😥 User could not be found, confirm user handle"
+            .catch(err => {
+                error =  err.response? "😥 User could not be found, confirm user handle" : err.message;
             })
 
     } else {

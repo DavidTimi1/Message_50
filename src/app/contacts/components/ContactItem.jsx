@@ -18,7 +18,7 @@ export const ContactItem = ({data, Message}) => {
         <div className="contact-cont br-5" data-id={id}>
             <div className="max gap-3 flex mid-align">
 
-                <UserProfilePic handle={handle} dp={dp}  />
+                <UserProfilePic handle={handle} dp={dp ?? placeholderImg}  />
 
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>

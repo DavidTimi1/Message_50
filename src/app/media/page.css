@@ -206,7 +206,7 @@ nav.media-nav {
         left: 0;
         top: 0;
         z-index: 1;
-        background-color: #55555550;
+        background: linear-gradient(to bottom, #55555550, #55555500);
         padding: 5px;
         display: flex;
         transition: .3s;
@@ -221,7 +221,7 @@ nav.media-nav {
         bottom: 0;
         left: 0;
         z-index: 1;
-        background-color: #55555550;
+        background: linear-gradient(to top, #55555550, #55555500);
         padding: 5px;
         text-align: center;
         transition: .3s;

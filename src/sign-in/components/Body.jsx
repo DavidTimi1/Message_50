@@ -74,17 +74,17 @@ const Body = ({isLogin}) => {
 								<div className='mx-auto'> OR </div>
 							</div>
 
-							<Input type="text" name="username" label="Username*" placeholder='Enter your username' />
+							<Input type="text" name="username" label="Username*" placeholder='Enter your username' autoComplete={isLogin? 'username' : undefined} />
 
-							{ !isLogin && <Input type="email" name="email" label="Email*" placeholder='Enter your email address' /> }
+							{ !isLogin && <Input type="email" name="email" label="Email*" placeholder='Enter your email address' autoComplete={isLogin? 'email' : undefined} /> }
 							
-							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={8} />
+							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={8} autoComplete={isLogin? 'msg50-password' : undefined} />
 
-							<div className='flex fw' style={{justifyContent: "flex-end"}}>
+							{/* <div className='flex fw' style={{justifyContent: "flex-end"}}>
 								<Link className='no-link' to='/reset'>
 									Forgot Password?
 								</Link>
-							</div>
+							</div> */}
 
 							<Button className="br-5" type="submit" disabled={["pending", true].includes(status)}>
 								{

@@ -227,9 +227,6 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
     const name = useContactName(chatting);
 
     const toggleOverlay = useContext(ToggleOverlay);
-    const { removeState } = useContext(StateNavigatorContext);
-
-
 
     return (
         <div className={`${styles.heading}`}>

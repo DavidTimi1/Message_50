@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance from './axiosInstance.js';
 import { apiHost } from '../App.jsx';
 import { loadDB, restartIDB } from '../db.jsx';
+import { useOnlineStatus } from '../app/components/Hooks.jsx';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -13,6 +14,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('jwt');
         return token ? { token } : null;
     });
+    const isOnline = useOnlineStatus();
 
     const verifyUrl = apiHost + '/token/verify';
 
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     // Logout function
     const logout = () => {
+        localStorage.removeItem('userdata');
         localStorage.removeItem('jwt'); // Remove token
         setAuth(null);
 
@@ -42,15 +45,16 @@ export const AuthProvider = ({ children }) => {
                     await axiosInstance.post(verifyUrl, { token: auth.token });
                     
                 } catch (err) {
-                    console.log(err)
-                    // logout(); // Logout if token is invalid
+                    console.log("Error validating session:", err);
+                    if (err.response)
+                        logout(); // Logout if token is invalid
                 }
             }
         }
 
-        verifyToken();
+        isOnline && verifyToken();
 
-  }, [auth]);
+  }, [auth, isOnline]);
 
     return (
         <AuthContext.Provider value={{ auth, login, logout }}>

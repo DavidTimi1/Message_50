@@ -253,7 +253,7 @@ export const ImgThmb = ({data}) => {
 
     return (
         <div className="img-thmb max" onClick={handleClick}>
-            <img src={thmbSrc || placeholderImg} alt='' style={{objectFit: "cover"}} />
+            <img src={thmbSrc || placeholderImg} alt='' className="fw br-5" style={{objectFit: "cover"}} />
         </div>
     )
 
@@ -271,7 +271,7 @@ export const VidThmb = ({data}) => {
 
     return (
         <div className="vid-thmb max" onClick={handleClick}>
-            <img src={thmbSrc || placeholderVid} alt='' style={{objectFit: "cover"}} />
+            <img src={thmbSrc || placeholderVid} alt='' className="fw br-5" style={{objectFit: "cover"}} />
             <div className='abs-mid'>
                 <FontAwesomeIcon icon={faPlay} />
             </div>
@@ -292,7 +292,7 @@ export const AudThmb = ({data}) => {
     return (
         <div className="file-thmb max" onClick={handleClick}>
             <div className='abs-mid flex-col mid-align gap-2'>
-                <FontAwesomeIcon icon={ faMicrophone } size="lg" />
+                <FontAwesomeIcon icon={ faMicrophone } size="xl" />
                 <span className='text-sm'>{data.ext}</span>
             </div>
         </div>
@@ -308,16 +308,16 @@ export const AudThmb = ({data}) => {
 
 export const FileThmb = ({data}) => {
     return (
-        <div className="fw flex mid-align gap-2" style={{ padding: "5px" }} onClick={handleClick}>
+        <div className="fw flex mid-align gap-4" style={{ padding: "10px" }} onClick={handleClick}>
             <div>
-                <FontAwesomeIcon icon={faFile} size="xl" />
+                <FontAwesomeIcon icon={faFile} size="2x" />
             </div>
             <div className="flex-col grow gap-1">
                 <div className="crop-excess">
                     {data.name}
                 </div>
                 <div className="fw">
-                    <small>
+                    <small className='flex gap-1'>
                         <span>{data.size}</span>
                         <span>•</span>
                         <span>{data.ext}</span>
@@ -328,12 +328,13 @@ export const FileThmb = ({data}) => {
     )
 
     async function handleClick(){
-        const fileData = await getFile(data.id).data;
+        const fileInfo = await getFile(data.id), fileData = fileInfo.data;
         const src = URL.createObjectURL(fileData);
         // auto click download link
         const a = document.createElement('a');
         a.href = src;
         a.download = data.name;
         a.click();
+        URL.revokeObjectURL(src);
     }
 }

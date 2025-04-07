@@ -430,7 +430,7 @@ function LoadVeil({ loadType, size, loadProgress, handleClick }) {
                     <div>
                         <svg height="40px" width="40px" style={{ backgroundColor: "grey", clipPath: "circle()", rotate: "-90deg" }}>
                             <circle cx="20px" cy="20px" ref={progressRef} r="17px" fill="none" stroke="white" 
-                                strokeWidth="3px" strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                                strokeWidth="3px" strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.3s ease" }}
                                 strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={circumference}
                             ></circle>
                         </svg>

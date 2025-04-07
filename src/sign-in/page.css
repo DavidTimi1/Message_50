@@ -2,7 +2,7 @@
     overflow: hidden auto;
 
     form {
-        transition: 1s;
+        transition: .5s;
         width: min(90%, 500px);
         
 

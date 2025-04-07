@@ -44,7 +44,7 @@ const Footer = () => {
   
 
 
-export const Input = ({type='text', name, label, required, placeholder, children}) => {
+export const Input = ({type='text', name, label, required, placeholder, children, autoComplete}) => {
     required = required ?? label.slice(-1) === '*';
 
     return (
@@ -53,7 +53,7 @@ export const Input = ({type='text', name, label, required, placeholder, children
                 <small className="lb">
                     {label}
                 </small>
-                <input className="fw" type={type} name={name} placeholder={placeholder} required={required} />
+                <input className="fw" type={type} name={name} placeholder={placeholder} required={required} autoComplete="e" />
             </div>
 
             <small> {children} </small>

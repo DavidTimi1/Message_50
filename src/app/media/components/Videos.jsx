@@ -1,5 +1,6 @@
 
 import { forwardRef, useEffect } from "react";
+import { VidThmb } from "../page";
 
 
 
@@ -22,7 +23,7 @@ export const VideosList = forwardRef((props, ref) => {
                             <div className='flex' style={{ flexWrap: "wrap" }}>
                                 {
                                     data.map(vid =>
-                                        <div key={vid.id} className="media-grid-item br-5">{vid.src}</div>
+                                        <div key={vid.id} className="media-grid-item br-5"> <VidThmb data={vid} /> </div>
                                     )
                                 }
                             </div>

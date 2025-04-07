@@ -7,7 +7,7 @@ import axiosInstance from "../../../auth/axiosInstance";
 import { apiHost } from "../../../App";
 import { decryptMediaFile } from "../../crypt";
 import { saveFile } from "../../../db";
-import { AudThmb, ImgThmb, VidThmb } from "../page";
+import { AudThmb, FileThmb, ImgThmb, VidThmb } from "../page";
 import { useState } from "react";
 import { standardUnit } from "../../../utils";
 
@@ -149,12 +149,12 @@ export const Details = forwardRef((props, ref) => {
                                             <FontAwesomeIcon icon={faAngleRight} />
                                         </small>
                                     </button>
-                                    <div className="vl-items-cont max gap-2">
-                                        {others.slice(0, 6).map(oth => <div key={oth.id} className="vl-item br-5"> <AudThmb data={oth} /> </div>)}
+                                    <div className="flex-col gap-1 max gap-2">
+                                        {others.slice(0, 3).map(oth => <div key={oth.id} className="br-5"> <FileThmb data={oth} /> </div>)}
 
                                         {others.length > 4 &&
                                             <div className="view-all">
-                                                <span className="abs-mid"> {`${others.length - 3}+`} </span>
+                                                <span className="abs-mid"> {others.length - 4}+ files </span>
                                             </div>
                                         }
                                     </div>

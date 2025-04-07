@@ -213,7 +213,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
         getUserDetails(args.id, isOnline)
         .then( async res => {
             if (res.success){
-                setTimeout( () => setData(res.data), 1000 )
+                setTimeout( () => setData(res.data), 500 )
                 
             } else
             showError(res.error)

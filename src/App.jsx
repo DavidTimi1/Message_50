@@ -125,7 +125,7 @@ export const Msg50 = () => {
 
 export const userDevData = {
 	bio: "Experienced programmer, Full stack web developer, AI enthusiast",
-	name: "David",
+	username: "David",
 	handle: "@dev_id",
 	dp: userDp
 }

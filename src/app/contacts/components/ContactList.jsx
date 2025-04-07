@@ -109,9 +109,9 @@ function getContacts(){
 
             if (cursor) {
 
-                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name: name ?? handle }
+                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name: name ?? "~" + handle }
                 
-                let char = (name ?? handle).charAt(0).toUpperCase();
+                let char = (detail.name).charAt(0).toUpperCase();
                 char = char.toLowerCase() == char ? '#' : char
 
                 if (!(char in contactsHashTable))

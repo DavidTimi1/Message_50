@@ -146,7 +146,9 @@ IDBrequest.addEventListener('success', e => {
 
 
 export const deleteDatabase = () => {
-    const vert = confirm("Are you sure you wanna?");
+    const vert = confirm(
+        `Delete all your chats. Note that the chats are not backed up for privacy reasons and this action will permanently delete them.
+    Do you wish to continue?`);
     if (!vert) return 
 
     let done = false;

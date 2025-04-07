@@ -1,5 +1,6 @@
 
 import { forwardRef, useEffect } from "react";
+import { ImgThmb } from "../page";
 
 
 export const ImagesList = forwardRef((props, ref) => {
@@ -20,7 +21,7 @@ export const ImagesList = forwardRef((props, ref) => {
                             <div className='flex' style={{ flexWrap: "wrap" }}>
                                 {
                                     data.map(img =>
-                                        <div key={img.id} className="media-grid-item br-5">{img.src}</div>
+                                        <div key={img.id} className="media-grid-item br-5"> <ImgThmb data={img} /> </div>
                                     )
                                 }
                             </div>
