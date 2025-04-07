@@ -46,7 +46,10 @@ export const UserProvider = ({ children, devData }) => {
 			})
 			.catch((error) => {
 				console.error('Error Loading Data:', error);
-				setUserData({error: error.response ?? 'network'});
+				if (!error.response){
+					setUserData({error: "network", reload: reloadUserData})
+				}
+
 			});
 
 		} else if (!auth) {
@@ -59,37 +62,7 @@ export const UserProvider = ({ children, devData }) => {
 
     return (
         <UserContext.Provider value={userData}>
-			{
-				userData.error?
-					<div className="max flex mid-align" style={{justifyContent: "center"}}>
-						{
-							userData.error === 'network'?
-								<div className="max flex-col mid-align gap-4 p-4" style={{justifyContent: "center"}}>
-									<span style={{fontSize: "50px"}}> ⚠ </span>
-									<p>
-										<b> No Internet ! </b>
-									</p>
-								</div>
-							:
-								<div className="p-2 br-5" style={{backgroundColor: "pink", border: "1px solid salmon", color: "red"}}>
-									Oops!😥 this seems bad <br />
-									But no worries, our team is already fixing it 😁
-								</div>
-						}
-					</div>
-					:
-				userData.username?
-					children
-					:
-					<div className="max flex-col mid-align gap-4 p-4" style={{justifyContent: "center"}}>
-						<CustomLoader />
-						<p>
-							<b> Slow Network </b> - Fetching user data is taking longer than usual <br></br>
-							<em> Try checking your internet connection </em>
-						</p>
-					</div>
-
-			}
+			{children}
         </UserContext.Provider>
     );
 

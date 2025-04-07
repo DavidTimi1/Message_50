@@ -1,7 +1,7 @@
 import "./page.css";
 
-import { useEffect, useState } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation, Link } from "react-router-dom";
 
 import { ChatContext, ToggleOverlay } from './contexts';
 import { NavBar } from "./components/Navbar";
@@ -19,6 +19,9 @@ import { getUserDetails } from "./contacts/lib";
 import { useOnlineStatus } from "./components/Hooks";
 import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
 import { decryptMessage } from "./crypt";
+import { UserContext } from "../contexts";
+import { Button } from "../components/Button";
+import CustomLoader from "../components/Loading";
 
 
 
@@ -28,6 +31,7 @@ export const Msg50App = () => {
     const [overlays, setOverlays] = useState(new Map());
     const isOnline = useOnlineStatus();
     const [msgFrom, jumpTo] = useState();
+    const userError = useContext(UserContext).error;
 
     const navigate = useNavigate();
     const location = useLocation(), locationState = location.state;
@@ -61,48 +65,53 @@ export const Msg50App = () => {
 
     return (
         <div className="max main-app">
-            <StateNavigatorProvider>
-                <ToggleOverlay.Provider value={toggleOverlay}>
-                    <SendMsgsProvider>
-                        <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
-                            <NavBar open={overlays.has('navbar')} />
+            {
+                userError?
+                    <BlankErrorPage />
+                :
+                <StateNavigatorProvider>
+                    <ToggleOverlay.Provider value={toggleOverlay}>
+                        <SendMsgsProvider>
+                            <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
+                                <NavBar open={overlays.has('navbar')} />
 
-                            <Routes>
-                                <Route path='/' element={
-                                    <ProtectedRoute>
-                                        <ChatsPage />
-                                    </ProtectedRoute>
-                                } />
-                                <Route path='/media' element={
-                                    <ProtectedRoute>
-                                        <MediaPage />
-                                    </ProtectedRoute>
-                                } />
-                                {/* <Route path='/notifications' element={
-                    <ProtectedRoute>
-                        <NotificationsPage />
-                    </ProtectedRoute>
-                } /> */}
-                                <Route path='/settings' element={
-                                    <ProtectedRoute>
-                                        <SettingsPage />
-                                    </ProtectedRoute>
-                                } />
-                                <Route path='/contacts' element={
-                                    <ProtectedRoute>
-                                        <ContactsPage />
-                                    </ProtectedRoute>
-                                } />
-                                <Route path='*' element={
-                                    <Navigate to="/app" replace />
-                                } />
-                            </Routes>
+                                <Routes>
+                                    <Route path='/' element={
+                                        <ProtectedRoute>
+                                            <ChatsPage />
+                                        </ProtectedRoute>
+                                    } />
+                                    <Route path='/media' element={
+                                        <ProtectedRoute>
+                                            <MediaPage />
+                                        </ProtectedRoute>
+                                    } />
+                                    {/* <Route path='/notifications' element={
+                        <ProtectedRoute>
+                            <NotificationsPage />
+                        </ProtectedRoute>
+                    } /> */}
+                                    <Route path='/settings' element={
+                                        <ProtectedRoute>
+                                            <SettingsPage />
+                                        </ProtectedRoute>
+                                    } />
+                                    <Route path='/contacts' element={
+                                        <ProtectedRoute>
+                                            <ContactsPage />
+                                        </ProtectedRoute>
+                                    } />
+                                    <Route path='*' element={
+                                        <Navigate to="/app" replace />
+                                    } />
+                                </Routes>
 
-                            <More openOverlays={overlays} />
-                        </ChatContext.Provider>
-                    </SendMsgsProvider>
-                </ToggleOverlay.Provider>
-            </StateNavigatorProvider>
+                                <More openOverlays={overlays} />
+                            </ChatContext.Provider>
+                        </SendMsgsProvider>
+                    </ToggleOverlay.Provider>
+                </StateNavigatorProvider>
+            }
         </div>
     )
 
@@ -200,4 +209,37 @@ async function handleMessageReceipt(msgEvent){
 
         
 
+}
+
+
+const BlankErrorPage = () => {
+    const [graceOver, setGraceOver] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setGraceOver(true);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+            <div className="max flex-col mid-align gap-4 p-4 center-text" style={{justifyContent: "center"}}>
+                {
+                    graceOver?
+                    <>
+                    <span style={{fontSize: "50px"}}> ⚠ </span>
+                    <div>
+                        <b> Error </b> - Something went wrong while fetching user data <br></br>
+                        <em> Try checking your internet connection </em>
+                    </div>
+                    <Button onClick={() => window.location.reload()}>
+                        Reload Page
+                    </Button>
+                    </>
+                    :
+                    <CustomLoader />
+                }
+            </div>
+    )
 }
