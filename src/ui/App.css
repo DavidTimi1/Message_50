@@ -196,6 +196,20 @@ label.nv-input {
 }
 
 
+.custom-svg-loader {
+  width: 100px;
+  height: 100px;
+
+  path {
+    stroke: #ff8000;
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 100px;
+    animation: draw .5s ease-in-out alternate-reverse infinite;
+  }
+} 
+
 .my-btn {
   --color: var(--text-col);
   background-color: var(--btn-col);
