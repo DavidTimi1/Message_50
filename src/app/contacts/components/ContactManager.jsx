@@ -1,16 +1,20 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAt } from "@fortawesome/free-solid-svg-icons/faAt";
 import { Button, IconBtn } from "../../../components/Button";
 import { faCheck, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { once, transitionEnd } from "../../../utils";
+import { contactsTable, IDBPromise, loadDB, openTrans, saveContactToDB } from "../../../db";
+import { Link } from "react-router-dom";
+import { useContactName } from "../../components/Hooks";
 
 
 
 export const ManageContact = ({ show, args }) => {
     const {NEW, id} = show ? args : {} ;
     const title = `${NEW? "Create" : "Edit"} Contact`;
+    const [completed, setCompleted] = useState();
 
     const ref = useRef(null), navId = 'manage-contact';
     const toggleOverlay = useContext(ToggleOverlay);
@@ -58,6 +62,11 @@ export const ManageContact = ({ show, args }) => {
 
     }, [show, navId, pushState, close]);
 
+    useEffect(() => {
+        if(completed && !completed.error)
+            setTimeout( () => handleCloseClick(), 500 );
+    }, [completed])
+
 
     return (
         show &&
@@ -69,19 +78,24 @@ export const ManageContact = ({ show, args }) => {
                     </IconBtn>
                     <h3> {title} </h3>
                 </div>
+
+                {
+                    completed && (
+                        completed.error?
+                        <div className="p-2 br-5 center-text mx-auto" style={{backgroundColor: "pink", border: "1px solid salmon", color: "red"}}>
+                            An error occured, could not perform action
+                        </div>
+                        :
+                        <div className="p-2 br-5 center-text mx-auto" style={{backgroundColor: "limegreen", border: "1px solid green"}}>
+                            {completed}
+                        </div>
+                    )
+                }
                 
-                <Form NEW={NEW} id={id} />
+                <Form NEW={NEW} id={id} showMessage={setCompleted} />
             </div>
         </div>
     )
-
-    // function close() {
-    //     once(transitionEnd, ref.current, () => {
-    //         toggleOverlay('manage-contact', false)
-    //     });
-
-    //     ref.current.classList.add("close");
-    // }
     
     function handleCloseClick(){
         // go back in history to trigger close
@@ -96,10 +110,13 @@ export const ManageContact = ({ show, args }) => {
 }
 
 
-const Form = ({NEW, id}) => {
+const Form = ({NEW, id, showMessage}) => {
+    const formRef = useRef();
+    const name = NEW? '' : useContactName(id);
+
 
     return (
-        <form action="/contacts" method="post" onSubmit={handleSubmit} className="mx-auto">
+        <form action="/contacts" method="post" onSubmit={handleSubmit} ref={formRef} className="mx-auto">
             {
                 id && 
                 <input name="id" value={id} type="text" hidden readOnly />
@@ -108,7 +125,7 @@ const Form = ({NEW, id}) => {
                 <label className="nv-input fw br-5">
                     <div className="flex-col gap-1">
                         <small> Fullname* </small>
-                        <input className="fw" name="names" placeholder="first middle last" required />
+                        <input className="fw" name="name" placeholder="first middle last" defaultValue={name} required />
                     </div>
                 </label>
 
@@ -117,27 +134,35 @@ const Form = ({NEW, id}) => {
                         <small> Handle* </small>
                         <label className="flex gap-1 mid-align">
                             <FontAwesomeIcon icon={faAt} />
-                            <input className="fw" placeholder="valid MSG50 handle" name="handle" required />
+                            <input className="fw" placeholder="valid MSG50 handle" name="handle" defaultValue={id ?? ''} contentEditable={!NEW} required />
                         </label>
                     </div>
                 </label>
                 
                 <label className="nv-input fw br-5">
                     <div className="flex-col gap-1">
-                        <small> Phone Number </small>
+                        <small> Phone Number (optional) </small>
                         <input className="fw" placeholder="phone number" name="phone" type="tel" />
                     </div>
+                    <small> This information is not shared. Read our <Link className="no-link" to="/privacy"> privacy </Link>  </small>
                 </label>
                 
                 <div className="form-btns flex mid-align even-space">
                     { NEW?
-                        <Button onClick={createContact}>
+                        <Button type="submit">
                             Add to Contacts
                         </Button>
                         :
                         <>
-                        <IconBtn icon={faCheck} onClick={editContact} />
-                        <IconBtn icon={faTrashCan} onClick={deleteContact} />
+                        <Button onClick={editContact}>
+                            <span> Save Edit </span>
+                            <FontAwesomeIcon icon={faCheck} />
+                        </Button>
+
+                        <Button onClick={deleteContact}>
+                            <span> Delete Contact </span>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                        </Button>
                         </>
                     }
                 </div>
@@ -145,11 +170,31 @@ const Form = ({NEW, id}) => {
         </form>
     )
 
-    function handleSubmit(){}
+    function handleSubmit(e){
+        e.preventDefault();
+        if (NEW){
+            const form = e.target;
+            const name = form["name"].value, handle = form["handle"].value, phone = form["phone"].value
+            saveContactToDB({name, handle, phone})
+            .then(_ => showMessage("Successfully Created Contact") )
+            .catch( _ => showMessage({error: true}))
+        }
+    }
 
-    function createContact(){}
+    function editContact(){
+        const form = formRef.current;
+        const name = form["name"].value, handle = form["handle"].value, phone = form["phone"].value
+        saveContactToDB({name, handle, phone})
+        .then(_ => showMessage("Successfully Edited Contact") )
+        .catch( _ => showMessage({error: true}))
+    }
 
-    function editContact(){}
-
-    function deleteContact(){}
+    function deleteContact(){
+        loadDB()
+        .then( DB => {
+            IDBPromise( openTrans(DB, contactsTable, 'readwrite').delete(id) )
+        })
+        .then(_ => showMessage("Successfully Deleted Contact") )
+        .catch( _ => showMessage({error: true}))
+    }
 }
