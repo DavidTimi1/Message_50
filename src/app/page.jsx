@@ -44,7 +44,7 @@ export const Msg50App = () => {
         const socket = connectSocket(authenticated);
 
         socket.addEventListener('message', handleMessageReceipt);
-        setTimeout(()=> {socketSend("ready")}, 2000);
+        setTimeout(()=> {socketSend("ready")}, 1000);
 
         return () => {
             socket.removeEventListener('message', handleMessageReceipt)

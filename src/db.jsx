@@ -38,7 +38,9 @@ export const keysTable = 'keys';
 
 
 // listen for any errors from opening the indexeddb
-IDBrequest.onerror = e => {
+IDBrequest.onerror = handleIDBError;
+
+function handleIDBError(e) {
     if (IDBrequest.constructor.name === "IDBOpenDBRequest")
         console.error("Why didn't you allow my web app to use IndexedDB?!")
     else
@@ -52,19 +54,29 @@ export function restartIDB() {
     deleteRequest.onsuccess = _ => {
         loadedDB = false;
         console.log("Successfully closed indexeddb");
+        console.log("Restarting indexeddb ...");
+
+        const IDBrequest = indexedDB.open(dbName, 1);
+        IDBrequest.onerror = handleIDBError;
+        IDBrequest.onupgradeneeded = IDBUpgrade;
+        IDBrequest.onblocked = IDBBlocked;
+        IDBrequest.addEventListener('success', IDBSuccess);
     }
 }
 
 
 // listen for any errors from opening the indexeddb
-IDBrequest.onblocked = _ => {
+IDBrequest.onblocked = IDBBlocked;
+function IDBBlocked(e) {
     DB?.close();
     alert("Database is outdated, please reload the page.");
 }
 
 
 // if we upgrade (create new database or add or remove columns and overwrie former database)
-IDBrequest.onupgradeneeded = e => {
+IDBrequest.onupgradeneeded = IDBUpgrade;
+
+function IDBUpgrade(e) {
     DB = e.target.result;
     DBrestart = true;
     
@@ -122,7 +134,9 @@ IDBrequest.onupgradeneeded = e => {
 
 
 // if it is successful the reulting databse should be assigned to db
-IDBrequest.addEventListener('success', e => {
+IDBrequest.addEventListener('success', IDBSuccess);
+
+function IDBSuccess(e){
     const { target: { result } } = e;
 
     DB = result;
@@ -142,7 +156,7 @@ IDBrequest.addEventListener('success', e => {
         console.log("Indexeddb is ready to go!");
     }
 
-});
+}
 
 
 export const deleteDatabase = () => {

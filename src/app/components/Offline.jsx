@@ -3,7 +3,6 @@ import { useOnlineStatus } from "./Hooks";
 
 import { IDBPromise, openTrans, msgsTable, offlineMsgsTable, loadDB } from "../../db";
 
-import api from '../../data/api.json';
 import { SendMsgContext } from "../contexts";
 import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../crypt.js";
 import axiosInstance from "../../auth/axiosInstance.js";
@@ -142,11 +141,11 @@ export const useOfflineActivities = () => {
 export const OnOnlineMsgSender= () =>{
     
     const offlineActs = useOfflineActivities();
-    const isOnline = useContext(useOnlineStatus);
+    const isOnline = useOnlineStatus();
     
     useEffect(() => {
         if (isOnline){
-            offlineActs.sendMsg()
+            offlineActs.sendMsg();
         }
 
     }, [isOnline, offlineActs])

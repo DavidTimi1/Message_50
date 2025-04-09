@@ -64,7 +64,10 @@ export const ManageContact = ({ show, args }) => {
 
     useEffect(() => {
         if(completed && !completed.error)
-            setTimeout( () => handleCloseClick(), 500 );
+            setTimeout( () => {
+                handleCloseClick()
+                window.location.reload()
+            }, 500 );
     }, [completed])
 
 
@@ -144,7 +147,7 @@ const Form = ({NEW, id, showMessage}) => {
                         <small> Phone Number (optional) </small>
                         <input className="fw" placeholder="phone number" name="phone" type="tel" />
                     </div>
-                    <small> This information is not shared. Read our <Link className="no-link" to="/privacy"> privacy </Link>  </small>
+                    <small> This information is not shared. Read our <Link className="no-link" to="/privacy.pdf"> privacy policy </Link>  </small>
                 </label>
                 
                 <div className="form-btns flex mid-align even-space">

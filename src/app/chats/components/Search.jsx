@@ -40,12 +40,12 @@ export default function SearchWindow({ closeSearch, initFilters }) {
             const controller = new AbortController(), abortSignal = controller.signal;
             searchAbort.current = controller;
 
-            if (!filters.length || onlyContacts){
+            if (!ignore && (!filters.length || filters.includes("contacts"))){
                 searchCl(query, null, abortSignal)
                 .then(res => {
                     contacts.push(...res);
-
-                    !ignore && setResults({
+                    
+                    !ignore && onlyContacts && setResults({
                         contacts
                     })
                 })
@@ -138,9 +138,9 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                             <Button className="br-5 fw" onClick={ () => toggleOverlay('manage-contact', {NEW: true}) } >
                                 Create New Contact
                             </Button>
+                            <hr />
                         </div>
                 }
-                <hr />
                 {
                     results.contacts &&
 
@@ -264,7 +264,7 @@ const ChatUnsaved = ({ searchBoxRef, closeSearch }) => {
         if (returnValue) {
             // fetchDetals and chat
             closeSearch();
-            message(token);
+            message(token.trim());
         }
     }
 }
@@ -321,7 +321,7 @@ async function searchCl(token, lastId, signal){
             // normally, load 20 if id is set, load only 10 more
             if (cursor && !signal.aborted && ((!lastId && i < uB) || (lastId && i < uB2))) {
 
-                const {handle, name} = cursor.value, detail = { id: handle, name };
+                const {handle, dp, bio} = cursor.value, detail = { id: handle, dp, bio };
                 const cmpd = handle + "" + name;
                 
                 if (cmpd.toLowerCase().includes(token)){
@@ -346,4 +346,4 @@ async function searchCl(token, lastId, signal){
 }
 
 
-const searchFilters = [ "contacts", "messages", "media", "images", "videos", "audios", "files" ]
+const searchFilters = [ "contacts", "messages"] //, "media", "images", "videos", "audios", "files" ]

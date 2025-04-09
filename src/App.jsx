@@ -24,6 +24,7 @@ import UserProfilePage from './users/page';
 
 
 export const ProdName = "Message50";
+export const githubLink = "https://github.com/DavidTimi1";
 export const DevMode = import.meta.env.MODE === 'development';
 
 export const apiHost = DevMode? "http://localhost:5173" : import.meta.env.VITE_BACKEND_HOST;

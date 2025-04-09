@@ -58,10 +58,12 @@ export const MsgItem = (props) => {
                     {
                         notSent ? <FontAwesomeIcon icon={faClock} />
                         :
-                        sent && <StatusIcon statusChar={status} />
+                        <>
+                        { sent && <StatusIcon statusChar={status} /> }
+                        <TimePast time={time} />
+                        </>
                     }
 
-                    <TimePast time={time} />
                 </small>
             </div>
         </div>

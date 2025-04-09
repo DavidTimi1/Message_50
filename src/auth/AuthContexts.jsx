@@ -45,9 +45,12 @@ export const AuthProvider = ({ children }) => {
                     await axiosInstance.post(verifyUrl, { token: auth.token });
                     
                 } catch (err) {
-                    console.log("Error validating session:", err);
-                    if (err.response)
-                        logout(); // Logout if token is invalid
+                    // If token is invalid, logout
+                    if (err.response?.status === 401) {
+                        logout();
+                    } else {
+                        console.error("Error verifying token:", err);
+                    }
                 }
             }
         }

@@ -62,7 +62,7 @@ async function storePrivateKeyInIndexedDB(privateKey) {
 }
 
 // Function to get private key from IndexedDB
-async function getPrivateKey() {
+export async function getPrivateKey() {
     
     return loadDB()
     .then( DB => (

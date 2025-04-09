@@ -293,6 +293,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
             onClick={handleClick}
             ref={listElem}
         >
+            <div className="fw">
             <small className='mx-auto banner'>
                 Messages between you and
                 <span style={{color: "var(--btn-col)"}}> {chatting} </span>
@@ -302,6 +303,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                 </Link>
                 🔒
             </small>
+            </div>
             {
                 msgList.map(msg => {
                     let select = selected.includes(msg.id);

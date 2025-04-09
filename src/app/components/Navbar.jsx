@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IconBtn } from "../../components/Button.jsx";
 import { UserProfilePic } from "../contacts/components/ContactItem.jsx";
+import { githubLink } from "../../App.jsx";
 
 
 export function NavBar({ open }) {
@@ -101,7 +102,7 @@ export function NavBar({ open }) {
                                         </div>
                                     </label>
 
-                                    <Link to="https://github.com/DavidTimi1" className="no-link" target="_blank" rel="noopener noreferrer">
+                                    <Link to={githubLink} className="no-link" target="_blank" rel="noopener noreferrer">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
@@ -114,7 +115,7 @@ export function NavBar({ open }) {
                                         </svg>
                                     </Link>
 
-                                    <Link to="https://github.com/DavidTimi1/Msg50-BE" className="no-link" style={{color: "white"}} target="_blank" rel="noopener noreferrer">
+                                    <Link to="https://davidtimi1.github.io" className="no-link" style={{color: "white"}} target="_blank" rel="noopener noreferrer">
                                         <FontAwesomeIcon icon={faStar} />
                                     </Link>
 

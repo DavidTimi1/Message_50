@@ -83,9 +83,9 @@ const Footer = () => {
 	return (
 		<footer className='mx-auto center-text'>
 			<div className='flex gap-2' style={{flexWrap: "wrap"}}>
-				<span><Link className='no-link' to='/'>Privacy Policy</Link></span>
+				<span><Link className='no-link' to='/privacy.pdf'>Privacy Policy</Link></span>
 				<span> | </span>
-				<span><Link className='no-link' to='/'>Terms of Use</Link></span>
+				<span><Link className='no-link' to='/terms.pdf'>Terms of Use</Link></span>
 				<span>&copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.</span>
 			</div>
 		</footer>

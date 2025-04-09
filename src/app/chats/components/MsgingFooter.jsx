@@ -31,6 +31,14 @@ export const Footer = ({previewFile}) => {
     const isOnline = useOnlineStatus();
     const offloadQueue = useOfflineActivities().sendMsg;
 
+    useEffect(() => {
+        let t_id = setTimeout(() => {
+            inputRef.current.focus();
+
+        }, 200)
+
+        return () => clearTimeout(t_id);
+    }, [])
 
     return (
         <div className="msgg-bottom fw mx-auto">

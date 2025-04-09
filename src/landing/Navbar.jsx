@@ -7,7 +7,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { once, transitionEnd } from '../utils';
 
 import { faBars, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { ProdName } from '../App';
+import { githubLink, ProdName } from '../App';
 import { Button, IconBtn } from '../components/Button';
 
 
@@ -37,7 +37,7 @@ export default function Navbar({scroll}){
                     </div>
 
                     <div className='flex gap-2 mid-align even-space'>
-                        <Link to="https://github.com/DavidTimi1" className="no-link" target="_blank" rel="noopener noreferrer">
+                        <Link to={githubLink} className="no-link" target="_blank" rel="noopener noreferrer">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -73,7 +73,7 @@ export default function Navbar({scroll}){
                     </div>
 
                     <div style={{"--col": "var(--foreground)"}}>
-                        <Link to="https://github.com/DavidTimi1" className="no-link" target="_blank" rel="noopener noreferrer">
+                        <Link to={githubLink} className="no-link" target="_blank" rel="noopener noreferrer">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"

@@ -222,7 +222,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
 
     }, [isOnline]);
     
-    const {name, handle, username, dp, bio} = data || {};
+    const {name, handle, username, dp, bio, isSaved} = data || {};
 
 
     return (
@@ -243,7 +243,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                     <small> {args === true? username : handle} </small>
                 </div>
 
-                <Actions id={handle} navId={navId} closeModal={closeModal} />
+                <Actions id={handle} navId={navId} isSaved={isSaved} closeModal={closeModal} />
                 
                 <div>
                     <small> Bio </small>
@@ -272,7 +272,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
 }
 
 
-const Actions = ({id, closeModal}) => {
+const Actions = ({id, closeModal, isSaved}) => {
     const openMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
 
@@ -287,25 +287,30 @@ const Actions = ({id, closeModal}) => {
                     </small>
                 </div>
             </button>
-            <button className="no-btn icon-btn" type="button" onClick={editContact}>
-                <div className="btn-bg abs-mid fw"></div>
-                <div className="flex-col mid-align">
-                    <FontAwesomeIcon icon={faPencil} size="xl" />
-                    <small>
-                        Edit
-                    </small>
-                </div>
-            </button>
+            {
+                isSaved? 
+
+                <button className="no-btn icon-btn" type="button" onClick={editContact}>
+                    <div className="btn-bg abs-mid fw"></div>
+                    <div className="flex-col mid-align">
+                        <FontAwesomeIcon icon={faPencil} size="xl" />
+                        <small>
+                            Edit
+                        </small>
+                    </div>
+                </button>
+                :
             
-            <button className="no-btn icon-btn" type="button" onClick={saveContact}>
-                <div className="btn-bg abs-mid fw"></div>
-                <div className="flex-col mid-align">
-                    <FontAwesomeIcon icon={faPlusCircle} size="xl" />
-                    <small>
-                        Save
-                    </small>
-                </div>
-            </button>
+                <button className="no-btn icon-btn" type="button" onClick={saveContact}>
+                    <div className="btn-bg abs-mid fw"></div>
+                    <div className="flex-col mid-align">
+                        <FontAwesomeIcon icon={faPlusCircle} size="xl" />
+                        <small>
+                            Save
+                        </small>
+                    </div>
+                </button>
+            }
 
             {/* Invite ?? */}
         </div>
@@ -325,7 +330,7 @@ const Actions = ({id, closeModal}) => {
         closeModal()
         .then(done => {
             if (done)
-                toggleOverlay('manage-contact', {NEW: false, id: id})
+                toggleOverlay('manage-contact', {NEW: false, id})
         })
     }
 

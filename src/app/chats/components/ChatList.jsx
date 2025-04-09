@@ -11,6 +11,8 @@ import StatusIcon from '../../components/status';
 import { newMsgEvent } from '../../components/Sockets';
 import { UserProfilePic } from '../../contacts/components/ContactItem';
 import { TextualFile } from '../../media/page';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 
 
 export const ChatList = () => {
@@ -83,10 +85,10 @@ export const ChatList = () => {
 
     useEffect(() => {
         // to effect status changes
-        for (let status of msgsStatus) {
-            const index = pendingList.findIndex(val => val.id === status.id);
+        for (let statusObj of msgsStatus) {
+            const index = pendingList.findIndex(val => val.id === statusObj.id);
 
-            if (index > -1 && status.status?.success) {
+            if (index > -1 && statusObj.status === true) {
 
                 setPendingList(prev => {
                     const clone = [...prev];
@@ -97,7 +99,7 @@ export const ChatList = () => {
                 })
 
                 // get message and add to list to be displayed
-                const newMsgID = status.args?.newID;
+                const newMsgID = statusObj.args?.newID;
                 if (newMsgID){
                     getMsg(newMsgID)
                     .then( msg => {
@@ -142,7 +144,7 @@ export const ChatList = () => {
 
 
 const ChatItem = ({ data, Message }) => {
-    const { id, time, handle, textContent, sent, file, status } = data;
+    const { id, time, handle, textContent, sent, file, status, notSent } = data;
     const name = useContactName(handle);
 
     const toggleOverlay = useContext(ToggleOverlay);
@@ -167,7 +169,7 @@ const ChatItem = ({ data, Message }) => {
                             {handle !== "multiple" ? name : "Broadcast List"}
                         </div>
                         <small className='tl'>
-                            <TimePast time={time} />
+                            <TimePast time={time} pending={notSent} />
                         </small>
                     </div>
                     <div className="flex chat-msg gap-1 mid-align fw">
@@ -204,7 +206,7 @@ const ChatItem = ({ data, Message }) => {
     }
 }
 
-export function TimePast({ time }) {
+export function TimePast({ time, pending }) {
     const [value, setValue] = useState(timePast(time));
 
     useEffect(() => {
@@ -215,7 +217,10 @@ export function TimePast({ time }) {
     })
 
     return (
-        <>{value}</>
+        pending?
+        <FontAwesomeIcon icon={faClock} size="sm" style={{margin: ".25rem"}} />
+        :
+        value
     )
 
 }
@@ -239,7 +244,7 @@ function getChats(max) {
                     const { value } = cursor, { handle } = value;
 
                     if (!done.includes(handle)){
-                        unsent.push(value);
+                        unsent.push({...value, notSent: true});
                         done.push(handle);
                     }
 

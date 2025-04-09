@@ -281,7 +281,7 @@ export function timePast(timestamp) {
         return `${day} day${day > 1 ? 's' : ''}`
     }
 
-    if (hr || min)
+    if (min > 2)
         return standardUnit('time', timestamp)
 
     return `Just now`

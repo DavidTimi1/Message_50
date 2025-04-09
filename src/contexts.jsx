@@ -1,11 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useAuth } from "./auth/ProtectedRoutes";
 import { apiHost, DevMode } from "./App";
-import { generateKeyPair } from './app/crypt.js';
+import { generateKeyPair, getPrivateKey } from './app/crypt.js';
 
 import axiosInstance from "./auth/axiosInstance";
 import { DBrestart } from "./db.jsx";
-import CustomLoader from "./components/Loading.jsx";
 
 export const UserContext = createContext(null);
 
@@ -23,21 +22,31 @@ export const UserProvider = ({ children, devData }) => {
         return {...parsedData, reload: reloadUserData};
     });
 
-    const { auth } = useAuth();
+    const {auth} = useAuth() || {auth: null};
 
 	const loadDataUrl = apiHost + "/chat/api/user/me";
 	
 	useEffect(() => {
 		let ignore = false;
 
-		if (!auth && !DevMode) return 
+		if (!auth && userData.username){
+			setUserData({reload: reloadUserData});
 
-		if (auth && !userData.username) {
+		} else if (auth && !userData.username) {
 			axiosInstance.get(loadDataUrl)
-			.then( res => {
-				const {dp, public_key} = res.data
+			.then( async res => {
+				if (ignore) return;
 
-				if (!public_key || DBrestart) {
+				const {dp, public_key} = res.data;
+				let privateKey;
+
+				try {
+					privateKey = await getPrivateKey();
+				} catch (err) {
+					console.error("Error getting private key:", err);
+				}
+
+				if (!public_key || !privateKey || DBrestart) {
 					setUserKeyPair()
 				}
 
@@ -51,9 +60,6 @@ export const UserProvider = ({ children, devData }) => {
 				}
 
 			});
-
-		} else if (!auth) {
-			DevMode && setUserData(devData);
 
 		}
 

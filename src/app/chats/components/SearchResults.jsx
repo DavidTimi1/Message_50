@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { standardUnit, timePast } from "../../../utils";
 import { useContactName } from "../../components/Hooks";
 import { UserProfilePic } from "../../contacts/components/ContactItem";
 import StatusIcon from "../../components/status";
@@ -10,7 +8,6 @@ import { TimePast } from "./ChatList";
 export const MsgResultItem = ({ data }) => {
     const { id, time, handle, textContent, status } = data;
     const name = useContactName(handle);
-
 
     return (
         <div className='msg-res br-1' data-id={id} data-user={handle}>
@@ -38,19 +35,19 @@ export const MsgResultItem = ({ data }) => {
 
 
 export const ContactResultItem = ({data}) => {
-    const {id, handle, bio, dp} = data;
-    const name = useContactName(handle);
+    const {id, dp, bio} = data;
+    const name = useContactName(id);
 
     return (
         <div className="contact-res br-5" data-user={id}>
             <div className="max gap-3 flex mid-align">
-                <UserProfilePic dp={dp} handle={handle} />
+                <UserProfilePic dp={dp} handle={id} />
 
                 <div className="grow left-text flex-col">
                     <div className="fs-3 fw-800"> {name} </div>
                     {
                         bio &&
-                        <small className="crop-excess fw"> {bio} </small>
+                        <small className="crop-excess fw" style={{color: "var(--text2-col)"}}> {bio} </small>
                     }
                 </div>
             </div>
