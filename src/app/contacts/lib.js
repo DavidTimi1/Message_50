@@ -37,7 +37,7 @@ export const getUserDetails = async (handle, isOnline) => {
                 if (!user)
                     saveContactToDB(transData);
                 
-                return {...user, ...transData, isSaved: user.name}
+                return {...user, ...transData, isSaved: user?.name}
             })
             .catch(err => {
                 error =  err.response? "😥 User could not be found, confirm user handle" : err.message;

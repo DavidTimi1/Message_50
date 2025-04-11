@@ -223,6 +223,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
     }, [isOnline]);
     
     const {name, handle, username, dp, bio, isSaved} = data || {};
+    const primaryId = args === true? username : handle;
 
 
     return (
@@ -239,8 +240,8 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                 </div>
 
                 <div className='flex-col mx-auto mid-align'>
-                    <span className="fs-3 fw-800"> {name} </span>
-                    <small> {args === true? username : handle} </small>
+                    <span className="fs-3 fw-800"> {name || ''} </span>
+                    <small> {primaryId} </small>
                 </div>
 
                 <Actions id={handle} navId={navId} isSaved={isSaved} closeModal={closeModal} />
@@ -257,12 +258,12 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                 <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
                     <label className="flex mid-align gap-3">
                         <FontAwesomeIcon icon={faEraser} size="lg" />
-                        <span> Clear Chats with {name} </span>
+                        <span> Clear Chats with {name || primaryId} </span>
                     </label>
                     
                     <label className="flex mid-align gap-3 fs-5">
                         <FontAwesomeIcon icon={faFlag} size="lg" />
-                        <span> Report {name} </span>
+                        <span> Report {name || primaryId} </span>
                     </label>
                 </div>
             </div>
