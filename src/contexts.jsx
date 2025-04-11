@@ -22,17 +22,17 @@ export const UserProvider = ({ children, devData }) => {
         return {...parsedData, reload: reloadUserData};
     });
 
-    const {auth} = useAuth() || {auth: null};
+	const isAuth = Boolean( useAuth().auth );
 
 	const loadDataUrl = apiHost + "/chat/api/user/me";
 	
 	useEffect(() => {
 		let ignore = false;
 
-		if (!auth && userData.username){
+		if (!isAuth && userData.username){
 			setUserData({reload: reloadUserData});
 
-		} else if (auth && !userData.username) {
+		} else if (isAuth && !userData.username) {
 			axiosInstance.get(loadDataUrl)
 			.then( async res => {
 				if (ignore) return;
@@ -43,7 +43,7 @@ export const UserProvider = ({ children, devData }) => {
 				try {
 					privateKey = await getPrivateKey();
 				} catch (err) {
-					console.error("Error getting private key:", err);
+					console.warn("Error getting private key:", err);
 				}
 
 				if (!public_key || !privateKey || DBrestart) {
@@ -64,7 +64,7 @@ export const UserProvider = ({ children, devData }) => {
 		}
 
 		return () => ignore = true;
-	}, [auth, userData]);
+	}, [isAuth, userData]);
 
     return (
         <UserContext.Provider value={userData}>
@@ -73,7 +73,7 @@ export const UserProvider = ({ children, devData }) => {
     );
 
 	function reloadUserData(){
-		if (auth) {
+		if (isAuth) {
 			axiosInstance.get(loadDataUrl)
 			.then( res => {
 				localStorage.setItem('userdata', JSON.stringify(res.data));

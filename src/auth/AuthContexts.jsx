@@ -17,16 +17,19 @@ export const AuthProvider = ({ children }) => {
     const isOnline = useOnlineStatus();
 
     const verifyUrl = apiHost + '/token/verify';
+    const refreshUrl = apiHost + '/token/refresh';
 
     // Login function
-    const login = (token) => {
+    const login = (token, refresh) => {
         localStorage.setItem('jwt', token); // Store token in localStorage
+        localStorage.setItem('refresh', refresh); // Store token in localStorage
         setAuth({ token });
     };
 
     // Logout function
     const logout = () => {
         localStorage.removeItem('userdata');
+        localStorage.removeItem('refresh');
         localStorage.removeItem('jwt'); // Remove token
         setAuth(null);
 
@@ -47,13 +50,39 @@ export const AuthProvider = ({ children }) => {
                 } catch (err) {
                     // If token is invalid, logout
                     if (err.response?.status === 401) {
-                        logout();
+                        refreshToken()
                     } else {
                         console.error("Error verifying token:", err);
                     }
                 }
             }
         }
+
+        const refreshToken = async _ => {
+            const refreshToken = localStorage.getItem('refresh');
+            if (!refreshToken) {
+                logout();
+                return;
+            }
+
+            try {
+                const response = await axios.post(refreshUrl, {
+                    refresh: refreshToken,
+                });
+
+                // Extract the new access token from the response
+                const newAccessToken = response.data.access;
+
+                login(newAccessToken, refreshToken); // Update the auth state with the new token
+
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    logout();
+                } else {
+                    console.error("Error refreshing token:", error.response?.data || error.message);
+                }
+            }
+        };
 
         isOnline && verifyToken();
 
