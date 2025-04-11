@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { DevMode } from "../../../App";
 import { ChatContext, ToggleOverlay } from "../../contexts";
 import { ContactItem } from "./ContactItem";
@@ -6,7 +6,7 @@ import { $ } from "../../../utils";
 import { contactsTable, loadDB, openTrans } from "../../../db";
 
 
-
+export const ContactUpdateContext = createContext(null);
 
 export const ContactList = () => {
     const [contacts, setContacts] = useState({});
@@ -25,45 +25,47 @@ export const ContactList = () => {
 
 
     return (
-        <div className="contact-list custom-scroll max">
-            <div className='content' 
-                ref={ref} 
-                onClick={handleClick} 
-                onContextMenu={handleContextMenu}
-            >
-                { hashes.length? 
+        <ContactUpdateContext.Provider value={{update: updateContact}}>
+            <div className="contact-list custom-scroll max">
+                <div className='content' 
+                    ref={ref} 
+                    onClick={handleClick} 
+                    onContextMenu={handleContextMenu}
+                >
+                    { hashes.length? 
 
-                    hashes.map( hash => {
-                        const hashBucket = contacts[hash];
+                        hashes.map( hash => {
+                            const hashBucket = contacts[hash];
 
-                        return hashBucket.sort( sortByName )
-                        .map( person =>{
-                            const {handle} = person;
+                            return hashBucket.sort( sortByName )
+                            .map( person =>{
+                                const {handle} = person;
 
-                            if (handle === 'multiple') return;
+                                if (handle === 'multiple') return;
 
-                            return (
-                                <ContactItem
-                                    key={handle}
-                                    Message={toggleMessaging}
-                                    data={person}
-                                /> 
-                            )
+                                return (
+                                    <ContactItem
+                                        key={handle}
+                                        Message={toggleMessaging}
+                                        data={person}
+                                    /> 
+                                )
+                            })
                         })
-                    })
 
-                    : 
+                        : 
 
-                    <>
-                        <div className="no-message"> You do not have any contacts. </div>
-                        <div className="new-ptr">
-                            Click the add contact icon to create a new contact.
-                        </div>
-                    </>
+                        <>
+                            <div className="no-message"> You do not have any contacts. </div>
+                            <div className="new-ptr">
+                                Click the add contact icon to create a new contact.
+                            </div>
+                        </>
 
-                }
+                    }
+                </div>
             </div>
-        </div>
+        </ContactUpdateContext.Provider>
     )
 
 
@@ -90,6 +92,41 @@ export const ContactList = () => {
         if (dropdown){
             dropdown.click();           
         }
+    }
+
+    function updateContact(contact, isDeleted=false){
+        let {id, name} = contact;
+        name = name ?? "~" + id;
+                
+        let hash = name.charAt(0).toUpperCase();
+        hash = hash.toLowerCase() == hash ? '#' : hash
+
+        if (id === 'multiple') return;
+
+        setContacts(prev => {
+            const contacts = {...prev};
+
+            if (hash in contacts){
+                const hashBucket = contacts[hash];
+                const index = hashBucket.findIndex( c => c.handle === id );
+
+                if (index > -1){
+                    if (isDeleted){
+                        hashBucket.splice(index, 1);
+
+                        if (hashBucket.length === 0)
+                            delete contacts[hash];
+
+                    } else {
+                        hashBucket[index] = contact;
+                    }
+                } else
+                    hashBucket.unshift(contact);
+
+            } else {
+                contacts[hash] = [contact];
+            }
+        })
     }
 }
 

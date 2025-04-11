@@ -23,9 +23,9 @@ export const MsgResultItem = ({ data }) => {
                             <TimePast time={time} />
                         </small>
                     </div>
-                    <div className="flex chat-msg fw mid-align" style={{ alignItems: "baseline" }}>
+                    <div className="flex chat-msg crop-excess fw mid-align" style={{ alignItems: "baseline" }}>
                         <StatusIcon statusChar={status} />
-                        <span> {textContent} </span>
+                        <span> {textContent.slice(0,50)}{textContent.length > 50? '...' : ''} </span>
                     </div>
                 </div>
             </div>

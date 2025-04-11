@@ -25,15 +25,6 @@
 
 .msging {
 
-    .heading {
-        background-color: var(--body-col);
-        border-bottom: 1px solid var(--sec-col);
-        box-shadow: 0 1px 2px black;
-        color: var(--text-col);
-        padding: 5px 15px;
-    }
-
-
     .content {
         padding: 10px;
         overflow: hidden auto;

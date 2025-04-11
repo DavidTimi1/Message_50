@@ -8,6 +8,7 @@ import { once, transitionEnd } from "../../../utils";
 import { contactsTable, IDBPromise, loadDB, openTrans, saveContactToDB } from "../../../db";
 import { Link } from "react-router-dom";
 import { useContactName } from "../../components/Hooks";
+import { ContactUpdateContext } from "./ContactList";
 
 
 
@@ -116,6 +117,7 @@ export const ManageContact = ({ show, args }) => {
 const Form = ({NEW, id, showMessage}) => {
     const formRef = useRef();
     const name = NEW? '' : useContactName(id);
+    const {updateContact} = useContext(ContactUpdateContext); 
 
 
     return (
@@ -179,7 +181,10 @@ const Form = ({NEW, id, showMessage}) => {
             const form = e.target;
             const name = form["name"].value, handle = form["handle"].value, phone = form["phone"].value
             saveContactToDB({name, handle, phone})
-            .then(_ => showMessage("Successfully Created Contact") )
+            .then(_ => {
+                showMessage("Successfully Created Contact");
+                updateContact({id: handle, name, handle, phone});
+            })
             .catch( _ => showMessage({error: true}))
         }
     }
@@ -188,7 +193,10 @@ const Form = ({NEW, id, showMessage}) => {
         const form = formRef.current;
         const name = form["name"].value, handle = form["handle"].value, phone = form["phone"].value
         saveContactToDB({name, handle, phone})
-        .then(_ => showMessage("Successfully Edited Contact") )
+        .then(_ =>{ 
+            showMessage("Successfully Edited Contact") 
+            updateContact({id: handle, name, handle, phone});
+        })
         .catch( _ => showMessage({error: true}))
     }
 
@@ -197,7 +205,10 @@ const Form = ({NEW, id, showMessage}) => {
         .then( DB => {
             IDBPromise( openTrans(DB, contactsTable, 'readwrite').delete(id) )
         })
-        .then(_ => showMessage("Successfully Deleted Contact") )
+        .then(_ => {
+            showMessage("Successfully Deleted Contact") 
+            updateContact({id: handle}, true);
+        })
         .catch( _ => showMessage({error: true}))
     }
 }

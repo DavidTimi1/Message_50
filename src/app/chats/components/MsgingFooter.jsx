@@ -53,7 +53,7 @@ export const Footer = ({previewFile}) => {
                     </div>
                     <div className="grow flex-col br-1 contain">
                         <div className="ref">
-                            <FooterReply id={reply} remove={removeReply} />
+                            <FooterReply id={reply} inputRef={inputRef} remove={removeReply} />
                         </div>
 
                         <label className='nv-input br-1'>
@@ -157,6 +157,8 @@ export const Footer = ({previewFile}) => {
         inputRef.current.value = ''; // remove text
         setUI({ ...UI, opts: false, ready: false }); 
         msgList.scrollTop = msgList.scrollHeight;   // scroll to bottom
+        resize({target: inputRef.current }); // reset textarea
+        inputRef.current.focus();
     }
 
     function selectFile(value) {
@@ -263,7 +265,7 @@ const UploadOptions = ({ open, selectFile }) => {
 }
 
 
-const FooterReply = ({id, remove}) => {
+const FooterReply = ({id, remove, inputRef}) => {
     const [msgData, setMsgData] = useState();
 
     const ref = useRef(null);
@@ -281,6 +283,7 @@ const FooterReply = ({id, remove}) => {
                 if (msg){
                     msg.handle = msg.sent? '' :  msg.handle;
                     setMsgData(msg);
+                    inputRef.current?.focus();
                     return
                 }
 
@@ -289,7 +292,7 @@ const FooterReply = ({id, remove}) => {
         } else setMsgData()
 
 
-    }, [id])
+    }, [id, inputRef])
     
 
     return (

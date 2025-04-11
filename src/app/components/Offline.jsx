@@ -130,7 +130,7 @@ export const useOfflineActivities = () => {
                 .then( () => deleteMessageFromStore(offId) ) // delete after success
                 .then( () => saveMsgInDb(newMsg) ) // save message in db
                 .then( () => updateMsgStatus(offId, true, {newID: msgId}) ) // set status to sent
-                .catch(_ => console.log("Back to DB"))
+                .catch(err => console.log("Back to DB", err))
 
             }, new Promise(res => res())) // start the chain of promises
         })
@@ -191,7 +191,8 @@ const useMessageSender = () => {
             
             //  upload file(s)
             new Promise( async res => {
-                if (!rawFile){
+                // if only sending to self no need to upload
+                if (!rawFile || (receivers.length === 1 && receivers[0] === username)){
                     res(null);
                     return
                 }
@@ -212,7 +213,7 @@ const useMessageSender = () => {
     
                 const mediaUploadUrl = apiHost + "/chat/api/media/upload/";
                 
-                updateMsgStatus(`upload_${data.id}`, 0)
+                updateMsgStatus(`upload_${data.id}`, 0, undefined, 'upload')
                 
                 // send all to server / each
                 await axiosInstance.post( mediaUploadUrl, fd, {
@@ -231,7 +232,7 @@ const useMessageSender = () => {
     
             .then( async(fileObj) => {
                 // get public keys
-                const publicKeys = await getPubicKeys(receivers)
+                const publicKeys = await getPubicKeys(receivers.filter( rec => rec !== username ));
     
                 // for each receiver
                 for (let uuid in publicKeys) {

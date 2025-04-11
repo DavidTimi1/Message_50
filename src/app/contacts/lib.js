@@ -4,8 +4,9 @@ import { getContactDetailsFromDB, saveContactToDB } from "../../db";
 
 
 export const getUserDetails = async (handle, isOnline) => {
-    let error, details, isSaved = false;
+    let error, details, refresh = true;
     const userAPIRoute = apiHost + "/chat/api/user/" + handle;
+    const now = new Date().getTime();
 
     if (!handle){
         return {
@@ -17,18 +18,20 @@ export const getUserDetails = async (handle, isOnline) => {
     let user = await getContactDetailsFromDB(handle);
 
     if (user) {
-        isSaved = true; // The user data has been saved previously
         details = user
+        const daysPassed = Math.floor((now - user.lastUpdated) / (1000 * 60 * 60 * 24));
+        refresh = daysPassed > 1;
     }
 
-    if (isOnline) {
+    if (isOnline && refresh) {
         details = await axiosInstance.get(userAPIRoute)
             .then ( ({data}) => {
                 const transData = {
                     id: data.id,
                     handle: data.username,
                     dp: data.dp,
-                    bio: data.bio
+                    bio: data.bio,
+                    lastUpdated: now
                 }
 
                 if (!user)

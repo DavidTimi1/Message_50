@@ -44,8 +44,9 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                 searchCl(query, null, abortSignal)
                 .then(res => {
                     contacts.push(...res);
+                    const showContactsOnly = filters.length === 1 && filters.includes("contacts")
                     
-                    !ignore && onlyContacts && setResults({
+                    !ignore && (onlyContacts || showContactsOnly) && setResults({
                         contacts
                     })
                 })
@@ -64,6 +65,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                         contacts
                     })
                 })
+                
             }
 
         } else setResults({}) // empty search results
@@ -145,6 +147,17 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                     results.contacts &&
 
                     <div className="search-result fw results-contacts" onClick={handleCLClick}>
+                        <p className="fw">
+                            <small className='mx-auto banner'>
+                                Contacts
+                            </small>
+                        </p>
+                        {
+                            results.contacts.length?
+                            <></>
+                            :
+                            <em> No matching contacts found 😪 </em>
+                        }
                         {
                             results.contacts.map( (data, key) => <ContactResultItem key={key} data={data} /> )
                         }
@@ -155,6 +168,18 @@ export default function SearchWindow({ closeSearch, initFilters }) {
                     results.msgs &&
 
                     <div className="search-result fw results-messages" onClick={handleMsgClick}>
+                        <br />
+                        <p className="fw">
+                            <small className='mx-auto banner'>
+                                Messages
+                            </small>
+                        </p>
+                        {
+                            results.msgs.length?
+                            <></>
+                            :
+                            <em> No matching messages found 😪 </em>
+                        }
                         {
                             results.msgs.map( (data, key) => <MsgResultItem key={key} data={data} /> )
                         }
@@ -184,7 +209,8 @@ export default function SearchWindow({ closeSearch, initFilters }) {
         const el = target.closest(".contact-res"), userId = el?.dataset?.user;
 
         if (userId) {
-            toggleOverlay('user-card', {id: userId});
+            handleCloseClick();
+            setTimeout( () => toggleOverlay('user-card', {id: userId}) )
         }
         
     }
@@ -290,8 +316,9 @@ async function searchMsgs(token, msgId, signal, initFilters) {
                     // normally, load 20 if id is set, load only 10 more
                     if (cur && !signal.aborted && ((!msgId && i < uB) || (msgId && i < uB2))) {
                         const text = cur.value.textContent.toLowerCase();
+                        const handle = cur.value.handle.toLowerCase();
 
-                        if (text.includes(token))
+                        if (text.includes(token) || text.includes(handle))
                             list.push(cur.value);
 
                         i++;
@@ -321,8 +348,8 @@ async function searchCl(token, lastId, signal){
             // normally, load 20 if id is set, load only 10 more
             if (cursor && !signal.aborted && ((!lastId && i < uB) || (lastId && i < uB2))) {
 
-                const {handle, dp, bio} = cursor.value, detail = { id: handle, dp, bio };
-                const cmpd = handle + "" + name;
+                const {handle, dp, bio, name} = cursor.value, detail = { id: handle, dp, bio };
+                const cmpd = handle + " " + name;
                 
                 if (cmpd.toLowerCase().includes(token)){
                     list.push(detail);

@@ -131,7 +131,7 @@ const Body = ({isLogin}) => {
 		axios.post(guestUrl)
 		.then((response) => {
 			console.log(response.data.message);
-			logUIIn(response.data.access_token);
+			logUIIn(response.data.access_token, response.data.refresh_token);
 			setStatus(true);
 		})
 		.catch((error) => {
@@ -166,7 +166,7 @@ const Body = ({isLogin}) => {
 		axios.post(loginUrl, data)
 		.then((response) => {
 			console.log('Logged In successfully:', response.data);
-			logUIIn(response.data.access);
+			logUIIn(response.data.access, response.data.refresh);
 			setStatus(true);
 		})
 		.catch((error) => {

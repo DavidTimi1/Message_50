@@ -46,7 +46,7 @@ export const MsgItem = (props) => {
                     {file && <MsgAttachment msgId={id} fileInfo={file} loadType={sent? 'up':'down'} />}
 
                     <div style={{ lineHeight: "20px", padding: "1px 5px" }}>
-                        <div className="text"> {textContent} </div>
+                        <div className="text" style={{whiteSpace: "pre-wrap"}}> {textContent} </div>
                     </div>
 
                     <div className="abs instr">

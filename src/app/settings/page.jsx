@@ -114,7 +114,9 @@ const Invite = () => {
                 <h3 className='flex gap-4 mid-align'>
 
                     <span className='flex mid-align'>
-                        <FontAwesomeIcon icon={faPlus} size="sm" />
+                        <span className="abs" style={{left: "-12px"}}>
+                            <FontAwesomeIcon icon={faPlus} size="sm" stroke='var(--body-col)' strokeWidth={5} />
+                        </span>
                         <FontAwesomeIcon icon={faUsers} />
                     </span>
 

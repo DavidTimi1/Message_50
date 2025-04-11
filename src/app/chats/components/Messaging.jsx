@@ -229,21 +229,25 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
     const toggleOverlay = useContext(ToggleOverlay);
 
     return (
-        <div className={`${styles.heading}`}>
+        <div className="msging-heading">
             <div className={selecting && "disappear"}>
                 <div className="fw flex mid-align gap-2 flex">
                     <IconBtn icon={faAngleLeft} onClick={closeMsging}>
                         Back
                     </IconBtn>
                     <div className="flex fw mid-align grow gap-2" onClick={showUserProfile} style={{ justifyContent: "center" }}>
-                        <UserProfilePic handle={chatting} />
-
-                        <div className="flex gap-2 mid-align" style={{ justifyContent: "space-between" }}>
-                            <div className="fs-3 fw-800"> {chatting && title(name)} </div>
-                            <small style={{ color: online ? "green" : "var(--text2-col)" }}>
-                                {online ? "Online" : online}
-                            </small>
+                        <div>
+                            <UserProfilePic handle={chatting} />
+                            {
+                                
+                                <div className="abs online-bubble">
+                                    <div className="dp-img" style={{width: "12px", backgroundColor: "var(--btn-col)"}}>
+                                    </div>
+                                </div>
+                            }
                         </div>
+
+                        <div className="fs-3 fw-800"> {chatting && title(name)} </div>
                     </div>
                 </div>
             </div>

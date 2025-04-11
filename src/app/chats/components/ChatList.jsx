@@ -172,16 +172,18 @@ const ChatItem = ({ data, Message }) => {
                             <TimePast time={time} pending={notSent} />
                         </small>
                     </div>
-                    <div className="flex chat-msg gap-1 mid-align fw">
-                        {
-                            sent &&
-                            <StatusIcon statusChar={status} />
-                        }
-                        {
-                            file && <TextualFile fileInfo={file} hasText={Boolean(textContent)} />
-                        }
-                        <span> {textContent} </span>
-                    </div>
+                    <div className='grow crop-excess'>
+                        <div className="flex chat-msg gap-1 mid-align">
+                            {
+                                sent &&
+                                <StatusIcon statusChar={status} />
+                            }
+                            {
+                                file && <TextualFile fileInfo={file} hasText={Boolean(textContent)} />
+                            }
+                            <span> {textContent.slice(0,50)}{textContent.length > 50? '...' : ''} </span>
+                        </div>
+                        </div>
                 </div>
             </div>
         </div>

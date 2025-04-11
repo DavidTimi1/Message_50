@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { ManageContact } from "../contacts/components/ContactManager";
 import { UserCard } from "../contacts/components/UserCard";
 import { Feedback } from "../feedback/page";
@@ -15,7 +14,6 @@ export const More = ({openOverlays}) => {
         <Overlay component={ManageContact} name='manage-contact' />
         <Overlay component={UserCard} name='user-card' />
         <Overlay component={MediaViewer} name='media-viewer' />
-        {/* <Overlay component={ContactCard} name="contact-card" /> */}
         <Overlay component={Feedback} name="feedback" />
         </>
     )

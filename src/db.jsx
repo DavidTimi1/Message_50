@@ -42,13 +42,14 @@ IDBrequest.onerror = handleIDBError;
 
 function handleIDBError(e) {
     if (IDBrequest.constructor.name === "IDBOpenDBRequest")
-        console.error("Why didn't you allow my web app to use IndexedDB?!")
+        console.warn("Why didn't you allow my web app to use IndexedDB?!")
     else
         console.error(`Database error: ${e.target.error}`);
 }
 
 
 export function restartIDB() {
+    
     DB?.close();
     let deleteRequest = indexedDB.deleteDatabase("messages_db");
     deleteRequest.onsuccess = _ => {
@@ -138,8 +139,17 @@ IDBrequest.addEventListener('success', IDBSuccess);
 
 function IDBSuccess(e){
     const { target: { result } } = e;
-
     DB = result;
+
+    const requiredStores = [msgsTable, chatsTable, contactsTable, offlineMsgsTable, filesTable, keysTable];
+    const missingStores = requiredStores.filter(store => !DB.objectStoreNames.contains(store));
+
+    if (missingStores.length > 0) {
+        console.warn("Missing object stores:", missingStores);
+        restartIDB();
+        return;
+    }
+
     if (DevMode){
         seedDB(DB)
         .then(() => {
@@ -276,7 +286,8 @@ export const getFile = async (fileID) => {
 
 export const hasMessaged = (handle) => {
     // range should start from the first
-    const range = IDBKeyRange.lowerBound([handle, 0]);
+    const range = IDBKeyRange.bound([handle, 0], [handle, Infinity]);
+
 
     return loadDB()
     .then( DB => 
