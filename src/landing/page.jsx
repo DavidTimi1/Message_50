@@ -22,14 +22,13 @@ const LandingPage = () => {
 
     return (
         <div className='landing-page max' onScroll={handleScroll}>
-
             <Navbar scroll={scroll} />
 
-            <div className="content max mid-align flex-col gap-5 can-animate not-animated" ref={ref}>
+            <div className="content max mid-align flex-col can-animate not-animated" style={{padding: 0, margin: 0}} ref={ref}>
             {/* Hero Section */}
             <header className="hero pad d-flex gap-3 flex-md-row flex-col align-items-center justify-content-center">
-                <div className="hero-img col-md-6 br-5 container-sm">
-                    <img src="/msg-bubble.png" alt="Hero" className="fw" style={{ objectFit: "contain" }} />
+                <div className="hero-img col-md-5 container-sm">
+                    <img src="/msg-bubble.png" alt="Hero" className="fw br-1" style={{ objectFit: "contain" }} />
                 </div>
                 <div className="d-flex flex-col gap-3 col-md-6">
                     <p className="hero-tagline d-flex flex-col gap-3">
@@ -39,7 +38,7 @@ const LandingPage = () => {
                         </span>
 
                         <small className='fs-6 fw-light text2-col'>
-                            Experience quick seamless and secure communication. The best messaging app for you
+                            Experience quick seamless and secure communication. <br /> The best messaging app for you
                         </small>
 
                         <em className="sr-only">
@@ -67,8 +66,8 @@ const LandingPage = () => {
 
             <div className='fw pad'> <hr /> </div>
 
-            <div className="fw pad box">
-                <div className="d-flex flex-column-reverse flex-md-row gap-4 mid-align">
+            <div id="contact-us" className="fw pad box">
+                <div className="d-flex fw flex-column-reverse flex-md-row gap-4 align-items-center" style={{justifyContent: "space-evenly"}}>
                     <div className="flex-col mid-align">
                         <div className="flex mid-align">
                             <div style={{width: "50px", aspectRatio: 1/1}}>
@@ -129,9 +128,9 @@ const features = [
 ]
 
 const Features = () => (
-    <section className="features pad box fw">
-        <h2 className="section-title center-text"> Why Choose { ProdName }? </h2>
-        <div className="features-cards d-flex gap-5 flex-wrap">
+    <section id="features" className="features pad box fw">
+        <h2 className="section-title center-text mb-5"> Why Choose { ProdName }? </h2>
+        <div className="features-cards d-flex gap-5 flex-wrap" style={{justifyContent: "space-evenly"}}>
             {features.map((feature, index) => (
                 <div className="feature-card d-flex br-5 gap-2" key={index}>
                     <div className="feature-icon">
@@ -139,7 +138,7 @@ const Features = () => (
                     </div>
                     <div className="">
                         <h3 className="fs-3 feature-title">{feature.title}</h3>
-                        <p className="feature-description">{feature.description}</p>
+                        <p className="fw-light fs-6">{feature.description}</p>
                     </div>
                 </div>
             ))}
@@ -182,8 +181,8 @@ const FAQ = () => {
     ];
 
     return (
-        <section className="faq-section pad box fw">
-            <h2 className="section-title center-text"> Frequently Asked Questions </h2>
+        <section id="faqs" className="faq-section pad box fw">
+            <h2 className="section-title center-text mb-5"> Frequently Asked Questions </h2>
             <ul className="accordion" id="faqAccordion">
                 {faqs.map((faq, index) => (
                     <li className="accordion-item" style={{backgroundColor: "var(--body2-col)" }}  key={index}>
@@ -260,18 +259,20 @@ const Gallery = () => {
 
     return (
         <section className="gallery-section pad box fw">
-            <div className="gallery d-flex flex-col gap-5">
+            <div className="gallery d-flex fw flex-col" style={{gap: "5rem"}}>
 
                 {featuresIllustrations.map((feature, index) => (
                     <div className="d-flex flex-col mid-align gap-3" key={index}>
-                        <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="col-md-6 br-5" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
-                        <div className="flex-col col-md-4">
-                            <h4 className='fw-bold fs-2'>
-                                {feature.title}
-                            </h4>
-                            <p className="text2-col fw-light">
-                                <small>{feature.description}</small>
-                            </p>
+                        <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="col-md-5 br-1 fw" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
+                        <div className="col-md-7">
+                            <div className="mx-auto" style={{maxWidth: "400px"}}>
+                                <h4 className='fw-bold fs-2'>
+                                    {feature.title}
+                                </h4>
+                                <p className="text2-col fw-light">
+                                    <small>{feature.description}</small>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ))}

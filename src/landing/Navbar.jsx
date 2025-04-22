@@ -24,14 +24,14 @@ export default function Navbar({scroll}){
                     </a>
 
                     <div className="menu flex mid-align">
-                        <Link className="nav-item" to='/#our-products'>
-                            Our products
+                        <Link className="nav-item" to='/#features'>
+                            Features
                         </Link>
-                        <Link className="nav-item" to='/#how-we-work'>
-                            How we work
+                        <Link className="nav-item" to='/#faqs'>
+                            FAQS
                         </Link>
-                        <Link className="nav-item" to='/#about'>
-                            About Us
+                        <Link className="nav-item" to='/#contact-us'>
+                            Contact Us
                         </Link>
                     </div>
 
@@ -71,7 +71,7 @@ export default function Navbar({scroll}){
                         <h3 className="brand fh"> {ProdName} </h3>
                     </div>
 
-                    <div style={{"--col": "var(--foreground)"}}>
+                    <div className='mid-align' style={{"--col": "var(--foreground)"}}>
                         <Link to={githubLink} className="no-link" target="_blank" rel="noopener noreferrer">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -123,11 +123,14 @@ function Menu({show, closeMenu}){
                     <NavLink className="nav-item" to='/' end={true}>
                         Home
                     </NavLink>
-                    <Link className="nav-item" to='/#about'>
-                        About Us
+                    <Link className="nav-item" to='/#features'>
+                        Features
                     </Link>
-                    <Link className="nav-item" to='/#our-products'>
-                        Our products
+                    <Link className="nav-item" to='/#faqs'>
+                        FAQS
+                    </Link>
+                    <Link className="nav-item" to='/#contact-us'>
+                        Contact Us
                     </Link>
                     <Link className="nav-item" to='/app'>
                         App

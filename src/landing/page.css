@@ -4,7 +4,19 @@
     overflow: hidden auto;
   
     .hero {
-      min-height: 80vh;
+      min-height: 85vh;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        backdrop-filter: blur(20px);
+        background-color: transparent;
+        z-index: 2;
+      }
     }
   .hero-title {
     font-size: 3rem;
@@ -12,15 +24,19 @@
     margin-bottom: 10px;
   }
   
+  .features {
+    background-color: var(--btn-col);
+  }
   
   .feature-card {
     padding: 5px;
+    text-shadow: 0 0 3px #222;
     width: 300px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
 
     .feature-icon {
-      background-color: var(--btn2-col);
+      background-color: var(--text2-col);
       border-radius: 999999px;
       padding: 5px;
       height: max-content;
