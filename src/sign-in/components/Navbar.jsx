@@ -1,14 +1,13 @@
 import '../../components/Navbar.css';
-import logo from '../../logo.svg';
 
 import { useEffect, useState, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 import { transitionEnd } from '../../utils';
 
-import { faBars, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ProdName } from '../../App';
-import { Button, IconBtn } from '../../components/Button';
+import { IconBtn } from '../../components/Button';
 
 
 

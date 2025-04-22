@@ -5,12 +5,11 @@
         --col2: var(--foreground);
         background-color: transparent;
         box-shadow: 0 1px 3px transparent;
-        /* backdrop-filter: blur(5px); */
         left: 0px;
-        position: fixed;
+        position: sticky;
         top: 0px;
         transition: background-color .3s ease-in-out, box-shadow .3s ease-in-out;
-        width: calc(100% - 12px);
+        width: 100%;
         z-index: 5;
 
         &.scroll {
@@ -18,11 +17,6 @@
             --col2: var(--text);
             background-color: var(--body-col);
             box-shadow: 0 1px 3px var(--body3-col);
-            width: 100%;
-            
-            > * {
-                margin-right: 12px;
-            }
         }
 
         .brand {
@@ -65,7 +59,6 @@
 
     .nav-item {
         color: var(--col);
-        font-size: 110%;
         font-weight: 500;
         text-decoration: none;
 

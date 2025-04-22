@@ -3,9 +3,14 @@ import './page.css';
 
 import React, { useRef, useState } from 'react';
 import { Link } from "react-router-dom";
-import { ProdName } from '../App';
+import { apiHost, githubLink, portfolioLink, ProdName } from '../App';
 import Navbar from './Navbar';
 import { useTransitionOnLoad } from '../app/components/Hooks';
+import { Button } from '../components/Button';
+import { Input } from '../sign-in/page';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const LandingPage = () => {
@@ -20,46 +25,64 @@ const LandingPage = () => {
 
             <Navbar scroll={scroll} />
 
-            <div className="content max flex-col gap-5 can-animate not-animated" ref={ref}>
+            <div className="content max mid-align flex-col gap-5 can-animate not-animated" ref={ref}>
             {/* Hero Section */}
-            <header className="hero">
-                <div className="hero-content">
-                <h1 className="hero-title">{ ProdName }</h1>
-                <p className="hero-tagline">
-                    Quick, Secure and Seamless Messaging Platform
-                </p>
-                <div className="flex" style={{justifyContent: "center"}}>
-                    <Link to="/register" className="my-btn no-link br-5">
-                        <div className="btn-bg">
-                            <div className="btn max">
-                                Get Started
-                            </div>
-                        </div>
-                    </Link>
+            <header className="hero pad d-flex gap-3 flex-md-row flex-col align-items-center justify-content-center">
+                <div className="hero-img col-md-6 br-5 container-sm">
+                    <img src="/msg-bubble.png" alt="Hero" className="fw" style={{ objectFit: "contain" }} />
                 </div>
+                <div className="d-flex flex-col gap-3 col-md-6">
+                    <p className="hero-tagline d-flex flex-col gap-3">
+                        <span className='fs-1 fw-bold'>
+                            Connect Privately <br />
+                            with Friends and Family <br />
+                        </span>
+
+                        <small className='fs-6 fw-light text2-col'>
+                            Experience quick seamless and secure communication. The best messaging app for you
+                        </small>
+
+                        <em className="sr-only">
+                            Message50 is the best, fastest and most secure messaging application
+                        </em>
+                    </p>
+                    <div className='d-flex'>
+                        <Link to="/register" className="my-btn no-link br-5">
+                            <div className="btn-bg">
+                                <div className="btn d-flex mid-align gap-2">
+                                    <span> Get started now </span>
+                                    <FontAwesomeIcon icon={faAngleRight} />
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
             </header>
 
-            {/* Features Section */}
-            <section className="features">
-                <h2 className="section-title">Why Choose { ProdName }?</h2>
-                <div className="feature-cards">
-                <div className="feature-card">
-                    <h3>🔒 End-to-End Encryption</h3>
-                    <p>Your messages stay private—always.</p>
-                </div>
-                <div className="feature-card">
-                    <h3>🌍 Cross-Platform</h3>
-                    <p>Access your chats anytime, anywhere.</p>
-                </div>
-                <div className="feature-card">
-                    <h3>⚡ Lightning Fast</h3>
-                    <p>Instant delivery with cutting-edge technology.</p>
-                </div>
-                </div>
-            </section>
+            <Features />
 
-            <Footer />
+            <Gallery />
+
+            <FAQ />
+
+            <div className='fw pad'> <hr /> </div>
+
+            <div className="fw pad box">
+                <div className="d-flex flex-column-reverse flex-md-row gap-4 mid-align">
+                    <div className="flex-col mid-align">
+                        <div className="flex mid-align">
+                            <div style={{width: "50px", aspectRatio: 1/1}}>
+                                <img src="/logo.png" alt="Logo" className="logo fw" style={{objectFit: "contain"}}  />
+                            </div>
+                            <div className="hero-title fh"> {ProdName} </div>
+                        </div>
+                        <Footer />
+                    </div>
+
+                    <Feedback />
+                </div>
+            </div>
+
             </div>
             
         </div>
@@ -77,38 +100,285 @@ const LandingPage = () => {
 export default LandingPage;
 
 
+const features = [
+    {
+        title: "End-to-End Encryption",
+        description: "Your messages stay private - always.",
+        icon: "🔒"
+    },
+    {
+        title: "Cross-Platform",
+        description: "Access your chats anytime, anywhere.",
+        icon: "🌍"
+    },
+    {
+        title: "Lightning Fast",
+        description: "Instant delivery with cutting-edge technology.",
+        icon: "⚡"
+    },
+    {
+        title: "User-Friendly Interface",
+        description: "Navigate effortlessly with our intuitive design.",
+        icon: "🖥️"
+    },
+    {
+        title: "Media Sharing",
+        description: "Share images, videos, and documents seamlessly.",
+        icon: "📤"
+    },
+]
+
+const Features = () => (
+    <section className="features pad box fw">
+        <h2 className="section-title center-text"> Why Choose { ProdName }? </h2>
+        <div className="features-cards d-flex gap-5 flex-wrap">
+            {features.map((feature, index) => (
+                <div className="feature-card d-flex br-5 gap-2" key={index}>
+                    <div className="feature-icon">
+                        {feature.icon}
+                    </div>
+                    <div className="">
+                        <h3 className="fs-3 feature-title">{feature.title}</h3>
+                        <p className="feature-description">{feature.description}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </section>
+
+)
+
+
+const FAQ = () => {
+    const faqs = [
+        {
+            question: "Is my data secure on this platform?",
+            answer: "Yes, we use end-to-end encryption (e2ee) to ensure your data remains private and secure."
+        },
+        {
+            question: "Can I use this platform on multiple devices?",
+            answer: "Absolutely! Our platform is cross-platform and works seamlessly on all your devices."
+        },
+        {
+            question: "How fast is the message delivery?",
+            answer: "Messages are delivered instantly using our cutting-edge technology."
+        },
+        {
+            question: "What is end-to-end encryption (E2EE)?",
+            answer: "End-to-end encryption ensures that only you and the person you're communicating with can read the messages. No one else, not even the platform, can access your messages."
+        },
+        {
+            question: "Can anyone intercept my messages?",
+            answer: "No, with E2EE, messages are encrypted on your device and decrypted only on the recipient's device, making interception impossible."
+        },
+        {
+            question: "Are media files also encrypted?",
+            answer: "Yes, all media files, including images, videos, and documents, are encrypted to ensure complete privacy and security." 
+        },
+        {
+            question: "What happens if I lose my device?",
+            answer: "If you lose your device, your messages cannot be accessed without your private key. Always ensure you have a backup of your encryption keys."
+        }
+    ];
+
+    return (
+        <section className="faq-section pad box fw">
+            <h2 className="section-title center-text"> Frequently Asked Questions </h2>
+            <ul className="accordion" id="faqAccordion">
+                {faqs.map((faq, index) => (
+                    <li className="accordion-item" style={{backgroundColor: "var(--body2-col)" }}  key={index}>
+                        <h2 className="accordion-header" id={`heading${index}`}>
+                            <button
+                                className="accordion-button collapsed"
+                                type="button"
+                                style={{backgroundColor: "var(--body-col)", color: "var(--text-col)" }} 
+                                data-bs-toggle="collapse"
+                                data-bs-target={`#collapse${index}`}
+                                aria-expanded="false"
+                                aria-controls={`collapse${index}`}
+                            >
+                                {faq.question}
+                            </button>
+                        </h2>
+                        <div
+                            id={`collapse${index}`}
+                            className="accordion-collapse collapse"
+                            style={{backgroundColor: "var(--body3-col)" }}
+                            aria-labelledby={`heading${index}`}
+                            data-bs-parent="#faqAccordion"
+                        >
+                            <div className="accordion-body">{faq.answer}</div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+};
+
+
+const featuresIllustrations = [
+
+    {
+        title: "End-to-End Encryption",
+        description: "Your messages stay private - always. We use state-of-the-art encryption technology to ensure that only you and the intended recipient can access your messages, providing unparalleled privacy and security.",
+        icon: "🔒",
+        image: "/e2ee-placeholder.jpg",
+        ratio: 2048/1200,
+    },
+    {
+        title: "Cross-Platform",
+        description: "Access your chats anytime, anywhere. Whether you're on your phone, tablet, or desktop, our platform ensures a seamless experience across all your devices, keeping you connected wherever you go.",
+        icon: "🌍",
+        image: "/multidevice-gif.gif",
+        ratio: 400/300,
+    },
+    {
+        title: "Lightning Fast",
+        description: "Instant delivery with cutting-edge technology. Experience real-time communication with no delays, ensuring your messages are delivered as quickly as you can type them.",
+        icon: "⚡",
+        image: "/instant-messaging.gif",
+        ratio: 800/600,
+    },
+    // {
+    //     title: "User-Friendly Interface",
+    //     description: "Navigate effortlessly with our intuitive design. Our platform is built with simplicity in mind, making it easy for users of all ages and technical abilities to communicate effectively.",
+    //     icon: "🖥️",
+    //     image: "/placeholder-img.jpg",
+    //     ratio: 1,
+    // },
+    {
+        title: "Media Sharing",
+        description: "Share images, videos, and documents seamlessly. All media files are also end-to-end encrypted, ensuring complete privacy and security.",
+        icon: "📤",
+        image: "/attachment-menu.png",
+        ratio: 1580/904,
+    },
+];
+
+const Gallery = () => {
+
+    return (
+        <section className="gallery-section pad box fw">
+            <div className="gallery d-flex flex-col gap-5">
+
+                {featuresIllustrations.map((feature, index) => (
+                    <div className="d-flex flex-col mid-align gap-3" key={index}>
+                        <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="col-md-6 br-5" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
+                        <div className="flex-col col-md-4">
+                            <h4 className='fw-bold fs-2'>
+                                {feature.title}
+                            </h4>
+                            <p className="text2-col fw-light">
+                                <small>{feature.description}</small>
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
+
+function Feedback() {
+    const [state, setState] = useState();
+    const formRef = useRef(null);
+    const sent = state?.status;
+
+    return (
+        <section className="feedback br-1 flex-col gap-3">
+            <h2 className="section-title">We Value Your Feedback</h2>
+            <form method="post" action={`${apiHost}/feedback/message50`} className="fw br-1 up" ref={formRef} onSubmit={handleSubmit}>
+                <div className='fw flex-col gap-3'>
+
+                    {
+                        state && state?.data &&
+                        <div className={`alert ${state !== undefined ? sent ? "alert-success" : "alert-danger" : 'disappear'}`}>
+                            {state.data}
+                        </div>
+                    }
+
+                    <div className="flex md-flex-col fw gap-3">
+                        <Input label="Name*" id="inputName" name="name" />
+                        <Input label="Email*" type="email" id="inputEmail" name="email" />
+                    </div>
+
+                    <Input label="Subject*" id="inputSubject" name="subject" />
+
+                    <label className="fw nv-input br-1 flex-col gap-2">
+                            <small className="lb">
+                                Message*
+                            </small>
+                            <textarea className="fw" name="message" placeholder="Type in your message..." required />
+                    </label>
+    
+
+                    <label className="fw flex mid-align gap-2">
+                        <input type="checkbox" name="subscribe" style={{ padding: "10px" }} />
+                        <div>
+                            Subscribe to receiving updates on our progress
+                        </div>
+                    </label>
+                    <div className="mx-auto flex" style={{ justifyContent: 'right' }}>
+                        <Button type="submit">
+                            Send Feedback
+                        </Button>
+                    </div>
+
+                </div>
+            </form>
+        </section>
+    )
+
+    function handleSubmit(e) {
+        const { target } = e;
+        e.preventDefault();
+
+        const fd = new FormData(target);
+
+        axios.post(`${apiHost}/feedback/message50`, fd)
+        .then(res => {
+            setState(res.data);
+            clearInputs();
+        })
+        .catch(err => {
+            setState({ status: false, data: err.message });
+        })
+    }
+
+
+    function clearInputs() {
+        const all = ["message", "subject"];
+
+        all.forEach(elem => {
+            formRef.current[elem].value = '';
+        })
+    }
+}
+
 
 
 const Footer = () => {
 	return (
 		<footer className='mx-auto center-text'>
-			<div className='flex gap-2' style={{flexWrap: "wrap"}}>
-				<span><Link className='no-link' to='/privacy.pdf'>Privacy Policy</Link></span>
-				<span> | </span>
-				<span><Link className='no-link' to='/terms.pdf'>Terms of Use</Link></span>
+			<div className='flex-col gap-2' style={{flexWrap: "wrap"}}>
+                <div>
+                    <span><Link className='no-link' to='/privacy.pdf'>Privacy Policy</Link></span>
+                    <span> | </span>
+                    <span><Link className='no-link' to='/terms.pdf'>Terms of Use</Link></span>
+                </div>
 				<span>&copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.</span>
+                <em className='sr-only'>
+                    Message50 is developed by TimiDev (David Uwagbale) 
+                    <a href={githubLink}>
+                        Link to David's github profile
+                    </a>
+                    <a href={portfolioLink}>
+                        Link to David's portfolio website
+                    </a>
+                </em>
 			</div>
 		</footer>
 	)
 }
-
-
-
-// export const LandingPage = () => {
-
-//     return (
-//         <div className="abs-mid">
-//             <p className="fs-1 fw-1000">
-//                 Welcome to Message50 Landing Page
-//             </p>
-//             <small className="fw-100">
-//                 Oops! Nothing here yet!
-//             </small>
-//             <div>
-//                 <Link to='/routes'>
-//                     {"Routes >"}
-//                 </Link>
-//             </div>
-//         </div>
-//     )
-// }
