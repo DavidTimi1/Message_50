@@ -14,7 +14,7 @@ export const AppRoutes = () => {
             <ul>
                 <li>
                     <Link to='/'>
-                        Landing Page
+                        Message50 Landing Page
                     </Link>
                 </li>
                 <li>
@@ -23,13 +23,13 @@ export const AppRoutes = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to='/'>
-                        Register Page
+                    <Link to='/register'>
+                        Registration Page
                     </Link>
                 </li>
                 <li>
                     <Link to='/app'>
-                        Msg50App
+                        Message50 App
                     </Link>
                 </li>
                 <li>
