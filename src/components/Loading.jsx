@@ -1,8 +1,12 @@
 import { useEffect, useRef } from "react";
 
 
-export default function CustomLoader(){
+export default function CustomLoader({height=100, width=100}) {
     const path1 = useRef(), path2 = useRef();
+    const svgStyles = {
+        height: `${height}px`,
+        width: `${width}px`,
+    }
 
     useEffect(() => {
         const paths = [path1.current, path2.current];
@@ -15,7 +19,7 @@ export default function CustomLoader(){
     }, [])
 
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 250 250" className="custom-svg-loader" preserveAspectRatio="xMidYMid meet">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 250 250" className="custom-svg-loader" style={svgStyles} preserveAspectRatio="xMidYMid meet">
           <g>
            <g transform="rotate(180 125 125)" stroke="#ff8000" fill="none" strokeWidth="5" id="svg_1">
             <path ref={path1} fill="none" stroke="null" d="m246.1739,3.13665m-44.11424,241.92784c16.23986,-3.53446 30.9042,-14.3816 37.32743,-27.6663c8.96828,-18.2817 8.84709,-44.60735 -0.24238,-62.6453c-3.87818,-7.55644 -13.93719,-18.2817 -20.84519,-21.81616c-11.9981,-6.21578 -16.48224,-7.06892 -44.23543,-7.8002c-24.72336,-0.73126 -27.14722,-0.97502 -32.47971,-3.53446c-3.15101,-1.58441 -7.27158,-4.87513 -9.33186,-7.31268c-3.51459,-4.38761 -7.27158,-13.2847 -7.27158,-17.55044c0,-2.55944 -2.90863,-2.8032 -12.36168,-0.85315c-20.23923,4.26574 -37.44862,19.50047 -44.84139,39.61035c-2.18147,6.21578 -2.66624,10.48151 -3.02982,31.56641c-0.60596,27.30067 0.72715,37.41655 6.54442,49.36059c6.66561,13.77222 22.05711,25.10687 39.02412,28.76321c10.90737,2.31568 80.95689,2.1938 91.74305,-0.12187l0.00001,0z" id="svg_2"/>
@@ -26,3 +30,9 @@ export default function CustomLoader(){
          </svg>
     )
 }
+
+export const LoadingPage = ({height=100, width=100}) => (
+    <div className="max d-flex align-items-center justify-content-center">
+        <CustomLoader height={height} width={width} />
+    </div>
+)

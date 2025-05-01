@@ -15,12 +15,13 @@ import { AuthProvider } from "./auth/AuthContexts";
 // import { More } from './more';
 
 import { UserProvider } from './contexts';
+import { lazy, Suspense } from 'react';
 
 import LandingPage from './landing/page';
-import { Msg50App } from './app/page';
 import { AppRoutes } from './Routes';
 import { SignIn } from './sign-in/page';
 import UserProfilePage from './users/page';
+import { LoadingPage } from './components/Loading';
 
 
 export const ProdName = "Message50";
@@ -29,6 +30,8 @@ export const portfolioLink = "https://davidtimi1.github.io";
 export const DevMode = import.meta.env.MODE === 'development';
 
 export const apiHost = DevMode? "http://localhost:5173" : import.meta.env.VITE_BACKEND_HOST;
+
+const Msg50App =  lazy(() => import('./app/page'))
 
 export const Msg50 = () => {
 
@@ -41,7 +44,11 @@ export const Msg50 = () => {
 					<Route path='/' element={<LandingPage />} />
 					<Route path='/register' element={<SignIn isLogin={false} />} />
 					<Route path='/login' element={<SignIn isLogin={true} />} />
-					<Route path='/app/*' element={<Msg50App />} />
+					<Route path='/app/*' element={	
+						<Suspense fallback={<LoadingPage />}>
+							<Msg50App />
+						</Suspense>
+					} />
 					<Route path='/user/:username' element={<UserProfilePage />} />
 					<Route path='/routes' element={<AppRoutes />} />
 					<Route path='*' element={<Navigate to='/' replace />} />

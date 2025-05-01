@@ -26,7 +26,7 @@ import CustomLoader from "../components/Loading";
 
 
 
-export const Msg50App = () => {
+const Msg50App = () => {
     const [chatting, setChatting] = useState({ user: false });
     const [overlays, setOverlays] = useState(new Map());
     const isOnline = useOnlineStatus();
@@ -163,6 +163,8 @@ export const Msg50App = () => {
     }
 }
 
+
+export default Msg50App;
 
 async function handleMessageReceipt(msgEvent){
     const json_data = msgEvent.data;
