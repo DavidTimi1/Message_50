@@ -5,13 +5,14 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { once, transitionEnd } from '../utils';
 
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faBars, faDownload, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { githubLink, ProdName } from '../App';
-import { IconBtn } from '../components/Button';
+import { Button, IconBtn } from '../components/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 
-export default function Navbar({scroll}){
+export default function Navbar({scroll, deferredInstallPrompt}){
     const [showMenu, setShow] = useState(false);
 
 
@@ -48,21 +49,33 @@ export default function Navbar({scroll}){
                                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.11.82-.26.82-.577v-2.234c-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.744.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.305 3.492.997.108-.774.418-1.305.762-1.605-2.665-.305-5.467-1.332-5.467-5.93 0-1.31.468-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.007-.322 3.3 1.23a11.52 11.52 0 0 1 3.003-.403c1.02.005 2.045.137 3.003.403 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.241 2.873.118 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.807 5.624-5.48 5.92.43.37.823 1.102.823 2.222v3.293c0 .32.218.694.825.576C20.565 21.796 24 17.297 24 12c0-6.63-5.37-12-12-12z" />
                             </svg>
                         </Link>
-                        <Link to="/login" className="my-btn no-link deval br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Log In
-                                </div>
-                            </div>
-                        </Link>
 
-                        <Link to="/register" className="my-btn no-link br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Register
+                        {
+                            deferredInstallPrompt ?
+                            <>
+                                <Link to="/app" className="my-btn no-link deval br-5X">
+                                    <div className="btn-bg">
+                                        <div className="btn d-flex mid-align gap-2">
+                                            <span> Use Web </span>
+                                            <FontAwesomeIcon icon={faAngleRight} />
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Button onClick={handleInstallClick}>
+                                    <FontAwesomeIcon icon={faDownload} />
+                                    <span> Install App </span>
+                                </Button>
+                            </>
+                            :
+                            <Link to="/app" className="my-btn no-link br-5">
+                                <div className="btn-bg">
+                                    <div className="btn max">
+                                        <span> Get Started </span>
+                                        <FontAwesomeIcon icon={faAngleRight} />
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        }
                     </div>
                 </div>
 
@@ -92,7 +105,7 @@ export default function Navbar({scroll}){
                     </div>
                 </div>
 
-                <Menu show={showMenu} closeMenu={()=> toggleMenu(false)} />
+                <Menu show={showMenu} installPrompt={deferredInstallPrompt}  closeMenu={()=> toggleMenu(false)} />
             </div>
         </div>
     )
@@ -100,11 +113,25 @@ export default function Navbar({scroll}){
     function toggleMenu(bool){
         setShow(bool);
     }
+    
+    function handleInstallClick() {
+        if (installPrompt) {
+            installPrompt.prompt();
+            installPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+            });
+        }
+    }
 
 }
 
 
-function Menu({show, closeMenu}){
+
+function Menu({show, closeMenu, installPrompt}){
     const myRef = useRef(null);
 
     useEffect(() => {
@@ -132,26 +159,47 @@ function Menu({show, closeMenu}){
                     <Link className="nav-item" to='/#contact-us'>
                         Contact Us
                     </Link>
-                    <Link className="nav-item" to='/app'>
-                        App
-                    </Link>
-                    <div className='flex fw gap-2 mid-align even-space'>
-                        <Link to="/login" className="my-btn deval no-link fw br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Log In
-                                </div>
-                            </div>
-                        </Link>
+                    <div className="d-flex flex-col gap-2 pad">
+                        <div className="w-full">
+                            <hr />
+                        </div>
 
-                        <Link to="/register" className="fw my-btn no-link br-5">
-                            <div className="btn-bg">
-                                <div className="btn max">
-                                    Register
+                        {
+                            installPrompt ?
+                            <>
+                                <Button onClick={handleInstallClick}>
+                                    <FontAwesomeIcon icon={faDownload} />
+                                    <span> Install App </span>
+                                </Button>
+
+                                <Link to="/app" className="my-btn no-link deval br-5">
+                                    <div className="btn-bg">
+                                        <div className="btn max">
+                                            <span> Continue on the web </span>
+                                            <FontAwesomeIcon icon={faAngleRight} />
+                                        </div>
+                                    </div>
+                                </Link>
+                            </>
+                            :
+                            <>
+                            <Link to="/app" className="my-btn no-link br-5">
+                                <div className="btn-bg">
+                                    <div className="btn max">
+                                        <span> Get Started </span>
+                                        <FontAwesomeIcon icon={faAngleRight} />
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                            <small className='mx-auto fw-light text-italic' style={{color: "var(--text2-col)"}}>
+                                Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
+                            </small>
+                            </>
+                        }
+
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -160,5 +208,18 @@ function Menu({show, closeMenu}){
     function close(){
         once(transitionEnd, myRef.current, closeMenu);
         myRef.current.classList.add("close");
+    }
+    
+    function handleInstallClick() {
+        if (installPrompt) {
+            installPrompt.prompt();
+            installPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+            });
+        }
     }
 }

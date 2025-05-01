@@ -1,7 +1,7 @@
 
 import './page.css';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 import { apiHost, githubLink, portfolioLink, ProdName } from '../App';
 import Navbar from './Navbar';
@@ -10,19 +10,33 @@ import { Button } from '../components/Button';
 import { Input } from '../sign-in/page';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 
 const LandingPage = () => {
     const [scroll, setScroll] = useState(false);
+    const [deferredInstallPrompt, setInstallPrompt] = useState(false);
     const ref = useRef();
 
     useTransitionOnLoad(ref);
 
 
+    useEffect(() => {
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            setInstallPrompt(e);
+        });
+
+        return 
+    }, [])
+
+
     return (
         <div className='landing-page max' onScroll={handleScroll}>
-            <Navbar scroll={scroll} />
+            <Navbar scroll={scroll} deferredInstallPrompt={deferredInstallPrompt} />
 
             <div className="content max mid-align flex-col can-animate not-animated" style={{padding: 0, margin: 0}} ref={ref}>
             {/* Hero Section */}
@@ -45,16 +59,40 @@ const LandingPage = () => {
                             Message50 is the best, fastest and most secure messaging application
                         </em>
                     </p>
-                    <div className='d-flex'>
-                        <Link to="/register" className="my-btn no-link br-5">
+                    
+                    {
+                        deferredInstallPrompt ?
+
+                        <div className='d-flex gap-2 align-items-center'>
+                            <Button onClick={handleInstallClick}>
+                                <FontAwesomeIcon icon={faDownload} />
+                                <span> Install App </span>
+                            </Button>
+                            <Link to="/app" className="my-btn no-link deval br-5X">
+                                <div className="btn-bg">
+                                    <div className="btn d-flex mid-align gap-2">
+                                        <span> Continue on the web </span>
+                                        <FontAwesomeIcon icon={faAngleRight} />
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                        :
+                        <>
+                        <Link to="/app" className="my-btn no-link br-5">
                             <div className="btn-bg">
-                                <div className="btn d-flex mid-align gap-2">
-                                    <span> Get started now </span>
+                                <div className="btn max">
+                                    <span> Get Started </span>
                                     <FontAwesomeIcon icon={faAngleRight} />
                                 </div>
                             </div>
                         </Link>
-                    </div>
+                        <small className='mx-auto fs-light' style={{color: "var(--text2-col)"}}>
+                            Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
+                        </small>
+                        </>
+                    }
+                    
                 </div>
             </header>
 
@@ -92,6 +130,20 @@ const LandingPage = () => {
 
         if (isScrolling != scroll){
             setScroll(isScrolling);
+        }
+    }
+
+    function handleInstallClick() {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+                // deferredInstallPrompt = null;
+            });
         }
     }
 };
@@ -262,8 +314,10 @@ const Gallery = () => {
             <div className="gallery d-flex fw flex-col" style={{gap: "5rem"}}>
 
                 {featuresIllustrations.map((feature, index) => (
-                    <div className="d-flex flex-col mid-align gap-3" key={index}>
-                        <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="col-md-5 br-1 fw" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
+                    <div className="d-flex flex-col fw mid-align gap-3" key={index}>
+                        <div className="col-md-5">
+                            <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="br-1 fw" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
+                        </div>
                         <div className="col-md-7">
                             <div className="mx-auto" style={{maxWidth: "400px"}}>
                                 <h4 className='fw-bold fs-2'>
@@ -365,9 +419,9 @@ const Footer = () => {
 		<footer className='mx-auto center-text'>
 			<div className='flex-col gap-2' style={{flexWrap: "wrap"}}>
                 <div>
-                    <span><Link className='no-link' to='/privacy.pdf'>Privacy Policy</Link></span>
+                    <span><Link className='no-link' to='/privacy.pdf' target='_blank' rel="noreferrer noopener"> Privacy Policy</Link></span>
                     <span> | </span>
-                    <span><Link className='no-link' to='/terms.pdf'>Terms of Use</Link></span>
+                    <span><Link className='no-link' to='/terms.pdf' target='_blank' rel="noreferrer noopener"> Terms of Use</Link></span>
                 </div>
 				<span>&copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.</span>
                 <em className='sr-only'>
