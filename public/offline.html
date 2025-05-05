@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Messaging, Secure Messaging, Instant Messaging, Message50, e2ee, end-to-end">
+    <meta name="robots" content="index, follow">
+    
+    <link rel="apple-touch-icon" href="public/logo192.png" />
+    <link rel="icon" href="public/favicon.ico" />
+    <link rel="manifest" href="public/manifest.json" />
+    
+    <meta name="description" content="Connect to the internet and reload to use our Quick, Secure and Seamless Messaging Platform" />
+    <title>You're Offline | Message50</title>
+
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#030508">
+
+    <link rel="icon" style="filter: grayscale();" href="public/favicon.ico" />
+    
+    <meta property="og:title" content="Offline | Message50 - E2EE Chat App">
+    <meta property="og:description" content="Connect to the internet and reload to use our Quick, Secure and Seamless Messaging Platform" >
+    <meta property="og:url" content="https://message50-frontend.vercel.app">
+    <meta property="og:site_name" content="Message50 - E2EE Chat App">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://message50-frontend.vercel.app/logo_text.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Offline | Message50 - E2EE Chat App">
+    <meta name="twitter:description" content="Connect to the internet and reload to use our Quick, Secure and Seamless Messaging Platform">
+    <meta name="twitter:image" content="https://message50-frontend.vercel.app/logo_text.jpg">
+    <meta name="twitter:url" content="https://message50-frontend.vercel.app">
+    <meta name="twitter:site" content="@DavidTimi1">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        :root {
+            font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            --darkest-blue: hsl(210, 50%, 2%);
+
+            --btn-col: hsl(30, 100%, 50%);
+            --btn2-col: hsl(30, 100%, 40%);
+            --body-col: light-dark( #eee, var(--darkest-blue) );
+
+            --text-col: light-dark(#111, #eee);
+            --text2-col: light-dark(#444, #aaa);
+        }
+      #root {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #030508;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+      }
+        .my-btn {
+            --color: var(--text-col);
+            appearance: none;
+            background-color: var(--btn-col);
+            border-radius: 1rem;
+            transition: background-position .5s ease-in-out;
+
+            .btn {
+                color: var(--color);
+            }
+
+            &:hover {
+                background-color: var(--btn2-col);
+            }
+        }
+        
+        .no-btn {
+            border: none;
+            font-weight: 600;
+            font-size: smaller;
+            outline: none;
+        }
+
+    </style>
+
+  </head>
+  <body class="mega-max">
+    <div id="root" class="max">
+        <div style="aspect-ratio: 1/1; width: 150px;">
+            <img src="logo.svg" style="object-fit: contain; width: 100%; filter: grayscale();" alt="">
+        </div>
+
+        <div>
+            <span style="display: flex; align-items: center; column-gap: 5px">
+                <span style="font-size: 30px;"> ☁ </span> You are currently <span style="color: #ff8000; font-weight: bolder; font-size: larger;"> offline </span>.
+            </span>
+            <br />
+            Check your Internet Connection and try again
+        </div>
+
+        <button type='button' class="my-btn no-btn" onclick="window.location.reload()">
+            <div class="btn-bg" style="padding: .5rem 1rem">
+                <div class="btn">
+                    Reload
+                </div>
+            </div>
+        </button>
+    </div>
+  </body>
+</html>
+
