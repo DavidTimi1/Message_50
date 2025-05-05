@@ -30,9 +30,18 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-const relatedApps = await navigator.getInstalledRelatedApps();
-console.log(relatedApps)
+let relatedApps = [];
+if (navigator.getInstalledRelatedApps) {
+    navigator.getInstalledRelatedApps()
+      .then((apps) => {
+        relatedApps = apps;
+      })
+      .catch((error) => {
+        console.error('Error fetching related apps:', error);
+      });
+} else {
+    console.log('getInstalledRelatedApps is not supported on this browser.');
+}
 
 
 const PWAContext = createContext(null);
@@ -42,7 +51,6 @@ const PWAProvider = ({children}) => {
   const [displayMode, setDisplay] = useState(initDisplayMode);
     const [isInstalled, setInstalled] = useState((relatedApps.length > 0) || ['standalone', 'twa'].includes(displayMode));
     const [installPrompt, setInstallPrompt] = useState();
-    console.log(isInstalled)
 
     useEffect(() => {
         const appInstalled = () => {

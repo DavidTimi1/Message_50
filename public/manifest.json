@@ -26,7 +26,7 @@
   "background_color": "#030508",
   "related_applications": [{
     "platform": "webapp",
-    "url": "localhost:3000/manifest.json"
+    "url": "https://message50-frontend.vercel.app/manifest.json"
   }],
   "prefer_related_applications": false
 }

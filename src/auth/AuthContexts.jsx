@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const response = await axios.post(refreshUrl, {
+                const response = await axiosInstance.post(refreshUrl, {
                     refresh: refreshToken,
                 });
 
