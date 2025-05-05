@@ -1,11 +1,14 @@
 const CACHE_NAME = 'message50-cache-v1';
 const urlsToCache = [
     '/',
+    '/app',
+    '/app/contacts',
+    '/app/media',
+    '/app/settings',
     '/manifest.json',
     '/favicon.ico',
     '/apple-touch-icon.png',
     'logo.svg',
-    '/index.html',
     '/msg-bubble.png',
     '/logo.png',
     '/e2ee-placeholder.jpg',
