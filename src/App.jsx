@@ -22,6 +22,7 @@ import { AppRoutes } from './Routes';
 import { SignIn } from './sign-in/page';
 import UserProfilePage from './users/page';
 import { LoadingPage } from './components/Loading';
+import PWAProvider from './lib/pwa';
 
 
 export const ProdName = "Message50";
@@ -37,6 +38,7 @@ export const Msg50 = () => {
 
 	return (
 		<div className='max App'>
+		<PWAProvider>
         <AuthProvider>
 			<UserProvider devData={userDevData}>
 			<Router>
@@ -57,6 +59,7 @@ export const Msg50 = () => {
 			</UserProvider>
 			
 		</AuthProvider>
+		</PWAProvider>
 		</div>
 	)
 }

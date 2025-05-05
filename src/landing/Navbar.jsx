@@ -9,11 +9,14 @@ import { faAngleRight, faBars, faDownload, faXmark } from '@fortawesome/free-sol
 import { githubLink, ProdName } from '../App';
 import { Button, IconBtn } from '../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { installPWA, usePWAContext } from '../lib/pwa';
 
 
 
-export default function Navbar({scroll, deferredInstallPrompt}){
+export default function Navbar({scroll}){
     const [showMenu, setShow] = useState(false);
+    const { isInstalled, installPrompt } = usePWAContext();
+    const isInstallable = Boolean(installPrompt) || isInstalled;
 
 
     return (
@@ -51,7 +54,7 @@ export default function Navbar({scroll, deferredInstallPrompt}){
                         </Link>
 
                         {
-                            deferredInstallPrompt ?
+                            isInstalled || isInstallable ?
                             <>
                                 <Link to="/app" className="my-btn no-link deval br-5X">
                                     <div className="btn-bg">
@@ -61,9 +64,9 @@ export default function Navbar({scroll, deferredInstallPrompt}){
                                         </div>
                                     </div>
                                 </Link>
-                                <Button onClick={handleInstallClick}>
+                                <Button onClick={() => installPWA(installPrompt)}>
                                     <FontAwesomeIcon icon={faDownload} />
-                                    <span> Install App </span>
+                                    <span> {isInstalled? "Use" : "Install"} App </span>
                                 </Button>
                             </>
                             :
@@ -105,7 +108,7 @@ export default function Navbar({scroll, deferredInstallPrompt}){
                     </div>
                 </div>
 
-                <Menu show={showMenu} installPrompt={deferredInstallPrompt}  closeMenu={()=> toggleMenu(false)} />
+                <Menu show={showMenu}  closeMenu={()=> toggleMenu(false)} />
             </div>
         </div>
     )
@@ -113,26 +116,15 @@ export default function Navbar({scroll, deferredInstallPrompt}){
     function toggleMenu(bool){
         setShow(bool);
     }
-    
-    function handleInstallClick() {
-        if (installPrompt) {
-            installPrompt.prompt();
-            installPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the A2HS prompt');
-                } else {
-                    console.log('User dismissed the A2HS prompt');
-                }
-            });
-        }
-    }
 
 }
 
 
 
-function Menu({show, closeMenu, installPrompt}){
+function Menu({show, closeMenu}){
     const myRef = useRef(null);
+    const { isInstalled, installPrompt } = usePWAContext();
+    const isInstallable = Boolean(installPrompt) || isInstalled;
 
     useEffect(() => {
         let t_id = show && setTimeout(() => myRef.current.classList.remove("close"));
@@ -165,11 +157,11 @@ function Menu({show, closeMenu, installPrompt}){
                         </div>
 
                         {
-                            installPrompt ?
+                            isInstalled || isInstallable ?
                             <>
-                                <Button onClick={handleInstallClick}>
+                                <Button onClick={() => installPWA(installPrompt)}>
                                     <FontAwesomeIcon icon={faDownload} />
-                                    <span> Install App </span>
+                                    <span> {isInstalled? "Use" : "Install"} App </span>
                                 </Button>
 
                                 <Link to="/app" className="my-btn no-link deval br-5">
@@ -191,9 +183,12 @@ function Menu({show, closeMenu, installPrompt}){
                                     </div>
                                 </div>
                             </Link>
-                            <small className='mx-auto fw-light text-italic' style={{color: "var(--text2-col)"}}>
-                                Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
-                            </small>
+
+                            { !isInstallable &&
+                                <small className='mx-auto fw-light text-italic' style={{color: "var(--text2-col)"}}>
+                                    Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
+                                </small>
+                            }
                             </>
                         }
 
@@ -208,18 +203,5 @@ function Menu({show, closeMenu, installPrompt}){
     function close(){
         once(transitionEnd, myRef.current, closeMenu);
         myRef.current.classList.add("close");
-    }
-    
-    function handleInstallClick() {
-        if (installPrompt) {
-            installPrompt.prompt();
-            installPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the A2HS prompt');
-                } else {
-                    console.log('User dismissed the A2HS prompt');
-                }
-            });
-        }
     }
 }

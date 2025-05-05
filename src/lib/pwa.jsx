@@ -1,0 +1,119 @@
+import { useEffect } from "react";
+import { useContext } from "react";
+import { createContext } from "react";
+import { useState } from "react";
+
+
+function getPWADisplayMode() {
+    if (document.referrer.startsWith('android-app://'))
+      return 'twa';
+    if (window.matchMedia('(display-mode: browser)').matches)
+      return 'browser';
+    if (window.matchMedia('(display-mode: standalone)').matches)
+      return 'standalone';
+    if (window.matchMedia('(display-mode: minimal-ui)').matches)
+      return 'minimal-ui';
+    if (window.matchMedia('(display-mode: fullscreen)').matches)
+      return 'fullscreen';
+    if (window.matchMedia('(display-mode: window-controls-overlay)').matches)
+      return 'window-controls-overlay';
+  
+    return 'unknown';
+}
+
+let initDisplayMode = null;
+window.addEventListener('DOMContentLoaded', () => {
+// Log launch display mode to analytics
+
+    initDisplayMode = getPWADisplayMode();
+    console.log('DISPLAY_MODE_LAUNCH:', getPWADisplayMode());
+});
+
+
+
+const relatedApps = await navigator.getInstalledRelatedApps();
+console.log(relatedApps)
+
+
+const PWAContext = createContext(null);
+
+
+const PWAProvider = ({children}) => {
+  const [displayMode, setDisplay] = useState(initDisplayMode);
+    const [isInstalled, setInstalled] = useState((relatedApps.length > 0) || ['standalone', 'twa'].includes(displayMode));
+    const [installPrompt, setInstallPrompt] = useState();
+    console.log(isInstalled)
+
+    useEffect(() => {
+        const appInstalled = () => {
+          // Log install to analytics
+          setInstalled(true);
+          console.log('INSTALL: Success');
+        };
+        
+        const installPrompt = (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            setInstallPrompt(e);
+        };
+
+        const DOMLoaded = () => {
+            // Replace "standalone" with the display mode used in your manifest
+            window.matchMedia('(display-mode: standalone)')
+              .addEventListener('change', () => {
+                // Log display mode change to analytics
+                setDisplay(getPWADisplayMode());
+                console.log('DISPLAY_MODE_CHANGED', getPWADisplayMode());
+              });
+        };
+
+        window.addEventListener('appinstalled', appInstalled);
+        window.addEventListener('beforeinstallprompt', installPrompt);
+        window.addEventListener('DOMContentLoaded', DOMLoaded);
+
+        // Log install status to analytics
+
+        return () => {
+            window.removeEventListener('appinstalled', appInstalled);
+            window.removeEventListener('DOMContentLoaded', DOMLoaded);
+            window.removeEventListener('beforeinstallprompt', installPrompt);
+
+        };
+    }, []);
+
+    
+    return (
+        <PWAContext.Provider value={{ isInstalled, displayMode, installPrompt }}>
+            {children}
+        </PWAContext.Provider>
+    );
+}
+
+
+export const usePWAContext = () => {
+    const context = useContext(PWAContext);
+    if (!context) {
+        throw new Error('usePWADetails must be used within a PWAProvider');
+    }
+    return context;
+}
+
+export const installPWA = (prompt) => {
+    if (!prompt) 
+        return
+    // Show the install prompt
+    prompt.prompt();
+
+    // Wait for the user to respond to the prompt
+    prompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt');
+        } else {
+            console.log('User dismissed the A2HS prompt');
+        }
+    });
+}
+
+
+export default PWAProvider;
