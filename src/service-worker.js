@@ -3,7 +3,7 @@ const CACHE_NAME = 'message50-cache-v1';
 const staticAssets = Object.keys(
     import.meta.glob([
       '/index.html',
-      'offlne.html',
+      '/offlne.html',
       '/app/index.html',
       '/login/index.html',
       '/register/index.html',
