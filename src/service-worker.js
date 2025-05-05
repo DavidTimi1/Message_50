@@ -27,6 +27,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
     // We only want to call event.respondWith() if this is a navigation request
     // for an HTML page.
+
     if (event.request.mode === 'navigate') {
       event.respondWith((async () => {
         try {
@@ -35,41 +36,45 @@ self.addEventListener('fetch', (event) => {
             if (preloadResponse) {
                 return preloadResponse;
             }
-
-            // Handle static asset requests
-            caches.match(event.request).then((cachedResponse) => {
-                return (
-                    cachedResponse ||
-
-                    fetch(event.request).then( response => {
-                        // update cache
-                        return caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(event.request, response.clone());
-                            return response;
-                        });
-                    })
-                );
-            })
+            
+            const networkResponse = await fetch(request);
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(request, networkResponse.clone());
+            return networkResponse;
 
         } catch (error) {
           // catch is only triggered if an exception is thrown, which is likely
           // due to a network error.
           // If fetch() returns a valid HTTP response with a response code in
           // the 4xx or 5xx range, the catch() will NOT be called.
-          console.log('Fetch failed; returning offline page instead.', error);
   
           const cache = await caches.open(CACHE_NAME);
-          const cachedResponse = await cache.match(OFFLINE_URL);
-          return cachedResponse;
+          const cachedResponse = await caches.match(event.request);
+          const offlineView = await cache.match(OFFLINE_URL);
+
+          return cachedResponse ?? offlineView;
         }
       })());
     }
 
-    // If our if() condition is false, then this fetch handler won't intercept the
-    // request. If there are any other fetch handlers registered, they will get a
-    // chance to call event.respondWith(). If no fetch handlers call
-    // event.respondWith(), the request will be handled by the browser as if there
+    // If no fetch handlers call event.respondWith(), 
+    // the request will be handled by the browser as if there
     // were no service worker involvement.
+    
+    // Cache First for static assets (JS, CSS, images, etc.)
+    event.respondWith(
+        caches.match(request).then((cached) => {
+        return (
+            cached ||
+            fetch(request).then((response) => {
+            return caches.open(CACHE_NAME).then(async (cache) => {
+                cache.put(request, response.clone());
+                return response;
+            });
+            })
+        );
+        })
+    );
 });
 
 // Update the Service Worker and clear old caches
