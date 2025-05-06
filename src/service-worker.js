@@ -1,24 +1,41 @@
 const CACHE_NAME = 'message50-cache-v1';
 
-const staticAssets = Object.keys(
-    import.meta.glob([
-      '/index.html',
-      '/offlne.html',
-      '/app/index.html',
-      '/login/index.html',
-      '/register/index.html',
-      '/assets/**/*.js',
-      '/assets/**/*.css',
-      '/assets/**/*.{woff2,png,jpg,svg,ico}',
-    ], { as: 'url' })
-  );
+
+// Fetch the manifest and cache the assets
+async function cacheAssets() {
+    const cache = await caches.open(CACHE_NAME);
+
+    // Fetch the manifest.json file
+    const response = await fetch('/manifest.json');
+    const manifest = await response.json();
+
+    // Extract the asset URLs from the manifest
+    const assetsToCache = Object.values(manifest).map(entry => entry.file);
+
+    // Add additional static assets (e.g., HTML files)
+    const staticAssets = [
+        '/',
+        '/index.html',
+        '/login.html',
+        '/register.html',
+        '/app.html',
+        '/offline.html',
+        '/favicon.ico',
+        '/logo.png',
+        '/user-icon.svg',
+        'manifest.json'
+    ];
+
+    // Cache all assets
+    return cache.addAll([...staticAssets, ...assetsToCache]);
+}
 
   
 // Install the Service Worker
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(staticAssets);
+        cacheAssets().catch((error) => {
+            console.error('Failed to cache assets:', error);
         })
     );
 });

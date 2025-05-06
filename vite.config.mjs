@@ -38,6 +38,7 @@ export default defineConfig({
         port: 3000
     },
     build: {
+        manifest: true,
         rollupOptions: {
           input: {
             main: resolve(__dirname, 'index.html'),
