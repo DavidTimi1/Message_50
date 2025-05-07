@@ -1,5 +1,6 @@
 const CACHE_NAME = 'message50-cache-v1';
 const OFFLINE_URL = '/offline.html';
+const OFFLINE_VERSION = 1.0001;
 
 
 // Fetch the manifest and cache the assets
@@ -9,10 +10,9 @@ async function cacheAssets() {
     // Fetch the manifest.json file
     const response = await fetch('/.vite/manifest.json');
     const manifest = await response.json();
-    console.log(manifest)
 
     // Extract the asset URLs from the manifest
-    const assetsToCache = Object.values(manifest).map(entry => entry.file === 'service-worker.js'? '' : entry.file);
+    const assetsToCache = Object.values(manifest).map(entry => entry.file);
 
     // Add additional static assets (e.g., HTML files)
     const staticAssets = [
@@ -28,7 +28,7 @@ async function cacheAssets() {
         '/logo.png',
         '/msg-bubble.png',
         '/user-icon.svg',
-        'manifest.json'
+        '/manifest.json'
     ];
 
     // Cache all assets
