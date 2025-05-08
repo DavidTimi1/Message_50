@@ -21,6 +21,8 @@
 ## Introduction
 Message_50 is a modern, secure, and fast messaging web application designed to provide seamless communication for users. It leverages cutting-edge technologies such as the Subtle Crypto API, WebSockets, and IndexedDB to ensure a highly secure and efficient messaging experience. This repository contains the frontend code for the application.
 
+[Visit site](https://message50-frontend.vercel.app)
+
 ---
 
 ## Motivation
@@ -39,7 +41,7 @@ Message_50 is built with the vision of fostering private and meaningful connecti
 - **Cross-Platform Support**: Access your chats on mobile, tablet, and desktop devices.
 - **Real-Time Messaging**: Instant message delivery using WebSockets.
 - **Media Sharing**: Share images, videos, and documents securely.
-- **User-Friendly Interface**: A clean and intuitive design for effortless navigation.
+- **User-Friendly Interface and Experience**: A clean and intuitive design for effortless navigation.
 
 ---
 
@@ -48,7 +50,7 @@ To set up the frontend of Message_50 locally, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-repo/Message_50.git
+    git clone https://github.com/davidtimi1/Message_50.git
     ```
 
 2. Navigate to the project directory:
@@ -63,123 +65,65 @@ To set up the frontend of Message_50 locally, follow these steps:
 
 4. Start the development server:
     ```bash
-    npm start
+    npm run dev
     ```
 
 ---
 
 ## Usage
 1. Open your browser and navigate to `http://localhost:3000`.
-2. Sign up or log in to access the messaging features.
-3. Explore functionalities such as sending messages, managing notifications, and sharing media files.
+2. [Set up the backend](https://github.com/davidtimi1/MSG50-BE) 
+3. Sign up or log in to access the messaging features (optional guest mode).
+4. Explore functionalities such as sending messages and sharing media files.
 
 ---
 
 ## Folder Structure
 ```
-Message_50/
-├── public/
-│   ├── index.html
-│   └── favicon.ico
+Message_50/ # Root Directory
+├── dist/  # build files
 ├── src/
-│   ├── components/
-│   │   ├── MessageList/
-│   │   ├── MessageInput/
-│   │   └── Notification/
-│   ├── pages/
-│   │   ├── Login/
-│   │   ├── Signup/
-│   │   └── Dashboard/
-│   ├── services/
-│   │   └── api.js
-│   ├── utils/
-│   │   └── helpers.js
-│   ├── App.js
-│   ├── index.js
-│   └── styles/
+│   ├── app/ # structured like Nextjs app router
+│   │   ├── chats/
+│   │   ├── contacts/
+│   │   ├── media/
+│   │   ├── settings/
+│   │   └── feedback/
+│   ├── auth/ # auth lib and resources
+│   ├── landing/ # landing page resources
+        ...
+│   │   └── page.jsx
+│   ├── lib/ # addn lib and modules
+│   ├── users/ 
+│   │   └── page.jsx # dynamic route for handling unauthed user view
+│   ├── ui/ # global css files
+│   ├── App.jsx
+│   ├── index.jsx
+│   └── service-worker.js
+├── public/  #
+│   ├── index.html
+    ├── logo.png
+    ├── logo.svg
+    ├── user-icon.svg
+    ├── mainfest.json
+│   └── favicon.ico
+├── prerendered-htmls/ # html snapshot of important routes (support SEO and prefetch)
+│   └── ...
+├── vite.config.mjs # bundling config
+├── vercel.json
 ├── package.json
-└── README.md
+└── README.md # docs
 ```
 
----
-
-## API Documentation
-### Endpoints
-1. **User Authentication**
-    - `POST /api/login`: Authenticate a user.
-    - `POST /api/signup`: Register a new user.
-
-2. **Messages**
-    - `GET /api/messages`: Fetch all messages.
-    - `POST /api/messages`: Send a new message.
-
-3. **Notifications**
-    - `GET /api/notifications`: Fetch user notifications.
-
-### Example Request
-```javascript
-fetch('/api/messages', {
-  method: 'GET',
-  headers: {
-     'Authorization': 'Bearer <token>'
-  }
-})
-  .then(response => response.json())
-  .then(data => console.log(data));
-```
 
 ---
 
 ## Backend Repository
-The backend code for Message_50 is hosted in a separate repository named `MSG50-BE`. It handles server-side operations, including user authentication, message storage, and real-time communication using WebSockets.
+The backend code for Message_50 is hosted in a separate repository [`MSG50-BE`](https://github.com/davidtimi1/MSG50-BE). It handles server-side operations, including user authentication, message storage, and real-time communication using WebSockets.
 
 ### Repository Link
-You can find the backend repository here: [MSG50-BE GitHub Repository](https://github.com/your-repo/MSG50-BE)
+You can find the backend repository here: [MSG50-BE GitHub Repository](https://github.com/davidtimi1/MSG50-BE)
 
-### Key Features of the Backend
-- **User Authentication**: Secure login and registration with token-based authentication.
-- **Message Handling**: Efficient storage and retrieval of messages.
-- **WebSocket Integration**: Real-time communication support.
-- **Data Encryption**: Ensures all data is encrypted during transmission and storage.
-- **Scalable Architecture**: Designed to handle high traffic and large user bases.
-
-### Setting Up the Backend
-1. Clone the backend repository:
-    ```bash
-    git clone https://github.com/your-repo/MSG50-BE.git
-    ```
-2. Navigate to the backend project directory:
-    ```bash
-    cd MSG50-BE
-    ```
-3. Install dependencies:
-    ```bash
-    npm install
-    ```
-4. Start the backend server:
-    ```bash
-    npm start
-    ```
-
----
-
-## Contributing
-We welcome contributions to improve Message_50! To contribute, follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix:
-    ```bash
-    git checkout -b feature-name
-    ```
-3. Make your changes and commit them:
-    ```bash
-    git commit -m "Add feature-name"
-    ```
-4. Push your changes to your fork:
-    ```bash
-    git push origin feature-name
-    ```
-5. Open a pull request to the main repository.
 
 ### Contribution Guidelines
 - Ensure your code follows the project's coding standards.
@@ -203,15 +147,15 @@ Messages are delivered instantly using WebSockets and cutting-edge technology.
 E2EE ensures that only you and the person you're communicating with can read the messages. No one else, not even the platform, can access your messages.
 
 ### Are media files also encrypted?
-Yes, all media files, including images, videos, and documents, are encrypted to ensure complete privacy and security.
-
-### What happens if I lose my device?
+Yes,
+at happens if I lose my device?
 If you lose your device, your messages cannot be accessed without your private key. Always ensure you have a backup of your encryption keys.
 
 ---
 
 ## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+T [Read more]()hi
+#roject is licensed under the MIT License. See the `LICENSE` file for details.
 
 ---
 
@@ -224,5 +168,5 @@ For any inquiries or feedback, please visit our [Contact Us](#contact-us) page o
 - **Privacy Policy**: [Privacy Policy](./privacy.pdf)
 - **Terms of Use**: [Terms of Use](./terms.pdf)
 - **Developer Portfolio**: [David Uwagbale's Portfolio](https://davidtimi1.github.io)
-- **GitHub Profile**: [David Uwagbale's GitHub](https://github.com/DavidTimi1)
-
+- **GitHub Profile**: [David Uwagbale's GituMailavidTmailto:devs.message50@gmail.com
+ev_did
