@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Attachment } from "./Attachment";
+// import { Attachment } from "./Attachment";
 import { Rating } from "./Rating";
 import { faCircleCheck, faSpinner, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "../../../components/Button";
-import { apiHost, ProdName } from "../../../App";
-import axios, { formToJSON } from "axios";
+import { apiHost } from "../../../App";
+import axios  from "axios";
 import { Input } from "../../../sign-in/page";
 
 
@@ -61,10 +61,10 @@ export const Form = ({closeModal}) => {
                         style={{ backgroundColor: "var(--body2-col)" }} 
                     />
 
-                    <textarea name="text" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
+                    <textarea name="message" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
                     {/* <Attachment files={files} remove={removeFile} add={addFile} /> */}
 
-                    {mode === 'comment' && <Rating />}
+                    {mode === 'Comment' && <Rating />}
 
                     <Button type="submit">
                         {
@@ -147,31 +147,13 @@ export const Form = ({closeModal}) => {
         setStatus('loading');
         
         const form = e.target;
-        // const fd = new FormData();
-        
-        // const xtraData = {
-        //     rating: form["rating"].value,
-        //     mode: form["type"].value,
-        // }
+        const fd = new FormData(form);
+
         const email = form["email"]?.value?.trim();
-
-        // fd.set("email", email);
-        // fd.set("message", form["text"].value.trim());
-        // fd.set("subscribed", Boolean(email))
+        fd.set("subscribed", Boolean(email))
         // // files.length && fd.set("image", files[0]);
-        // fd.set("extraData", JSON.stringify(xtraData))
 
-        const jsonData = {
-            email,
-            message: form["text"].value.trim(),
-            subscribed: Boolean(email),
-            extraData: {
-                rating: form["rating"]?.value,
-                mode: form["type"].value,
-            },
-        }
-
-        axios.post(FBendpoint, jsonData)
+        axios.post(FBendpoint, fd)
         .then( ({data}) => {
             if (data.success){
                 setStatus(true);
@@ -191,7 +173,7 @@ const SelectMode = ({ handleChange, selected }) => {
     return (
         <label>
             <span>Feedback Intent: </span>
-            <select name="type" className="feedback-type br-5" defaultValue={selected} required onChange={handleChange}>
+            <select name="subject" className="feedback-type br-5" defaultValue={selected} required onChange={handleChange}>
                 {
                     Object.keys(modes).map(mode =>
                         <option key={mode} value={mode} disabled={mode === ''}> {modes[mode]} </option>
@@ -206,7 +188,7 @@ const SelectMode = ({ handleChange, selected }) => {
 
 const modes = {
     '': "Choose a Feedback type",
-    bug: "Report a bug",
-    help: "Need Help?",
-    comment: "Leave a Feedback Comment"
+    Comment: "Leave a Feedback Comment",
+    Help: "Need Help?",
+    Bug: "Report a bug",
 }

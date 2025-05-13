@@ -88,31 +88,41 @@
         }
 
         .star {
-            color: var(--btn-col);
+            color: var(--text2-col);
+            transform-origin: center;
+            transform: scale(.7);
+            transition: .2s;
 
-            &:nth-child(2) {
-                transform-origin: bottom;
-                transform: rotate(-45deg) translateY(30px) scale(.7);
+            &:nth-child(2):hover, &:nth-child(2):has( :checked) {
+                transform: scale(.8);
             }
 
-            &:nth-child(3) {
-                transform-origin: bottom;
-                transform: rotate(-45deg) translateY(10px) scale(.85);
+            &:nth-child(3):hover, &:nth-child(3):has( :checked) {
+                transform: scale(.9);
+            }
+            
+            &:nth-child(4):hover, &:nth-child(4):has( :checked) {
+                transform: scale(1);
             }
 
-            &:nth-child(5) {
-                transform-origin: bottom;
-                transform: rotate(45deg) translateY(10px) scale(1.2);
+            &:nth-child(5):hover, &:nth-child(5):has( :checked) {
+                transform: scale(1.1);
             }
 
-            &:last-child {
-                transform-origin: bottom;
-                transform: rotate(45deg) translateY(30px) scale(1.5);
+            &:last-child:hover, &:last-child:has( :checked) {
+                transform: scale(1.25);
             }
         }
 
-        .star:has( :checked) ~ .star {
-            color: var(--text2-col);
+        .star:has(:checked, ~ .star :checked) {
+            color: var(--btn-col);
+        }
+
+        .star:hover, .star:has(~ .star:hover){
+            & svg {
+                stroke: var(--btn-col);
+                stroke-width: 20px;
+            }
         }
 
     }
