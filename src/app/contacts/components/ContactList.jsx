@@ -1,12 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { DevMode } from "../../../App";
 import { ChatContext, ToggleOverlay } from "../../contexts";
 import { ContactItem } from "./ContactItem";
 import { $ } from "../../../utils";
 import { contactsTable, loadDB, openTrans } from "../../../db";
 
 
-export const ContactUpdateContext = createContext(null);
+const ContactUpdateContext = createContext(null);
 
 export const ContactList = () => {
     const [contacts, setContacts] = useState({});
@@ -25,7 +24,7 @@ export const ContactList = () => {
 
 
     return (
-        <ContactUpdateContext.Provider value={{update: updateContact}}>
+        <ContactUpdateContext.Provider value={{updateContact: update}}>
             <div className="contact-list custom-scroll max">
                 <div className='content' 
                     ref={ref} 
@@ -94,7 +93,7 @@ export const ContactList = () => {
         }
     }
 
-    function updateContact(contact, isDeleted=false){
+    function update(contact, isDeleted=false){
         let {id, name} = contact;
         name = name ?? "~" + id;
                 
@@ -130,6 +129,7 @@ export const ContactList = () => {
     }
 }
 
+export const useContactUpdate = _ => useContext(ContactUpdateContext);
 
 
 function getContacts(){

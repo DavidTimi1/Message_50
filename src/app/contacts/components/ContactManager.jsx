@@ -8,8 +8,6 @@ import { once, transitionEnd } from "../../../utils";
 import { contactsTable, IDBPromise, loadDB, openTrans, saveContactToDB } from "../../../db";
 import { Link } from "react-router-dom";
 import { useContactName } from "../../components/Hooks";
-import { ContactUpdateContext } from "./ContactList";
-
 
 
 export const ManageContact = ({ show, args }) => {
@@ -117,7 +115,7 @@ export const ManageContact = ({ show, args }) => {
 const Form = ({NEW, id, showMessage}) => {
     const formRef = useRef();
     const name = NEW? '' : useContactName(id);
-    const {updateContact} = useContext(ContactUpdateContext); 
+    // const {updateContact} = useContactUpdate(); 
 
 
     return (
@@ -183,7 +181,7 @@ const Form = ({NEW, id, showMessage}) => {
             saveContactToDB({name, handle, phone})
             .then(_ => {
                 showMessage("Successfully Created Contact");
-                updateContact({id: handle, name, handle, phone});
+                // updateContact({id: handle, name, handle, phone});
             })
             .catch( _ => showMessage({error: true}))
         }
@@ -195,7 +193,7 @@ const Form = ({NEW, id, showMessage}) => {
         saveContactToDB({name, handle, phone})
         .then(_ =>{ 
             showMessage("Successfully Edited Contact") 
-            updateContact({id: handle, name, handle, phone});
+            // updateContact({id: handle, name, handle, phone});
         })
         .catch( _ => showMessage({error: true}))
     }
@@ -207,7 +205,7 @@ const Form = ({NEW, id, showMessage}) => {
         })
         .then(_ => {
             showMessage("Successfully Deleted Contact") 
-            updateContact({id: handle}, true);
+            // updateContact({id: handle}, true);
         })
         .catch( _ => showMessage({error: true}))
     }
