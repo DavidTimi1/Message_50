@@ -11,26 +11,33 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState(() => {
         // Initialize from localStorage if available
-        const token = localStorage.getItem('jwt');
-        return token ? { token } : null;
+        const authenticated = localStorage.getItem('authed');
+        return authenticated ? authenticated : null;
     });
     const isOnline = useOnlineStatus();
 
     const verifyUrl = apiHost + '/token/verify';
     const refreshUrl = apiHost + '/token/refresh';
+    
+
 
     // Login function
-    const login = (token, refresh) => {
-        localStorage.setItem('jwt', token); // Store token in localStorage
-        localStorage.setItem('refresh', refresh); // Store token in localStorage
-        setAuth({ token });
+    const login = (mode) => {
+        // store in local storage
+        // localStorage.setItem('jwt', token);
+        // localStorage.setItem('refresh', refresh);
+        localStorage.setItem('authed', mode);
+        setAuth(mode);
     };
 
     // Logout function
     const logout = () => {
+        // remove from local storage
         localStorage.removeItem('userdata');
-        localStorage.removeItem('refresh');
-        localStorage.removeItem('jwt'); // Remove token
+        localStorage.removeItem('authed');
+        // localStorage.removeItem('refresh');
+        // localStorage.removeItem('jwt');
+        
         setAuth(null);
 
         // clear user session data
@@ -42,10 +49,11 @@ export const AuthProvider = ({ children }) => {
     // Verify token on load
     useEffect(() => {
         const verifyToken = async () => {
-            if (auth?.token) {
+            if (auth) {
                 try {
                     // Verify token using the axios instance
-                    await axiosInstance.post(verifyUrl, { token: auth.token });
+                    // await axiosInstance.post(verifyUrl, { token: auth.token });
+                    await axiosInstance.post(verifyUrl);
                     
                 } catch (err) {
                     // If token is invalid, logout
@@ -59,16 +67,17 @@ export const AuthProvider = ({ children }) => {
         }
 
         const refreshToken = async _ => {
-            const refreshToken = localStorage.getItem('refresh');
-            if (!refreshToken) {
-                logout();
-                return;
-            }
+            // const refreshToken = localStorage.getItem('refresh');
+            // if (!refreshToken) {
+            //     logout();
+            //     return;
+            // }
 
             try {
-                const response = await axiosInstance.post(refreshUrl, {
-                    refresh: refreshToken,
-                });
+                // const response = await axiosInstance.post(refreshUrl, {
+                //     refresh: refreshToken,
+                // });
+                const response = await axiosInstance.post(refreshUrl)
 
                 // Extract the new access token from the response
                 const newAccessToken = response.data.access;

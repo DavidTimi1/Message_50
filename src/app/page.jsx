@@ -35,13 +35,13 @@ const Msg50App = () => {
 
     const navigate = useNavigate();
     const location = useLocation(), locationState = location.state;
-    const authenticated = useAuth().auth?.token;
+    const authenticated = useAuth().auth;
 
 
     useEffect(() => {
         if (!authenticated) return
 
-        const socket = connectSocket(authenticated);
+        const socket = connectSocket();
 
         socket.addEventListener('message', handleMessageReceipt);
         setTimeout(()=> {socketSend("ready")}, 1000);

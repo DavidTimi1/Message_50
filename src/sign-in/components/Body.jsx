@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Button } from '../../components/Button';
-import { AuthContext } from '../../auth/AuthContexts';
 import { apiHost } from '../../App';
+import { useAuth } from '../../auth/ProtectedRoutes';
 
 
 const Body = ({isLogin}) => {
@@ -16,7 +16,7 @@ const Body = ({isLogin}) => {
 	const navigate = useNavigate();
 	const {pathname, search} = useLocation(), nextRoute = new URLSearchParams(search).get("next");
 
-	const logUIIn = useContext(AuthContext).login;
+	const logUIIn = useAuth().login;
 
 	useEffect(() => {
 		const body = ref.current;
@@ -131,7 +131,7 @@ const Body = ({isLogin}) => {
 		axios.post(guestUrl)
 		.then((response) => {
 			console.log(response.data.message);
-			logUIIn(response.data.access_token, response.data.refresh_token);
+			logUIIn('guest');
 			setStatus(true);
 		})
 		.catch((error) => {
@@ -166,7 +166,7 @@ const Body = ({isLogin}) => {
 		axios.post(loginUrl, data)
 		.then((response) => {
 			console.log('Logged In successfully:', response.data);
-			logUIIn(response.data.access, response.data.refresh);
+			logUIIn('normal');
 			setStatus(true);
 		})
 		.catch((error) => {

@@ -22,23 +22,15 @@ export const newMsgEvent = "message-receipt";
 export const statusChangeEvent = "message-status-change";
 
 
-export function connectSocket(token){
+export function connectSocket(){
     const socketHost = `ws${apiHost.slice(4)}/ws/chat/`;
     
     if (SOCKET && SOCKET.readyState === WebSocket.OPEN)
         return SOCKET;
 
-    manuallyClosed = false; // we're initiating connection manually
+    manuallyClosed = false; // we're initiating connection manually    
 
-    token = localStorage.getItem('jwt');
-
-    if (!token) {
-        console.log("User not Auth")
-        return
-    }
-    
-
-    SOCKET = new WebSocket(`${ socketHost }?token=${token}`);
+    SOCKET = new WebSocket(socketHost);
 
     SOCKET.onopen = () => {
         console.log('Connected to socket server');
@@ -60,7 +52,7 @@ export function connectSocket(token){
             reconnectTimer = setTimeout(() => {
                 retries++;
                 console.log("🔁 Reconnecting WebSocket (", 3 - retries, "retries left )...");
-                connectSocket(token);
+                connectSocket();
             }, RECONNECT_INTERVAL);
         }
     }
@@ -103,8 +95,8 @@ export function socketSend(action, payload){
         func()
 
     } else {
-        connectSocket()
-        SOCKET.addEventListener("open", func)
+        SOCKET = connectSocket();
+        SOCKET.addEventListener("open", func);
     }
 }
 
