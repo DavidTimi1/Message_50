@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { useAuth } from "./auth/ProtectedRoutes";
-import { apiHost, DevMode } from "./App";
+import { apiHost } from "./App";
 import { generateKeyPair, getPrivateKey } from './app/crypt.js';
 
 import axiosInstance from "./auth/axiosInstance";
@@ -24,7 +24,7 @@ export const UserProvider = ({ children, devData }) => {
 
 	const isAuth = Boolean( useAuth().auth );
 
-	const loadDataUrl = apiHost + "/chat/api/user/me";
+	const loadDataUrl = "/user/me";
 	
 	useEffect(() => {
 		let ignore = false;
@@ -90,7 +90,7 @@ export const UserProvider = ({ children, devData }) => {
 
 
 function setUserKeyPair() {
-    const PUBLICKEY_URL = apiHost + "/chat/api/user/public-key/";
+    const PUBLICKEY_URL = apiHost + "/user/public-key/";
 
     generateKeyPair()
         .then(res => {

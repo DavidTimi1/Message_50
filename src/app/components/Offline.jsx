@@ -6,7 +6,6 @@ import { IDBPromise, openTrans, msgsTable, offlineMsgsTable, loadDB } from "../.
 import { SendMsgContext } from "../contexts";
 import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../crypt.js";
 import axiosInstance from "../../auth/axiosInstance.js";
-import { apiHost } from "../../App.jsx";
 import { socketSend } from "./Sockets.js";
 import { UserContext } from "../../contexts.jsx";
 
@@ -211,7 +210,7 @@ const useMessageSender = () => {
                 fd.append("file", filedBlob)
                 fd.append("metadata", JSON.stringify(metadata))
     
-                const mediaUploadUrl = apiHost + "/chat/api/media/upload/";
+                const mediaUploadUrl = "/media/upload/";
                 
                 updateMsgStatus(`upload_${data.id}`, 0, undefined, 'upload')
                 
@@ -266,7 +265,7 @@ const useMessageSender = () => {
 async function getPubicKeys(list){
     if (!list) return {}
     
-    const keysUrl = apiHost + "/chat/api/user/public-key/?username=";
+    const keysUrl = "/user/public-key/?username=";
     const query = list.join("&username=");
 
     return axiosInstance.get(keysUrl + query)

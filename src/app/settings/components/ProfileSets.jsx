@@ -6,8 +6,7 @@ import { faAngleLeft, faCamera, faNoteSticky, faPencil, faShare, faUser } from "
 import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const placeholderImg = '/user-icon.svg'; 
-import { apiHost } from "../../../App";
+const placeholderImg = '/user-icon.svg';
 import axiosInstance from "../../../auth/axiosInstance";
 
 
@@ -178,7 +177,7 @@ export const ProfileEdit = ({ show }) => {
 
     function handleSubmit(e){
         e.preventDefault();
-        const endpoint = apiHost + "/chat/api/profile-edit";
+        const endpoint = "/profile-edit";
 
         const fd = new FormData(e.target);
 

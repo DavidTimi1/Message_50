@@ -1,11 +1,10 @@
-import { apiHost } from "../../App";
 import axiosInstance from "../../auth/axiosInstance";
 import { getContactDetailsFromDB, saveContactToDB } from "../../db";
 
 
 export const getUserDetails = async (handle, isOnline) => {
     let error, details, refresh = true;
-    const userAPIRoute = apiHost + "/chat/api/user/" + handle;
+    const userAPIRoute = "/user/" + handle;
     const now = new Date().getTime();
 
     if (!handle){

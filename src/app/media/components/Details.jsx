@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { forwardRef, useContext, useEffect } from "react";
 import { SendMsgContext } from "../../contexts";
 import axiosInstance from "../../../auth/axiosInstance";
-import { apiHost } from "../../../App";
 import { decryptMediaFile } from "../../crypt";
 import { saveFile } from "../../../db";
 import { AudThmb, FileThmb, ImgThmb, VidThmb } from "../page";
@@ -188,7 +187,7 @@ export function useFileDownload(){
     async function download(src, key, id){
         if (!src) return
 
-        const mediaDownloadUrl = apiHost + "/chat/api/media/" + src;
+        const mediaDownloadUrl = "/media/" + src;
 
         // get media metadata
         const metadata = await axiosInstance.get( `${mediaDownloadUrl}?metadata`, {
