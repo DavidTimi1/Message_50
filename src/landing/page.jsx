@@ -321,6 +321,7 @@ function Feedback() {
     const [state, setState] = useState();
     const formRef = useRef(null);
     const sent = state?.status;
+    console.log(state?.data)
 
     return (
         <section className="feedback br-1 flex-col gap-3">
@@ -329,14 +330,14 @@ function Feedback() {
                 <div className='fw flex-col gap-3'>
 
                     {
-                        state && state?.data &&
-                        <div className={`alert ${state !== undefined ? sent ? "alert-success" : "alert-danger" : 'disappear'}`}>
+                        state?.data &&
+                        <div className={`alert ${ sent ? "alert-success" : "alert-danger"}`} role="alert">
                             {state.data}
                         </div>
                     }
 
                     <div className="flex md-flex-col fw gap-3">
-                        <Input label="Name*" id="inputName" name="name" />
+                        <Input label="Name*" id="inputName" name="user_name" />
                         <Input label="Email*" type="email" id="inputEmail" name="email" />
                     </div>
 
@@ -375,8 +376,8 @@ function Feedback() {
 
         axios.post(`${apiHost}/feedback/message50`, fd)
         .then(res => {
-            setState(res.data);
             clearInputs();
+            setState({ status: true, data: res.data.success });
         })
         .catch(err => {
             setState({ status: false, data: err.message });
