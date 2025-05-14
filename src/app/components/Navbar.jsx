@@ -44,9 +44,9 @@ export function NavBar({ open }) {
     return (
         open &&
         <aside className="side-wrapper mega-max close" ref={mainRef} onClick={handleCloseClick}>
-            <div className="side-bar fw" onClick={ e => e.stopPropagation()}>
+            <section className="side-bar fw" onClick={ e => e.stopPropagation()}>
                 <div className="content custom-scroll max">
-                    <div className='flex-col max' style={{ overflow: "hidden auto" }}>
+                    <nav className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw">
                             <button className="no-btn flex mid-align fw" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
                                 
@@ -122,14 +122,14 @@ export function NavBar({ open }) {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </nav>
                 </div>
                 <div className='abs' style={{ right: "10px", top: "10px" }}>
                     <IconBtn icon={faXmark} onClick={handleCloseClick}>
                         Close
                     </IconBtn>
                 </div>
-            </div>
+            </section>
         </aside>
     )
 

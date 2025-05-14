@@ -17,9 +17,9 @@ export const ChatsPage = ({viewMsg}) => {
         <div id="chats" className='max'>
             <div className='flex-col max'>
                 <Header startSearch={() => setSearch([])} />
-                <div className='grow'>
+                <section className='grow'>
                     <ChatList />
-                </div>
+                </section>
             </div>
 
             <MsgInterface viewMsg={viewMsg} />

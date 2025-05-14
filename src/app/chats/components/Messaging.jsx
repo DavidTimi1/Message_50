@@ -118,7 +118,7 @@ export default function MsgInterface() {
     return (
         chatting &&
 
-        <div id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef} >
+        <aside id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef} >
             <div className="max flex-col">
                 <Heading
                     closeMsging={handleCloseClick}
@@ -147,7 +147,7 @@ export default function MsgInterface() {
                 </div>
 
             </div>
-        </div>
+        </aside>
     )
 
     function clearSelection() {

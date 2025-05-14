@@ -64,7 +64,7 @@ const Msg50App = () => {
 
 
     return (
-        <div className="max main-app">
+        <main className="max main-app">
             {
                 userError?
                     <BlankErrorPage />
@@ -112,7 +112,7 @@ const Msg50App = () => {
                     </ToggleOverlay.Provider>
                 </StateNavigatorProvider>
             }
-        </div>
+        </main>
     )
 
     async function toggleMessaging(handle, id) {

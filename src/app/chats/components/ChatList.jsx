@@ -114,7 +114,7 @@ export const ChatList = () => {
 
     return (
         <div className="chat-list custom-scroll max" ref={ref}>
-            <div className='content max'>
+            <ol className='content max'>
                 {compound.length ?
 
                     compound.map(chat => {
@@ -130,14 +130,14 @@ export const ChatList = () => {
                     })
                     :
                     <>
-                        <div className="no-message"> You do not have any chats. </div>
-                        <div className="new-ptr">
+                        <li className="no-message"> You do not have any chats. </li>
+                        <li className="new-ptr">
                             Click the message icon to create a new chat.
-                        </div>
+                        </li>
                     </>
 
                 }
-            </div>
+            </ol>
         </div>
     )
 }
@@ -151,7 +151,7 @@ const ChatItem = ({ data, Message }) => {
 
 
     return (
-        <div className='chat-cont br-1' data-id={id}>
+        <li className='chat-cont br-1' data-id={id}>
             <div className='abs-mid br-1 max'>
                 <div className='fw flex mid-align' style={{ justifyContent: "space-between", padding: "10px 5px" }}>
 
@@ -186,7 +186,7 @@ const ChatItem = ({ data, Message }) => {
                         </div>
                 </div>
             </div>
-        </div>
+        </li>
     )
 
 

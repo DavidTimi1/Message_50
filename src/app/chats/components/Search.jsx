@@ -98,7 +98,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
 
     return (
-        <div className="interface close search" ref={myRef}>
+        <section className="interface close search" ref={myRef}>
             <div className="fw flex-col mid-align">
                 <div className="header fw flex mid-align gap-2">
                     <IconBtn icon={faAngleLeft} onClick={handleCloseClick}>
@@ -187,7 +187,7 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
                 }
             </div>
-        </div>
+        </section>
     )
 
     function handleMsgClick(e){
