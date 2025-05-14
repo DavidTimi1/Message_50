@@ -35,7 +35,7 @@
     .or {
         &::before, &::after {
             content: "";
-            background-color: var(--body2-col);
+            background-color: var(--text2-col);
             position: absolute;
             top: 50%;
             transform: translateY(-50%);

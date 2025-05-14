@@ -3,7 +3,7 @@ import '../../components/Navbar.css';
 import { useEffect, useState, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-import { transitionEnd } from '../../utils';
+import { once, transitionEnd } from '../../utils';
 
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ProdName } from '../../App';
@@ -17,10 +17,10 @@ export default function Navbar({scroll}){
 
     return (
         <div className={"navbar fw" + (scroll? " scroll" : "") }>
-            <div className='fw pad'>
-                <div className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
+            <section className='fw pad'>
+                <nav className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
                     <a href="/" className="no-link flex-rev mid-align gap-1 brand">
-                        <h3 className="brand fh"> {ProdName} </h3>
+                        <h2 className="brand fh fs-3"> {ProdName} </h2>
                     </a>
 
                     <div className="menu flex mid-align">
@@ -37,11 +37,11 @@ export default function Navbar({scroll}){
 
                     <div>
                     </div>
-                </div>
+                </nav>
 
                 <div className="mobile-nav nav fw flex mid-align">
                     <div className="flex mid-align gap-1">
-                        <h3 className="brand fh"> {ProdName} </h3>
+                        <h2 className="brand fh fs-3"> {ProdName} </h2>
                     </div>
 
                     <div style={{"--col": "var(--foreground)"}}>
@@ -54,7 +54,7 @@ export default function Navbar({scroll}){
                 </div>
 
                 <Menu show={showMenu} closeMenu={()=> toggleMenu(false)} />
-            </div>
+            </section>
         </div>
     )
     
@@ -80,7 +80,7 @@ function Menu({show, closeMenu}){
         show &&
         <div className="menu mob abs close" onClick={close} ref={myRef}>
             <div className='wrapper max'>
-                <div className="content fw flex-col">
+                <nav className="content fw flex-col">
                     <NavLink className="nav-item" to='/' end={true}>
                         Home
                     </NavLink>
@@ -96,7 +96,7 @@ function Menu({show, closeMenu}){
                     <Link className="nav-item" to='/app'>
                         App
                     </Link>
-                </div>
+                </nav>
             </div>
         </div>
     )

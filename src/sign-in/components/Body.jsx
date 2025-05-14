@@ -39,10 +39,10 @@ const Body = ({isLogin}) => {
 
 
 	return (
-		<div key={{}} className='box fw pad can-animate not-animated' ref={ref}>
-			<div className="header">
-				<h1> <p> { isLogin? "Welcome Back" : "Sign Up" } </p> </h1>
-			</div>
+		<main key={{}} className='box fw pad mt-0 can-animate not-animated' ref={ref}>
+			<header className="mb-4 center-text">
+				<h1> { isLogin? "Welcome Back" : "Sign Up" } </h1>
+			</header>
 				
 				<form className="mx-auto" onSubmit={handleSubmit}>
 					<Aesthetics />
@@ -89,10 +89,10 @@ const Body = ({isLogin}) => {
 							<Button className="br-5" type="submit" disabled={["pending", true].includes(status)}>
 								{
 									status === "pending" ? 
-									<FontAwesomeIcon icon={faSpinner} spin />
+									<FontAwesomeIcon icon={faSpinner} spin size="xl" />
 									:
 									status === true ?
-									<FontAwesomeIcon icon={faCheckCircle} />
+									<FontAwesomeIcon icon={faCheckCircle} size="xl" />
 									:
 									isLogin? "Login" : "Sign Up"
 								}
@@ -109,7 +109,7 @@ const Body = ({isLogin}) => {
 									</>
 									:
 									<>
-										<span>Already registered? </span>
+										<span> Already registered? </span>
 										<Link className='no-link' to={`/login${search? `?${search}` : ""}`}>
 											Login here
 										</Link>
@@ -120,7 +120,7 @@ const Body = ({isLogin}) => {
 						
 					</div>
 				</form>
-		</div>
+		</main>
 	)
 
 	function handleGuestSignIn(){
