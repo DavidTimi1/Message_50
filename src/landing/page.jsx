@@ -26,7 +26,7 @@ const LandingPage = () => {
 
 
     return (
-        <div className='landing-page max' onScroll={handleScroll}>
+        <main className='landing-page max' onScroll={handleScroll}>
             <Navbar scroll={scroll} />
 
             <div className="content max mid-align flex-col can-animate not-animated" style={{padding: 0, margin: 0}} ref={ref}>
@@ -37,14 +37,14 @@ const LandingPage = () => {
                 </div>
                 <div className="d-flex flex-col gap-3 col-md-6">
                     <p className="hero-tagline d-flex flex-col gap-3">
-                        <span className='fs-1 fw-bold'>
+                        <h1 className='fs-1 fw-bold'>
                             Connect Privately <br />
                             with Friends and Family <br />
-                        </span>
+                        </h1>
 
-                        <small className='fs-6 fw-light text2-col'>
+                        <p className='fs-6 fw-light text2-col'>
                             Experience quick seamless and secure communication. <br /> The best messaging app for you
-                        </small>
+                        </p>
 
                         <em className="sr-only">
                             Message50 is the best, fastest and most secure messaging application
@@ -73,7 +73,7 @@ const LandingPage = () => {
                         <Link to="/app" className="my-btn no-link br-5">
                             <div className="btn-bg">
                                 <div className="btn max">
-                                    <span> Get Started </span>
+                                    <span> Get Started </span> <span className="sr-only">with enhanced communication</span>
                                     <FontAwesomeIcon icon={faAngleRight} />
                                 </div>
                             </div>
@@ -117,7 +117,7 @@ const LandingPage = () => {
 
             </div>
             
-        </div>
+        </main>
     );
 
     function handleScroll(e){
@@ -162,20 +162,23 @@ const features = [
 
 const Features = () => (
     <section id="features" className="features pad box fw">
-        <h2 className="section-title center-text mb-5"> Why Choose { ProdName }? </h2>
-        <div className="features-cards d-flex gap-5 flex-wrap" style={{justifyContent: "space-evenly"}}>
+        <h1 className="section-title center-text mb-5"> Why Choose { ProdName }? </h1>
+
+        <ol className="features-cards d-flex gap-5 flex-wrap" style={{justifyContent: "space-evenly"}}>
+
             {features.map((feature, index) => (
-                <div className="feature-card d-flex br-5 gap-2" key={index}>
+                <li className="feature-card d-flex br-5 gap-2" key={index}>
                     <div className="feature-icon">
                         {feature.icon}
                     </div>
                     <div className="">
-                        <h3 className="fs-3 feature-title">{feature.title}</h3>
+                        <h2 className="fs-3 feature-title">{feature.title}</h2>
                         <p className="fw-light fs-6">{feature.description}</p>
                     </div>
-                </div>
+                </li>
             ))}
-        </div>
+
+        </ol>
     </section>
 
 )
@@ -215,7 +218,7 @@ const FAQ = () => {
 
     return (
         <section id="faqs" className="faq-section pad box fw">
-            <h2 className="section-title center-text mb-5"> Frequently Asked Questions </h2>
+            <h1 className="section-title center-text mb-5"> Frequently Asked Questions </h1>
             <ul className="accordion" id="faqAccordion">
                 {faqs.map((faq, index) => (
                     <li className="accordion-item" style={{backgroundColor: "var(--body2-col)" }}  key={index}>
@@ -239,7 +242,7 @@ const FAQ = () => {
                             aria-labelledby={`heading${index}`}
                             data-bs-parent="#faqAccordion"
                         >
-                            <div className="accordion-body">{faq.answer}</div>
+                            <p className="accordion-body">{faq.answer}</p>
                         </div>
                     </li>
                 ))}
@@ -292,26 +295,26 @@ const Gallery = () => {
 
     return (
         <section className="gallery-section pad box fw">
-            <div className="gallery d-flex fw flex-col" style={{gap: "5rem"}}>
+            <ul className="gallery d-flex fw flex-col" style={{gap: "5rem"}}>
 
                 {featuresIllustrations.map((feature, index) => (
-                    <div className="d-flex flex-col fw mid-align gap-3" key={index}>
+                    <li className="d-flex flex-col fw mid-align gap-3" key={index}>
                         <div className="col-md-5">
                             <img src={feature.image} alt={`Gallery image depicting ${feature.title} feature`} className="br-1 fw" style={{ objectFit: "contain", aspectRatio: feature.ratio }} />
                         </div>
                         <div className="col-md-7">
                             <div className="mx-auto" style={{maxWidth: "400px"}}>
-                                <h4 className='fw-bold fs-2'>
+                                <h2 className='fw-bold fs-2'>
                                     {feature.title}
-                                </h4>
+                                </h2>
                                 <p className="text2-col fw-light">
                                     <small>{feature.description}</small>
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </section>
     );
 };
@@ -321,11 +324,11 @@ function Feedback() {
     const [state, setState] = useState();
     const formRef = useRef(null);
     const sent = state?.status;
-    console.log(state?.data)
 
     return (
         <section className="feedback br-1 flex-col gap-3">
-            <h2 className="section-title">We Value Your Feedback</h2>
+            <h2 className="section-title mb-2">We Value Your Feedback</h2>
+
             <form method="post" action={`${apiHost}/feedback/message50`} className="fw br-1 up" ref={formRef} onSubmit={handleSubmit}>
                 <div className='fw flex-col gap-3'>
 
@@ -344,10 +347,10 @@ function Feedback() {
                     <Input label="Subject*" id="inputSubject" name="subject" />
 
                     <label className="fw nv-input br-1 flex-col gap-2">
-                            <small className="lb">
-                                Message*
-                            </small>
-                            <textarea className="fw" name="message" placeholder="Type in your message..." required />
+                        <small className="lb">
+                            Message*
+                        </small>
+                        <textarea className="fw" name="message" placeholder="Type in your message..." required />
                     </label>
     
 
@@ -401,13 +404,22 @@ const Footer = () => {
 		<footer className='mx-auto center-text'>
 			<div className='flex-col gap-2' style={{flexWrap: "wrap"}}>
                 <div>
-                    <span><Link className='no-link' to='/privacy.pdf' target='_blank' rel="noreferrer noopener"> Privacy Policy</Link></span>
+                    <span><Link className='no-link' to='/privacy.pdf' target='_blank' rel="noreferrer noopener">
+                        Privacy Policy 
+                        <span className="sr-only"> for Message50 </span> 
+                    </Link></span>
                     <span> | </span>
-                    <span><Link className='no-link' to='/terms.pdf' target='_blank' rel="noreferrer noopener"> Terms of Use</Link></span>
+                    <span><Link className='no-link' to='/terms.pdf' target='_blank' rel="noreferrer noopener"> 
+                        Terms of Use 
+                        <span className="sr-only"> for Message50 </span> 
+                    </Link></span>
                 </div>
-				<span>&copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.</span>
+				<span>
+                    &copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.
+                </span>
                 <em className='sr-only'>
-                    Message50 is developed by TimiDev (David Uwagbale) 
+                    Message50 is developed by Dev_id (David Uwagbale) 
+                    
                     <a href={githubLink}>
                         Link to David's github profile
                     </a>

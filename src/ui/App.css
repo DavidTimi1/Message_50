@@ -76,6 +76,14 @@ input[type=range] {
   }
 }
 
+ol, ul {
+  padding: unset;
+
+}
+li {
+  list-style: none;
+}
+
 .crop-excess2 {
   overflow: hidden;
   text-overflow: ellipsis;
