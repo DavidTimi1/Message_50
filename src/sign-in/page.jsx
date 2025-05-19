@@ -33,9 +33,15 @@ const Footer = () => {
 	return (
 		<footer className='mx-auto center-text'>
 			<div className='flex gap-2' style={{flexWrap: "wrap"}}>
-				<span><Link className='no-link' to='/privacy.pdf'>Privacy Policy</Link></span>
-				<span> | </span>
-				<span><Link className='no-link' to='/terms.pdf'>Terms of Use</Link></span>
+                <span><Link className='no-link' to='/privacy.pdf' target='_blank' rel="noreferrer noopener">
+                    Privacy Policy 
+                    <span className="sr-only"> for Message50 </span> 
+                </Link></span>
+                <span> | </span>
+                <span><Link className='no-link' to='/terms.pdf' target='_blank' rel="noreferrer noopener"> 
+                    Terms of Use 
+                    <span className="sr-only"> for Message50 </span> 
+                </Link></span>
 				<span>&copy; {new Date().getFullYear()} {ProdName} All Rights Reserved.</span>
 			</div>
 		</footer>

@@ -2,7 +2,7 @@
 import './page.css';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { apiHost, githubLink, portfolioLink, ProdName } from '../App';
 import Navbar from './Navbar';
 import { useTransitionOnLoad } from '../app/components/Hooks';
@@ -17,7 +17,12 @@ import { installPWA, usePWAContext } from '../lib/pwa';
 const LandingPage = () => {
     const [scroll, setScroll] = useState(false);
 
-    const { isInstalled, installPrompt } = usePWAContext();
+    const { isInstalled, installPrompt, isActive } = usePWAContext();
+    
+    if (isActive){
+        return <Navigate to="/app" replace={true} />;
+    }
+    
     const isInstallable = Boolean(installPrompt) || isInstalled;
 
     const ref = useRef();
@@ -55,10 +60,23 @@ const LandingPage = () => {
                         isInstalled || isInstallable ?
 
                         <div className='d-flex gap-2 align-items-center'>
-                            <Button onClick={() => installPWA(installPrompt)}>
-                                <FontAwesomeIcon icon={faDownload} />
-                                <span> {isInstalled? "Use" : "Install"} App </span>
-                            </Button>
+                            {
+                                isInstalled ?
+                                <Link to="/app" className="my-btn no-link deval br-5X" rel='noreferrer noopener' target='_blank'>
+                                    <div className="btn-bg">
+                                        <div className="btn d-flex mid-align gap-2">
+                                            <span> Open App </span>
+                                            <FontAwesomeIcon icon={faAngleRight} />
+                                        </div>
+                                    </div>
+                                </Link>
+                                : 
+                                <Button onClick={() => installPWA(installPrompt)}>
+                                    <FontAwesomeIcon icon={faDownload} />
+                                    <span> Install App </span>
+                                </Button>
+                            }
+
                             <Link to="/app" className="my-btn no-link deval br-5X">
                                 <div className="btn-bg">
                                     <div className="btn d-flex mid-align gap-2">
@@ -70,10 +88,10 @@ const LandingPage = () => {
                         </div>
                         :
                         <>
-                        <Link to="/app" className="my-btn no-link br-5">
+                        <Link to="/app" className="my-btn no-link br-5" rel='noreferrer noopener' target='_blank'>
                             <div className="btn-bg">
                                 <div className="btn max">
-                                    <span> Get Started </span> <span className="sr-only">with enhanced communication</span>
+                                    <span> Get Started </span> <span className="sr-only"> with enhanced communication </span>
                                     <FontAwesomeIcon icon={faAngleRight} />
                                 </div>
                             </div>
@@ -82,7 +100,9 @@ const LandingPage = () => {
                         {
                             !isInstallable &&
                             <small className='mx-auto fs-light' style={{color: "var(--text2-col)"}}>
-                                Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
+                                Your device currently doesn't support installation of this WebApp. <br /> 
+                                To do this visit options menu and click "Add to Home Screen". <br />
+                                If installed already, click "Open In App".
                             </small>
                         }
                         </>

@@ -13,13 +13,16 @@ import { IconBtn } from '../../components/Button';
 
 export default function Navbar({scroll}){
     const [showMenu, setShow] = useState(false);
+    const PWAIsActive = usePWAContext().isActive;
 
 
     return (
         <div className={"navbar fw" + (scroll? " scroll" : "") }>
             <section className='fw pad'>
                 <nav className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
-                    <a href="/" className="no-link flex-rev mid-align gap-1 brand">
+                    <a href="/" className="no-link flex-rev mid-align gap-1 brand" 
+                        {...( PWAIsActive? {rel: 'noreferrer noopener', target: '_blank'} : {})}
+                    >
                         <h2 className="brand fh fs-3"> {ProdName} </h2>
                     </a>
 

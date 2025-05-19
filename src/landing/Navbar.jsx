@@ -164,14 +164,26 @@ function Menu({show, closeMenu}){
                         {
                             isInstalled || isInstallable ?
                             <>
-                                <Button onClick={() => installPWA(installPrompt)}>
-                                    <FontAwesomeIcon icon={faDownload} />
-                                    <span> {isInstalled? "Use" : "Install"} App </span>
-                                </Button>
+                                {
+                                    isInstalled ?
+                                    <Link to="/app" className="my-btn no-link deval br-5X" rel='noreferrer noopener' target='_blank'>
+                                        <div className="btn-bg">
+                                            <div className="btn d-flex mid-align gap-2">
+                                                <span> Open App </span>
+                                                <FontAwesomeIcon icon={faAngleRight} />
+                                            </div>
+                                        </div>
+                                    </Link>
+                                    : 
+                                    <Button onClick={() => installPWA(installPrompt)}>
+                                        <FontAwesomeIcon icon={faDownload} />
+                                        <span> Install App </span>
+                                    </Button>
+                                }
 
-                                <Link to="/app" className="my-btn no-link deval br-5">
+                                <Link to="/app" className="my-btn no-link deval br-5X">
                                     <div className="btn-bg">
-                                        <div className="btn max">
+                                        <div className="btn d-flex mid-align gap-2">
                                             <span> Continue on the web </span>
                                             <FontAwesomeIcon icon={faAngleRight} />
                                         </div>
@@ -191,7 +203,9 @@ function Menu({show, closeMenu}){
 
                             { !isInstallable &&
                                 <small className='mx-auto fw-light text-italic' style={{color: "var(--text2-col)"}}>
-                                    Your device currently doesn't support installation of this WebApp. <br /> To do this visit options menu and click "Add to Home Screen"
+                                    Your device currently doesn't support installation of this WebApp. <br /> 
+                                    To do this visit options menu and click "Add to Home Screen". <br />
+                                    If installed already, click "Open In App".
                                 </small>
                             }
                             </>
