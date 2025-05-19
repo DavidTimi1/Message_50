@@ -51,8 +51,8 @@ self.addEventListener('fetch', (event) => {
     // for an HTML page.
     const {request} = event;
     
-    event.respondWith((async () => {
-        if (request.mode === 'navigate') {
+    if (request.mode === 'navigate') {
+        event.respondWith((async () => {
             try {
                 // First, try to use the navigation preload response if it's supported.
                 const preloadResponse = await event.preloadResponse;
@@ -77,31 +77,10 @@ self.addEventListener('fetch', (event) => {
 
                 return cachedResponse ?? offlineView;
             }
-        }
-        
-        // If no fetch handlers call event.respondWith(), 
-        // the request will be handled by the browser as if there
-        // were no service worker involvement.
-        
-        // Cache First for static assets (JS, CSS, images, etc.)
-        const cached = await caches.match(request);
-        if (cached) {
-            return cached;
-        }
+       
+        })())
+    }
 
-        try {
-            const response = await fetch(request);
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, response.clone());
-            return response;
-
-        } catch (error) {
-            console.error('Fetch failed; returning offline page instead.', error);
-            const cache = await caches.open(CACHE_NAME);
-            return cache.match(OFFLINE_URL);
-        }
-
-    })())
 });
 
 
