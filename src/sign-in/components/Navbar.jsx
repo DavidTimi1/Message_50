@@ -8,6 +8,7 @@ import { once, transitionEnd } from '../../utils';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ProdName } from '../../App';
 import { IconBtn } from '../../components/Button';
+import { usePWAContext } from '../../lib/pwa';
 
 
 
