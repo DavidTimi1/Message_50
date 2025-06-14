@@ -63,7 +63,7 @@ const Msg50App = () => {
 
 
     return (
-        // <ProtectedRoute>
+        <ProtectedRoute>
         <main className="max main-app">
             {
                 userError?
@@ -86,7 +86,7 @@ const Msg50App = () => {
                 </StateNavigatorProvider>
             }
         </main>
-        // </ProtectedRoute>
+        </ProtectedRoute>
     )
 
     async function toggleMessaging(handle, id) {
