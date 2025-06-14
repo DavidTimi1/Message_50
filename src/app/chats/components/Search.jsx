@@ -98,9 +98,9 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
 
     return (
-        <section className="interface close search" ref={myRef}>
+        <section className="interface abs close search custom-scroll" style={{overflowY: "auto"}} ref={myRef}>
             <div className="fw flex-col mid-align">
-                <div className="header fw flex mid-align gap-2">
+                <div className="header position-sticky top-1 left-0 fw flex mid-align gap-2">
                     <IconBtn icon={faAngleLeft} onClick={handleCloseClick}>
                         close search
                     </IconBtn>
@@ -228,13 +228,17 @@ export default function SearchWindow({ closeSearch, initFilters }) {
     }
 
     function handleCloseClick(){
-        removeState(navId);
+        const removed = removeState(navId);
+        if (!removed) close(); // fallback
     }
 
 
     function close() {
         const el = myRef.current;
+        if (!el || el.classList.contains("close")) return;
+    
         once(transitionEnd, el, closeSearch);
+    
         el?.classList?.add("close");
     }
 }

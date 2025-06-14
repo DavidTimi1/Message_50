@@ -1,27 +1,24 @@
 import "./page.css";
 
 import { useContext, useEffect, useState } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { ChatContext, ToggleOverlay } from './contexts';
-import { NavBar } from "./components/Navbar";
-import { ChatsPage } from "./chats/page";
-import { MediaPage } from "./media/page";
-import { SettingsPage } from "./settings/page";
-import { ContactsPage } from "./contacts/page";
 
-import { More } from "./components/more";
 import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket, newMsgEvent, socketSend } from "./components/Sockets";
 import { getUserDetails } from "./contacts/lib";
-import { useOnlineStatus } from "./components/Hooks";
+import { useIsMobile, useOnlineStatus } from "./components/Hooks";
 import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
 import { decryptMessage } from "./crypt";
 import { UserContext } from "../contexts";
 import { Button } from "../components/Button";
+
 import CustomLoader from "../components/Loading";
+import DesktopLayout from "./desktop-layout/Layout.";
+import MobileLayout from "./mobile-layout/Layout";
 
 
 
@@ -36,6 +33,8 @@ const Msg50App = () => {
     const navigate = useNavigate();
     const location = useLocation(), locationState = location.state;
     const authenticated = useAuth().auth;
+    
+    const isMobile = useIsMobile();
 
 
     useEffect(() => {
@@ -64,6 +63,7 @@ const Msg50App = () => {
 
 
     return (
+        // <ProtectedRoute>
         <main className="max main-app">
             {
                 userError?
@@ -72,47 +72,21 @@ const Msg50App = () => {
                 <StateNavigatorProvider>
                     <ToggleOverlay.Provider value={toggleOverlay}>
                         <SendMsgsProvider>
+
+
                             <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
-                                <NavBar open={overlays.has('navbar')} />
-
-                                <Routes>
-                                    <Route path='/' element={
-                                        <ProtectedRoute>
-                                            <ChatsPage />
-                                        </ProtectedRoute>
-                                    } />
-                                    <Route path='/media' element={
-                                        <ProtectedRoute>
-                                            <MediaPage />
-                                        </ProtectedRoute>
-                                    } />
-                                    {/* <Route path='/notifications' element={
-                        <ProtectedRoute>
-                            <NotificationsPage />
-                        </ProtectedRoute>
-                    } /> */}
-                                    <Route path='/settings' element={
-                                        <ProtectedRoute>
-                                            <SettingsPage />
-                                        </ProtectedRoute>
-                                    } />
-                                    <Route path='/contacts' element={
-                                        <ProtectedRoute>
-                                            <ContactsPage />
-                                        </ProtectedRoute>
-                                    } />
-                                    <Route path='*' element={
-                                        <Navigate to="/app" replace />
-                                    } />
-                                </Routes>
-
-                                <More openOverlays={overlays} />
+                                { 
+                                    isMobile? <MobileLayout overlays={overlays} /> :
+                                    <DesktopLayout overlays={overlays} />
+                                }
                             </ChatContext.Provider>
+
                         </SendMsgsProvider>
                     </ToggleOverlay.Provider>
                 </StateNavigatorProvider>
             }
         </main>
+        // </ProtectedRoute>
     )
 
     async function toggleMessaging(handle, id) {

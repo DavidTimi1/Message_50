@@ -44,6 +44,16 @@
     }
 }
 
+@media screen and (min-width: 768px) {
+    .interface {
+        position: relative;
+    }
+    
+    .abs.interface {
+        position: absolute;
+    }
+}
+
 .route-container {
 
     > * {

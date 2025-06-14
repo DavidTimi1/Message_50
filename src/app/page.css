@@ -20,7 +20,7 @@ aside.side-wrapper {
   position: relative;
   box-shadow: 0 0 5px black;
   transform: translateX(0px);
-  transition: transform .3s ease-in-out;
+  transition: transform .2s ease-in-out;
   /* &.show {
       transform: translateX(305px);
   } */
@@ -30,6 +30,48 @@ aside.side-wrapper {
   }
 }
 
+
+@media screen and (min-width: 768px) {
+  aside.side-wrapper {
+    background-color: light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1) );
+    position: relative;
+    width: 75px;
+    z-index: 10;
+  }
+  
+  .side-bar {
+    border-radius: 0px;
+    width: 75px;
+    transition: width .2s ease-in-out;
+
+    .hover\:hide {
+      display: none;
+    }
+    .hover\:invisible {
+      visibility: hidden;
+    }
+    
+    .unhover\:hide {
+      display: none;
+      /* position: absolute; */
+    }
+  }
+  
+  .side-bar:hover {
+    border-radius: 0px;
+    top: 0;
+    left: 0;
+    position: fixed;
+    width: 250px;
+
+    .hover\:invisible {
+      visibility: visible;
+    }
+    .hover\:hide {
+      display: block;
+    }
+  }
+}
 
 .nav-link {
   border-radius: 5px;

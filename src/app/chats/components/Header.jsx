@@ -40,7 +40,7 @@ export const Header = ({ startSearch }) => {
                         }
                     </button>
                     <div className='flex grow mid-align' style={{ justifyContent: "space-between" }}>
-                        <h2 className='hero-txt fs-4'> { ProdName } </h2>
+                        <h2 className='hero-txt m-0 fs-4'> { ProdName } </h2>
                         <IconBtn icon={faMagnifyingGlass} onClick={startSearch}>
                             Search
                         </IconBtn>
@@ -50,7 +50,7 @@ export const Header = ({ startSearch }) => {
 
             <div className="main-heading md-hidden lap">
                 <div className='flex'>
-                    <div className='fs-2'> Chats </div>
+                    <h2 className='fs-2'> Chats </h2>
                     <div className='flex mid-align gap-2'>
                         <button>
                             <div className="flex mid-align gap-2">

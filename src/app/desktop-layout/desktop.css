@@ -1,0 +1,23 @@
+#desktop {
+        display: grid;
+        grid-template-columns: 75px 4fr 8fr 0fr;
+        transition: .25s;
+
+        >* {
+            border-right: 2px solid var(--body2-col);
+            overflow: hidden;
+        }
+
+        &:has( > .more-pool .interface ){
+            grid-template-columns: 75px 4fr 8fr 4fr;
+        }
+
+        
+    @media screen and (min-width: 768px) {
+        .pad {
+        padding-left: 15px;
+        padding-right: 15px;
+        }
+    }
+      
+}

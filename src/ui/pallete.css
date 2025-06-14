@@ -184,14 +184,17 @@
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
     background-color: var(--btn2-col);
+    transition: background-color .2s;
 }
 
 @media screen and (min-width: 768px){
 
     .custom-scroll::-webkit-scrollbar {
-        appearance: none;
-        background-color: inherit;
-        width: 8px;
+        width: 5px;
+    }
+    
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--body2-col);
     }
 
 }

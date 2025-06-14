@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext } from "react";
 
 import { UserContext } from "../../contexts";
-import { StateNavigatorContext, ToggleOverlay } from "../contexts";
+import { ToggleOverlay } from "../contexts";
 
 import { changeTheme } from '../../theme.js';
 import { once, transitionEnd } from "../../utils";
@@ -13,46 +13,25 @@ import { UserProfilePic } from "../contacts/components/ContactItem.jsx";
 import { githubLink } from "../../App.jsx";
 
 
-export function NavBar({ open }) {
+export function DesktopNavBar() {
     const User = useContext(UserContext);
-    const mainRef = useRef(null), navId = "navbar";
     const toggleOverlay = useContext(ToggleOverlay);
 
     const navigate = useNavigate();
-    
-    const { pushState, removeState } = useContext( StateNavigatorContext );
-
-    useEffect(() => {
-        let t_id, ignore = false;
-        
-        if (open){
-
-            t_id = setTimeout(() => {
-                if (ignore) return
-
-                pushState(navId, close); // incase nav buttons are used
-                mainRef.current.classList.remove("close")
-            }, 100)
-        }
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-    }, [open])
 
     return (
-        open &&
-        <aside className="side-wrapper mega-max close" ref={mainRef} onClick={handleCloseClick}>
-            <section className="side-bar fw" onClick={ e => e.stopPropagation()}>
+        <aside className="side-wrapper fh">
+            <section className="side-bar fw">
                 <div className="content custom-scroll max">
                     <nav className='flex-col max' style={{ overflow: "hidden auto" }}>
                         <div className="fw p-1">
-                            <button className="no-btn flex gap-2 mid-align fw" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
+                            <button className="no-btn flex gap-2 mid-align fw crop-excess" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
                                 
+                                <span style={{flexShrink: 0}}>
                                 <UserProfilePic dp={User.dp} handle={User.username} width="30px" />
+                                </span>
                                 
-                                <div> Hi, {User.username} </div>
+                                <div className="hover:hide"> Hi, {User.username} </div>
                             </button>
                         </div>
                         <div className="fw">
@@ -77,11 +56,11 @@ export function NavBar({ open }) {
                             <button className="no-btn nav-link fw" onClick={openFeedback}>
                                 <div className="flex fw mid-align gap-2">
                                     <FontAwesomeIcon icon={faComments} />
-                                    <span>Feedback</span>
+                                    <span className="hover:invisible">Feedback</span>
                                 </div>
                             </button>
                             <div className="fw">
-                                <div className='flex fw mid-align even-space' style={{ flexWrap: "wrap" }}>
+                                <div className='flex md-flex-col fw mid-align even-space' style={{ flexWrap: "wrap" }}>
                                     <IconBtn icon={faBoltLightning} onClick={() => alert("Plus✨ not available in your region")}>
                                         Upgrade to plus
                                     </IconBtn>
@@ -120,11 +99,6 @@ export function NavBar({ open }) {
                         </div>
                     </nav>
                 </div>
-                <div className='abs' style={{ right: "10px", top: "10px" }}>
-                    <IconBtn icon={faXmark} onClick={handleCloseClick}>
-                        Close
-                    </IconBtn>
-                </div>
             </section>
         </aside>
     )
@@ -138,20 +112,6 @@ export function NavBar({ open }) {
         toggleOverlay("feedback", true)
     }
 
-    function handleCloseClick(){
-        const removed = removeState(navId);
-        if (!removed) close(); // fallback
-    }
-
-    function close() {
-        const el = mainRef.current;
-        if (!el || el.classList.contains("close")) return;
-    
-        once( transitionEnd, el, () => toggleOverlay("navbar", false) );
-    
-        el.classList.add("close");
-    }
-
 }
 
 
@@ -159,9 +119,9 @@ function NavItem({ children, href, icon, closeNavbar }) {
 
     return (
         <NavLink className="nav-link" to={href} end onClick={handleClick}>
-            <div className="flex mid-align gap-2 fw">
+            <div className="flex mid-align gap-2 fw crop-excess">
                 <FontAwesomeIcon icon={icon} />
-                <span>
+                <span className="hover:invisible">
                     {children}
                 </span>
             </div>

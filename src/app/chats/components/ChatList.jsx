@@ -157,7 +157,7 @@ const ChatItem = ({ data, Message }) => {
 
                 </div>
             </div>
-            <div className='max mid-align flex gap-3 br-1' style={{ padding: "10px 5px" }} onClick={handleClick}>
+            <div className='max mid-align flex gap-2 br-1' style={{ padding: "10px 5px" }} onClick={handleClick}>
 
                 <div className='flex' onClick={showUserDetails}>
                     <UserProfilePic handle={handle} />
