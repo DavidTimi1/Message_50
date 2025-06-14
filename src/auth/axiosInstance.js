@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const DevMode = import.meta.env.MODE === 'development';
-const apiHost = DevMode? "http://localhost:5173" : import.meta.env.VITE_BACKEND_HOST;
+const apiHost = import.meta.env.VITE_BACKEND_HOST;
 
 // Create an Axios instance
 const axiosInstance = axios.create({

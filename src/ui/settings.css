@@ -19,7 +19,7 @@
     background-color: var(--head-col);
 
     & > * {
-        font-size: 25px;
+        font-size: 20px;
         margin: 0 5px;
     }
 }

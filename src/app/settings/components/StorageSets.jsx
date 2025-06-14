@@ -11,7 +11,7 @@ export const StorageSettings = () => {
     return (
         <div className="fw settings-sec br-5">
         <button className="no-btn fw br-5" onClick={handleClick}>
-            <h3 className="flex mid-align gap-4">
+            <h3 className="flex mid-align fs-5 gap-4">
                 <FontAwesomeIcon icon={faFolder} />
                 <div className="flex-col">
                     <span className="setting-head"> {title} </span>

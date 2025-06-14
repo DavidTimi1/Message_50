@@ -13,7 +13,7 @@ export const ChatSettings = ({isActive, toggleActive}) => {
         <div id="chat-sets" className="settings-sec br-5">
             <div>
                 <button onClick={toggleActive} className="fw br-5 no-btn acc-btn" type="button" aria-expanded={isActive} aria-controls="#chat-sets-more">
-                    <h3 className="fw flex mid-align gap-2">
+                    <h3 className="fw fs-5 flex mid-align gap-2">
                         <div className="grow flex mid-align gap-4">
                             <FontAwesomeIcon icon={faMessage} />
                             <div className="flex-col">

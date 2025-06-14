@@ -7,8 +7,8 @@ import { once, transitionEnd } from "../../../utils";
 
 
 
-export const MediaViewer = ({ show, args }) => {    
-    const { pushState, removeState } = useContext( StateNavigatorContext );
+export const MediaViewer = ({ show, args }) => {
+    const { pushState, removeState } = useContext(StateNavigatorContext);
     const [full, setFull] = useState(false);
     const viewable = ['image', 'video', 'audio'].includes(args?.type);
     const localSrc = args?.src, caption = args?.caption;
@@ -21,11 +21,11 @@ export const MediaViewer = ({ show, args }) => {
     const close = useCallback(() => {
         URL.revokeObjectURL(localSrc); // revoke the object URL
 
-        if (mainRef.current){
+        if (mainRef.current) {
             mainRef.current.classList.add("close");
 
         } else {
-            setTimeout(handleTransitionEnd); 
+            setTimeout(handleTransitionEnd);
         }
 
         // Wait for the transition/animation to complete
@@ -47,11 +47,11 @@ export const MediaViewer = ({ show, args }) => {
     useEffect(() => {
         let t_id, ignore = false;
 
-        if (show){
+        if (show) {
             t_id = setTimeout(() => {
                 if (ignore) return
 
-                pushState( navId, close ); // incase nav buttons are used
+                pushState(navId, close); // incase nav buttons are used
                 mainRef.current.classList.remove("close")
             }, 100)
         }
@@ -67,7 +67,7 @@ export const MediaViewer = ({ show, args }) => {
     return (
         show &&
         <div id="media-viewer" className={`prev-interface overlay flex mid-align ${full ? 'fullscreen' : ''}`}
-            style={{justifyContent: "center"}}
+            style={{ justifyContent: "center" }}
             ref={mainRef}
             onClick={toggleImmersion}
         >
@@ -75,42 +75,56 @@ export const MediaViewer = ({ show, args }) => {
                 <IconBtn icon={faArrowLeft} onClick={handleCloseClick} />
             </div>
 
-                {args.type === 'image' && (
-                        <img className="mx-auto" src={localSrc} alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
-                )}
+            {args.type === 'image' && (
+                <img className="mx-auto" src={localSrc} alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
+            )}
 
-                {args.type === 'video' && (
-                        <video className="mx-auto" src={localSrc} controls alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
-                )}
-                
-                {args.type === 'audio' && (
-                        <audio className="mx-auto" src={localSrc} controls style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
-                )}
+            {args.type === 'video' && (
+                <video className="mx-auto" src={localSrc} controls alt="" style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
+            )}
 
-                {
-                    caption &&
-                    <div className="fw banner bottom-banner crop-excess2">
-                        {caption}
-                    </div>
-                }
+            {args.type === 'audio' && (
+                <audio className="mx-auto" src={localSrc} controls style={{ width: "95%", maxHeight: "100%", objectFit: "contain" }} />
+            )}
+
+            {
+                caption &&
+                <div className="fw banner bottom-banner crop-excess2">
+                    {caption}
+                </div>
+            }
         </div>
 
     )
 
-    function toggleImmersion(){
+    function toggleImmersion() {
         setFull(!full);
     }
 
-    function handleCloseClick(e){
+    function handleCloseClick(e) {
         e.stopPropagation();
-        // go back in history to trigger close
-        return new Promise( res => {
-            once(transitionEnd, mainRef.current, () =>{
-                res( removeState(navId) );
+
+        return new Promise(res => {
+            const el = mainRef.current;
+
+            if (!el) {
+                res(false);
+                return;
+            }
+
+            // If already closing, resolve immediately
+            if (el.classList.contains("close")) {
+                res(removeState(navId));
+                return;
+            }
+
+            once(transitionEnd, el, () => {
+                res(removeState(navId));
             });
 
-            mainRef.current.classList.add("close");
-        })        
+            el.classList.add("close");
+        });
+
     }
 
 }

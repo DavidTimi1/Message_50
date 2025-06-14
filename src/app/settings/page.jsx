@@ -111,7 +111,7 @@ const Invite = () => {
     return (
         <div className="settings-sec fw br-5">
             <button className="no-btn fw" onClick={handleClick}>
-                <h3 className='flex gap-4 mid-align'>
+                <h3 className='flex fs-5 gap-4 mid-align'>
 
                     <span className='flex mid-align'>
                         <span className="abs" style={{left: "-12px"}}>

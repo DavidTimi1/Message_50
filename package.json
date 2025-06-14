@@ -20,7 +20,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "vite test"
+    "test": "vite test",
+    "watch": "vite build --watch"
   },
   "eslintConfig": {
     "extends": [

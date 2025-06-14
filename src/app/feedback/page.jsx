@@ -54,8 +54,8 @@ export const Feedback = ({ show }) => {
 
 
     function handleCloseClick(){
-
-        removeState(navId);
+        const removed = removeState(navId);
+        if (!removed) close(); // fallback
     }
 
 }

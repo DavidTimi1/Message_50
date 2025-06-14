@@ -21,7 +21,14 @@ export const useStateNavigation = () => {
     const stateStack = useRef([]);
     
     const getStateObj = (stack) => stack.map(state => state.state);
+    
 
+    // useEffect(() => {
+    //     window.addEventListener('popstate', handlePopState);
+    //     return () => {
+    //       window.removeEventListener('popstate', handlePopState);
+    //     };
+    // }, []);
 
     useEffect(() => {
         stateStack.current = []; // restart if the path changes
@@ -86,24 +93,25 @@ export const useStateNavigation = () => {
 
     }
     
-    function removeState(state){
-        const currentState = getCurrentState();
 
-        if (currentState === state){
-            navigate(-1);
-            return true
+    function removeState(state) {
+        const index = stateStack.current.map(s => s.state).lastIndexOf(state);
+      
+        if (index === -1) return;
+      
+        const toRemove = stateStack.current.splice(index);
+      
+        // Call all `onPop`s from top to target state
+        for (const entry of toRemove.reverse()) {
+          entry.onPop?.();
         }
-
-        const stackClone = getStateObj(stateStack.current);
-
-        const index = stackClone.lastIndexOf(state);
-        if (index > -1){
-            navigate(-1-index); // to go back [index + 1] many times
-            return true
-        }
-
-        return 
-    }
+      
+        // Actually go back in browser history
+        navigate(-1 - index);
+      
+        return true;
+      }
+      
 };
 
 

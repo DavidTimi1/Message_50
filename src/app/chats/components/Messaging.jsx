@@ -26,20 +26,14 @@ import { UserProfilePic } from '../../contacts/components/ContactItem';
 
 export default function MsgInterface() {
     const [state, setState] = useState({});
-    const [reply, setReply] = useState();
     const [preview, setPrev] = useState({});
 
     const { pushState, removeState } = useContext(StateNavigatorContext);
-
-    const [msgList, setMsgList] = useState([]);
-    const [pendingList, setPendingList] = useState([]);
 
     // const firstId = msgList[0]?.id, lastId = msgList?.[msgList.length - 1]?.id;
 
     const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
     const chatContext = useContext(ChatContext), chatting = chatContext.cur;
-
-    const { msgsStatus } = useContext(SendMsgContext);
 
 
     const select = state?.selected;
@@ -64,41 +58,6 @@ export default function MsgInterface() {
         }
 
     }, [chatting]);
-
-
-    // useEffect(() => {
-    //     if (!chatting) return
-
-    //     for (let status of msgsStatus) {
-    //         const index = pendingList.findIndex(val => val.id === status.id);
-
-    //         if (index > -1) {
-    //             setPendingList(prev => {
-    //                 const clone = [...prev];
-    //                 let replacement;
-
-    //                 if (!status.status?.success) {
-    //                     replacement = { ...clone[index], status: status.status };
-    //                 }
-
-    //                 clone.splice(index, 1, replacement);
-
-    //                 return clone
-    //             })
-
-    //             // if sent
-    //             if (status.status?.success) {
-    //                 // get message and add to list to be displayed
-    //                 getMsg(status.status.id)
-    //                     .then(msg => {
-    //                         setMsgList(prev => [...prev, msg])
-    //                     })
-    //             }
-    //         }
-    //     }
-
-    // }, [chatting, msgsStatus]);
-
 
     const isSelecting = Boolean(select?.length);
     useEffect(() => {
@@ -205,16 +164,20 @@ export default function MsgInterface() {
     }
 
     function handleCloseClick() {
-        removeState(navId);
+        const removed = removeState(navId);
+        if (!removed) close(); // fallback
     }
 
     function close() {
-        once(transitionEnd, mainRef.current, () => {
+        const el = mainRef.current;
+        if (!el || el.classList.contains("close")) return;
+    
+        once(transitionEnd, el, () => {
             chatContext.set(false);
             setState({});
         });
-
-        mainRef.current.classList.add("close");
+    
+        el.classList.add("close");
     }
 
 }
@@ -237,17 +200,17 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
                     </IconBtn>
                     <div className="flex fw mid-align grow gap-2" onClick={showUserProfile} style={{ justifyContent: "center" }}>
                         <div>
-                            <UserProfilePic handle={chatting} />
+                            <UserProfilePic width="30px" handle={chatting} />
                             {
                                 
                                 <div className="abs online-bubble">
-                                    <div className="dp-img" style={{width: "12px", backgroundColor: "var(--btn-col)"}}>
+                                    <div className="dp-img" style={{width: "10px", backgroundColor: "var(--btn-col)"}}>
                                     </div>
                                 </div>
                             }
                         </div>
 
-                        <div className="fs-3 fw-800"> {chatting && title(name)} </div>
+                        <div className="fs-4 fw-800"> {chatting && title(name)} </div>
                     </div>
                 </div>
             </div>
@@ -290,6 +253,8 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
 
     const selectOn = Boolean(selected.length);
 
+    useEffect(handleScroll, []);
+
     return (
         <div className={`${styles.content} ${selectOn? 'blockscroll' : ''} msglist fw grow custom-scroll`}
             onContextMenu={handleContextMenu}
@@ -302,7 +267,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                 Messages between you and
                 <span style={{color: "var(--btn-col)"}}> {chatting} </span>
                 are
-                <Link className="no-link">
+                <Link to="https://en.wikipedia.org/wiki/End-to-end_encryption" target="_blank" className="no-link m-1">
                     end-to-end encrypted
                 </Link>
                 🔒

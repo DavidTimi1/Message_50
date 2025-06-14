@@ -30,9 +30,9 @@ export const githubLink = "https://github.com/DavidTimi1";
 export const portfolioLink = "https://davidtimi1.github.io";
 export const DevMode = import.meta.env.MODE === 'development';
 
-export const apiHost = DevMode? "http://localhost:5173" : import.meta.env.VITE_BACKEND_HOST;
+export const apiHost = import.meta.env.VITE_BACKEND_HOST;
 
-const Msg50App =  lazy(() => import('./app/page'))
+const Msg50App = lazy(() => import('./app/page'))
 
 export const Msg50 = () => {
 

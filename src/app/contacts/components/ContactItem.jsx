@@ -16,12 +16,12 @@ export const ContactItem = ({data, Message}) => {
 
     return (
         <div className="contact-cont br-5" data-id={id}>
-            <div className="max gap-3 flex mid-align">
+            <div className="max gap-2 flex mid-align">
 
                 <UserProfilePic handle={handle} dp={dp ?? placeholderImg}  />
 
                 <div className="grow left-text flex-col">
-                    <div className="fs-3 fw-800"> {name} </div>
+                    <div className="fs-4 fw-800"> {name} </div>
                     {
                         bio &&
                         <small className="crop-excess fw"> {bio} </small>
@@ -57,7 +57,7 @@ export const ContactItem = ({data, Message}) => {
 
 
 
-export function UserProfilePic({handle, dp}){
+export function UserProfilePic({handle, dp, width=""}){
     const isOnline = useOnlineStatus();
     const [newDp, setDp] = useState(dp);
 
@@ -70,7 +70,7 @@ export function UserProfilePic({handle, dp}){
     }, [dp, handle])
 
     return(
-        <div className="dp-img" style={{backgroundImage: `url(${newDp || placeholderImg})`}}></div>
+        <div className="dp-img" style={{backgroundImage: `url(${newDp || placeholderImg})`, width: width}}></div>
     )
 
 }

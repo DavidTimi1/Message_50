@@ -9,7 +9,7 @@ export const Rating = ({initRate}) => {
 
     return (
         <div className="flex-col">
-            <h3>
+            <h3 className="fs-5">
                 Rate this app 🌟:
             </h3>
             <div className='rating flex gap-2 mid-align'>

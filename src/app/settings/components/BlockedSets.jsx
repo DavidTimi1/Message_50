@@ -9,8 +9,9 @@ export const Blocked = ({isActive, toggleActive}) => {
         <div className="settings-sec fw br-5">
             <div>
                 <button onClick={toggleActive} className="fw br-5 no-btn acc-btn" type="button" aria-expanded={isActive} aria-controls="#blocked-users-more">
-                    <h3 className="flex mid-align gap-4">
+                    <h3 className="flex fs-5 mid-align gap-4">
                         <FontAwesomeIcon icon={faCircle} />
+                        
                         <span className="setting-head grow"> {title} </span>
                         <div className="rot-icon" style={{transform: isActive? "rotate(180deg)" : '' }} >
                             <FontAwesomeIcon icon={faAngleDown} />

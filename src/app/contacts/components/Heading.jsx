@@ -11,7 +11,7 @@ export const Heading = ({close}) => {
                 <IconBtn icon={faAngleLeft} onClick={close}>
                     back
                 </IconBtn>
-                <div className="grow gap-2 flex mid-align fs-3 fw-800">
+                <div className="grow gap-2 flex mid-align fs-4 fw-800">
                     <FontAwesomeIcon icon={faUsers} />
                     <span> Contacts </span>
                 </div>

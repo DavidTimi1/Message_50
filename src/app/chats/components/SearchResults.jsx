@@ -11,7 +11,7 @@ export const MsgResultItem = ({ data }) => {
 
     return (
         <div className='msg-res br-1' data-id={id} data-user={handle}>
-            <div className='max mid-align flex gap-3 br-1' style={{ padding: "10px 5px" }}>
+            <div className='max mid-align flex gap-2 br-1' style={{ padding: "10px 5px" }}>
                 <UserProfilePic handle={handle} />
 
                 <div className="flex-col details grow gap-1">
@@ -40,11 +40,11 @@ export const ContactResultItem = ({data}) => {
 
     return (
         <div className="contact-res br-5" data-user={id}>
-            <div className="max gap-3 flex mid-align">
+            <div className="max gap-2 flex mid-align">
                 <UserProfilePic dp={dp} handle={id} />
 
                 <div className="grow left-text flex-col">
-                    <div className="fs-3 fw-800"> {name} </div>
+                    <div className="fs-4 fw-800"> {name} </div>
                     {
                         bio &&
                         <small className="crop-excess fw" style={{color: "var(--text2-col)"}}> {bio} </small>

@@ -51,11 +51,11 @@ export const ProfileBrief = () => {
         toggleOverlay('profile-edit', true);
     }
 
-    function showUserCard(){
+    function showUserCard() {
         toggleOverlay('user-card', true);
     }
 
-    function shareProfile(){
+    function shareProfile() {
         const shareData = {
             title: `${User.username}'s profile`,
             text: "You can contact me on this quick and secure messaging platform",
@@ -75,7 +75,7 @@ export const ProfileEdit = ({ show }) => {
     const User = useContext(UserContext), userDp = User.dp;
     const [error, setError] = useState();
 
-    const { pushState, removeState } = useContext( StateNavigatorContext );
+    const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const [dp, setDp] = useState(userDp);
 
@@ -83,11 +83,11 @@ export const ProfileEdit = ({ show }) => {
     // Close function with animation handling
     const close = () => {
         // Trigger animation class
-        if (ref.current){
+        if (ref.current) {
             ref.current.classList.add("close");
 
         } else {
-            setTimeout(handleTransitionEnd); 
+            setTimeout(handleTransitionEnd);
         }
 
         // Wait for the transition/animation to complete
@@ -103,12 +103,12 @@ export const ProfileEdit = ({ show }) => {
 
         let t_id, ignore = false;
 
-        if (show){
+        if (show) {
 
             t_id = setTimeout(() => {
                 if (ignore) return
 
-                pushState( navId, close ); // incase nav buttons are used
+                pushState(navId, close); // incase nav buttons are used
                 ref.current.classList.remove("close")
             }, 100)
 
@@ -125,12 +125,12 @@ export const ProfileEdit = ({ show }) => {
     return (
         show &&
         <div className="interface close edit-profile" ref={ref}>
-            <div className="max custom-scroll" style={{overflow: "hidden auto"}}>
-                <div className="fw flex mid-align gap-2" style={{padding: "10px"}}>
+            <div className="max custom-scroll" style={{ overflow: "hidden auto" }}>
+                <div className="fw flex mid-align gap-2" style={{ padding: "10px" }}>
                     <IconBtn icon={faAngleLeft} onClick={handleCloseClick}>
                         <span className="sr-only"> Close </span>
                     </IconBtn>
-                    <h3> {title} </h3>
+                    <h3 className="fs-5"> {title} </h3>
                 </div>
 
                 {
@@ -142,7 +142,7 @@ export const ProfileEdit = ({ show }) => {
 
                 <form method="post" onSubmit={handleSubmit} action="" className="fw pad grow">
                     <div className="mx-auto thmb">
-                        <div className="img-dp" style={{width: "150px"}} >
+                        <div className="img-dp" style={{ width: "150px" }} >
                             <img src={dp ?? placeholderImg} alt="user profile picture" className="max" />
                         </div>
                         <div className='abs'>
@@ -155,61 +155,73 @@ export const ProfileEdit = ({ show }) => {
         </div>
     )
 
+    function handleCloseClick() {
+        return new Promise(res => {
+            const el = ref.current;
+            if (!el) {
+                res(false);
+                return;
+            }
 
-    function handleCloseClick(){
-        // go back in history to trigger close
-        return new Promise( res => {
-            once(transitionEnd, ref.current, () =>{
-                res( removeState(navId) );
+            // If already closing, resolve immediately
+            if (el.classList.contains("close")) {
+                res(removeState(navId));
+                return;
+            }
+
+            // Attach listener before triggering transition
+            once(transitionEnd, el, () => {
+                res(removeState(navId));
             });
 
-            ref.current.classList.add("close");
-        })        
+            el.classList.add("close");
+        });
     }
 
-    function setProfile(data){
-        if (!data) return 
+
+    function setProfile(data) {
+        if (!data) return
 
         const url = URL.createObjectURL(data);
         setDp(url);
 
     }
 
-    function handleSubmit(e){
+    function handleSubmit(e) {
         e.preventDefault();
         const endpoint = "/profile-edit";
 
         const fd = new FormData(e.target);
 
         axiosInstance.post(endpoint, fd)
-        .then(response => {
-            console.log(response.data.success);
-            User.reload();
+            .then(response => {
+                console.log(response.data.success);
+                User.reload();
 
-        }).catch( err => {
-            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
-            console.error(err);
-        })
+            }).catch(err => {
+                setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
+                console.error(err);
+            })
     }
 }
 
 
-const DPBtn = ({setProfile}) => {
+const DPBtn = ({ setProfile }) => {
 
     return (
         <label className="no-btn icon-btn" >
-            <div className="abs-mid btn-bg fw" style={{"--bg": "var(--btn-col)"}}></div>
+            <div className="abs-mid btn-bg fw" style={{ "--bg": "var(--btn-col)" }}></div>
             <FontAwesomeIcon icon={faCamera} size="xl" color="white" />
             <input onInput={handleInput} type="file" accept="image/*" name="dp" className="hide" />
 
-            <span className="sr-only"> 
+            <span className="sr-only">
                 Take a picture
             </span>
         </label>
     )
 
-    function handleInput(e){
-        const {target: {files}} = e;
+    function handleInput(e) {
+        const { target: { files } } = e;
 
         if (files?.[0]) setProfile(files[0]);
     }
@@ -243,9 +255,9 @@ const ProfileForm = () => {
     return (
         <div className="form-body">
             <div className="flex-col fw gap-2">
-                
+
                 <label className="nv-input fw br-1">
-                    <div className="fw flex mid-align gap-3">
+                    <div className="fw flex mid-align gap-2">
                         <FontAwesomeIcon icon={faUser} size="xl" />
                         <div className="flex-col gap-1">
                             <small> Username </small>
@@ -254,10 +266,10 @@ const ProfileForm = () => {
                     </div>
                 </label>
                 <label className="nv-input fw br-1">
-                    <div className="fw flex mid-align gap-3">
+                    <div className="fw flex mid-align gap-2">
                         <FontAwesomeIcon icon={faNoteSticky} size="xl" />
                         <div className="flex-col fw gap-1">
-                            <small className="flex" style={{justifyContent: "space-between"}}>
+                            <small className="flex" style={{ justifyContent: "space-between" }}>
                                 <span> bio </span>
                                 <span> 100 characters </span>
                             </small>

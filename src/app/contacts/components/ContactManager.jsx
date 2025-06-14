@@ -22,20 +22,28 @@ export const ManageContact = ({ show, args }) => {
 
     // Close function with animation handling
     const close = useCallback(() => {
-        // Trigger animation class
-        if (ref.current){
-            ref.current.classList.add("close");
+        const el = ref.current;
 
-        } else {
-            setTimeout(handleTransitionEnd); 
+        // Guard: fallback with timeout if ref is missing
+        if (!el) {
+            setTimeout(handleTransitionEnd); // ← adjust to your actual CSS duration
+            return;
         }
 
-        // Wait for the transition/animation to complete
-        once(transitionEnd, ref.current, handleTransitionEnd);
+        // If already closing, don't re-trigger
+        if (el.classList.contains("close")) return;
+
+        
+        // Wait for transition end, then clean up
+        once(transitionEnd, el, handleTransitionEnd);
+        
+        el.classList.add("close");
+
 
         function handleTransitionEnd() {
             toggleOverlay(navId, false);
         }
+
     }, [toggleOverlay, navId]);
 
 
@@ -78,7 +86,7 @@ export const ManageContact = ({ show, args }) => {
                     <IconBtn icon={faXmark} onClick={handleCloseClick}>
                         <span className="sr-only"> Close </span>
                     </IconBtn>
-                    <h3> {title} </h3>
+                    <h3 className="fs-4"> {title} </h3>
                 </div>
 
                 {
@@ -124,7 +132,7 @@ const Form = ({NEW, id, showMessage}) => {
                 id && 
                 <input name="id" value={id} type="text" hidden readOnly />
             }
-            <div className="flex-col gap-3">
+            <div className="flex-col gap-2">
                 <label className="nv-input fw br-5">
                     <div className="flex-col gap-1">
                         <small> Fullname* </small>

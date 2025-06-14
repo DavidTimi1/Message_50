@@ -85,7 +85,7 @@ function Menu({show, closeMenu}){
         <div className="menu mob abs close" onClick={close} ref={myRef}>
             <div className='wrapper max'>
                 <nav className="content fw flex-col">
-                    <NavLink className="nav-item" to='/' end={true}>
+                    <NavLink className="nav-item" to='/' end>
                         Home
                     </NavLink>
                     <Link className="nav-item" to='/#features'>

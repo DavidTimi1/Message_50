@@ -172,18 +172,34 @@ export const UserCard = ({ show, args }) => {
             // just re-position
             ref.current.style.transform = '';
     }
-
-    function handleCloseClick(){
-        // go back in history to trigger close
-        return new Promise( res => {
-            once(transitionEnd, ref.current, () =>{
-                res( removeState(navId) );
-            });
-
-            ref.current.style.transform = '';
-            winRef.current.classList.add("close");
-        })        
-    }
+    function handleCloseClick() {
+        return new Promise(res => {
+          const el = ref.current;
+          const winEl = winRef.current;
+      
+          if (!el || !winEl) {
+            res(false);
+            return;
+          }
+      
+          // If already closed, resolve immediately
+          if (winEl.classList.contains("close")) {
+            res(removeState(navId));
+            return;
+          }
+      
+          once(transitionEnd, winEl, () => {
+            res(removeState(navId));
+          });
+      
+          // Clear transform before triggering transition
+          el.style.transform = '';
+      
+          // Add class to start transition
+          winEl.classList.add("close");
+        });
+      }
+      
 
 }
 
@@ -240,7 +256,7 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                 </div>
 
                 <div className='flex-col mx-auto mid-align'>
-                    <span className="fs-3 fw-800"> {name || ''} </span>
+                    <span className="fs-4 fw-800"> {name || ''} </span>
                     <small> {primaryId} </small>
                 </div>
 
@@ -256,12 +272,12 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
                 <div> <hr></hr> </div>
                 
                 <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
-                    <label className="flex mid-align gap-3">
+                    <label className="flex mid-align gap-2">
                         <FontAwesomeIcon icon={faEraser} size="lg" />
                         <span> Clear Chats with {name || primaryId} </span>
                     </label>
                     
-                    <label className="flex mid-align gap-3 fs-5">
+                    <label className="flex mid-align gap-2 fs-5">
                         <FontAwesomeIcon icon={faFlag} size="lg" />
                         <span> Report {name || primaryId} </span>
                     </label>
@@ -346,7 +362,7 @@ const Actions = ({id, closeModal, isSaved}) => {
 
 
 const LoadingDetails = () => (
-    <div className="flex align-center gap-3" style={{justifyContent: "center"}}>
+    <div className="flex align-center gap-2" style={{justifyContent: "center"}}>
         <FontAwesomeIcon icon={faSpinner} size="xl" spin />
         <span>
             Loading ...

@@ -41,7 +41,7 @@ const LandingPage = () => {
                     <img src="/msg-bubble.png" alt="Hero" className="fw br-1" style={{ objectFit: "contain" }} />
                 </div>
                 <div className="d-flex flex-col gap-3 col-md-6">
-                    <p className="hero-tagline d-flex flex-col gap-3">
+                    <div className="hero-tagline d-flex flex-col gap-3">
                         <h1 className='fs-1 fw-bold'>
                             Connect Privately <br />
                             with Friends and Family <br />
@@ -54,7 +54,7 @@ const LandingPage = () => {
                         <em className="sr-only">
                             Message50 is the best, fastest and most secure messaging application
                         </em>
-                    </p>
+                    </div>
                     
                     {
                         isInstalled || isInstallable ?

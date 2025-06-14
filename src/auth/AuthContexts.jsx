@@ -18,14 +18,10 @@ export const AuthProvider = ({ children }) => {
 
     const verifyUrl = apiHost + '/token/verify';
     const refreshUrl = apiHost + '/token/refresh';
-    
-
 
     // Login function
     const login = (mode) => {
         // store in local storage
-        // localStorage.setItem('jwt', token);
-        // localStorage.setItem('refresh', refresh);
         localStorage.setItem('authed', mode);
         setAuth(mode);
     };
@@ -35,8 +31,6 @@ export const AuthProvider = ({ children }) => {
         // remove from local storage
         localStorage.removeItem('userdata');
         localStorage.removeItem('authed');
-        // localStorage.removeItem('refresh');
-        // localStorage.removeItem('jwt');
         
         setAuth(null);
 
@@ -52,7 +46,6 @@ export const AuthProvider = ({ children }) => {
             if (auth) {
                 try {
                     // Verify token using the axios instance
-                    // await axiosInstance.post(verifyUrl, { token: auth.token });
                     await axiosInstance.post(verifyUrl);
                     
                 } catch (err) {
@@ -67,16 +60,8 @@ export const AuthProvider = ({ children }) => {
         }
 
         const refreshToken = async _ => {
-            // const refreshToken = localStorage.getItem('refresh');
-            // if (!refreshToken) {
-            //     logout();
-            //     return;
-            // }
 
             try {
-                // const response = await axiosInstance.post(refreshUrl, {
-                //     refresh: refreshToken,
-                // });
                 const response = await axiosInstance.post(refreshUrl)
 
                 // Extract the new access token from the response

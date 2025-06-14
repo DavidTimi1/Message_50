@@ -35,7 +35,7 @@ export const Attachment = ({ files, add, remove }) => {
 
                 <div className='atth-view'>
                     <label className='br-5 abs-mid' tabIndex="0" role="button">
-                        <div className="abs-mid flex-col gap-3">
+                        <div className="abs-mid flex-col gap-2">
                             <FontAwesomeIcon icon={faPlus} size="3x" />
                         </div>
                         

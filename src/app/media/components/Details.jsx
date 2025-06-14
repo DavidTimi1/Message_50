@@ -95,7 +95,7 @@ export const Details = forwardRef((props, ref) => {
                                 <div className="videos-brief fw view-link" data-href="#vid-slide">
                                     <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("videos")}>
                                         <div className="vlt fw"> Videos </div>
-                                        <small className='flex mid-align gap-3'>
+                                        <small className='flex mid-align gap-2'>
                                             <span>{ }</span>
                                             <FontAwesomeIcon icon={faAngleRight} />
                                         </small>
@@ -119,7 +119,7 @@ export const Details = forwardRef((props, ref) => {
                                 <div className="audios-brief fw view-link" data-href="#aud-slide">
                                     <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("audios")}>
                                         <div className="vlt fw"> Audios </div>
-                                        <small className='flex mid-align gap-3'>
+                                        <small className='flex mid-align gap-2'>
                                             <span>{ }</span>
                                             <FontAwesomeIcon icon={faAngleRight} />
                                         </small>
@@ -143,7 +143,7 @@ export const Details = forwardRef((props, ref) => {
                                 <div className="others-brief fw view-link" data-href="#oth-slide">
                                     <button className="flex mid-align fw no-btn pad vlh body-btn" onClick={() => goTo("others")}>
                                         <div className="vlt fw"> Others </div>
-                                        <small className='flex mid-align gap-3'>
+                                        <small className='flex mid-align gap-2'>
                                             <span>{ }</span>
                                             <FontAwesomeIcon icon={faAngleRight} />
                                         </small>

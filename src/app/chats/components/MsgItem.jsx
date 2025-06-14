@@ -40,7 +40,7 @@ export const MsgItem = (props) => {
 
     return (
         <div data-id={id} className={`msgcont ${ sent || notSent ? "s-cont" : "r-cont"} fw ${select.cur ? 'selected' : ''}`} onTouchStart={handleTouchStart} ref={msgElem}>
-            <div className="flex-col fw gap-1">
+            <div className="flex-col fw">
                 <div className="msg-item" ref={itemRef}>
                     {reply && <MsgLink id={reply} chatting={cur}></MsgLink>}
                     {file && <MsgAttachment msgId={id} fileInfo={file} loadType={sent? 'up':'down'} />}

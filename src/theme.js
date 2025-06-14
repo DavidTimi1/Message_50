@@ -12,6 +12,17 @@ export function getTheme() {
 }
 
 
+export function initTheme(){
+    const theme = getTheme();
+    const themeIndex = THEMES.indexOf(theme);
+
+    const root = document.querySelector(":root"), themeColor = root.querySelector("meta[name='theme-color']"), colorScheme = root.querySelector("meta[name='color-scheme']");
+
+    colorScheme.content = theme;
+    themeColor.content = themeColors[themeIndex];
+}
+
+
 export function changeTheme(){
     const theme = getTheme();
     const newTheme = THEMES[THEMES.indexOf(theme) ? 0 : 1];
