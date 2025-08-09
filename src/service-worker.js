@@ -38,6 +38,8 @@ async function cacheAssets() {
 
 // Install the Service Worker
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
+
   event.waitUntil(
     cacheAssets().catch((error) => {
       console.error('Failed to cache assets:', error);
@@ -105,23 +107,29 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Update the Service Worker and clear old caches
+
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
 
-  event.waitUntil((async _ => {
-    if ('navigationPreload' in self.registration) {
-      await self.registration.navigationPreload.enable();
-    };
+  event.waitUntil(
+    (async () => {
+      // Enable navigation preload if supported
+      if ('navigationPreload' in self.registration) {
+        await self.registration.navigationPreload.enable();
+      }
 
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+      // Delete old caches
+      const cacheNames = await caches.keys();
+      await Promise.all(
         cacheNames.map((cacheName) => {
           if (!cacheWhitelist.includes(cacheName)) {
             return caches.delete(cacheName);
           }
         })
       );
-    })
-  })());
+
+      // Take control of all pages immediately
+      await self.clients.claim();
+    })()
+  );
 });
