@@ -8,6 +8,7 @@ import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../c
 import axiosInstance from "../../auth/axiosInstance.js";
 import { socketSend } from "./Sockets.js";
 import { UserContext } from "../../contexts.jsx";
+import { API_ROUTES } from "../../lib/routes.js";
 
 
 export const SendMsgsProvider = ({children}) => {
@@ -209,13 +210,11 @@ const useMessageSender = () => {
                 
                 fd.append("file", filedBlob)
                 fd.append("metadata", JSON.stringify(metadata))
-    
-                const mediaUploadUrl = "/media/upload/";
                 
                 updateMsgStatus(`upload_${data.id}`, 0, undefined, 'upload')
                 
                 // send all to server / each
-                await axiosInstance.post( mediaUploadUrl, fd, {
+                await axiosInstance.post( API_ROUTES.MEDIA_UPLOAD , fd, {
                     withCredentials: true,
                     onUploadProgress: (progressEvent) => {
                         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);

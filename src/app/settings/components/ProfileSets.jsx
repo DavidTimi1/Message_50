@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const placeholderImg = '/user-icon.svg';
 import axiosInstance from "../../../auth/axiosInstance";
+import { API_ROUTES } from "../../../lib/routes";
 
 
 
@@ -189,19 +190,17 @@ export const ProfileEdit = ({ show }) => {
 
     function handleSubmit(e) {
         e.preventDefault();
-        const endpoint = "/profile-edit";
 
         const fd = new FormData(e.target);
 
-        axiosInstance.post(endpoint, fd)
-            .then(response => {
-                console.log(response.data.success);
-                User.reload();
+        axiosInstance.post( API_ROUTES.PROFILE_EDIT , fd)
+        .then(() => {
+            User.reload();
 
-            }).catch(err => {
-                setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
-                console.error(err);
-            })
+        }).catch(err => {
+            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
+            console.error(err);
+        })
     }
 }
 

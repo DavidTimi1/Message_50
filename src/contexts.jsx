@@ -5,6 +5,7 @@ import { generateKeyPair, getPrivateKey } from './app/crypt.js';
 
 import axiosInstance from "./auth/axiosInstance";
 import { DBrestart } from "./db.jsx";
+import { API_ROUTES } from "./lib/routes.js";
 
 export const UserContext = createContext(null);
 
@@ -23,17 +24,20 @@ export const UserProvider = ({ children, devData }) => {
     });
 
 	const isAuth = Boolean( useAuth().auth );
-
-	const loadDataUrl = "/user/me";
+	const isError = Boolean( userData.error );
+	const username = userData.username;
 	
 	useEffect(() => {
 		let ignore = false;
 
-		if (!isAuth && userData.username){
+		if (isError) 
+			return;
+
+		if (!isAuth && username){
 			setUserData({reload: reloadUserData});
 
-		} else if (isAuth && !userData.username) {
-			axiosInstance.get(loadDataUrl)
+		} else if (isAuth && !username) {
+			axiosInstance.get(API_ROUTES.USER_ME)
 			.then( async res => {
 				if (ignore) return;
 
@@ -55,6 +59,7 @@ export const UserProvider = ({ children, devData }) => {
 			})
 			.catch((error) => {
 				console.error('Error Loading Data:', error);
+
 				if (!error.response){
 					setUserData({error: "network", reload: reloadUserData})
 				}
@@ -64,7 +69,7 @@ export const UserProvider = ({ children, devData }) => {
 		}
 
 		return () => ignore = true;
-	}, [isAuth, userData]);
+	}, [isAuth, username]);
 
     return (
         <UserContext.Provider value={userData}>
@@ -74,7 +79,7 @@ export const UserProvider = ({ children, devData }) => {
 
 	function reloadUserData(){
 		if (isAuth) {
-			axiosInstance.get(loadDataUrl)
+			axiosInstance.get(API_ROUTES.USER_ME)
 			.then( res => {
 				localStorage.setItem('userdata', JSON.stringify(res.data));
 				setUserData({...res.data, reload: reloadUserData})
@@ -90,11 +95,9 @@ export const UserProvider = ({ children, devData }) => {
 
 
 function setUserKeyPair() {
-    const PUBLICKEY_URL = apiHost + "/user/public-key/";
-
     generateKeyPair()
         .then(res => {
-            axiosInstance.post(PUBLICKEY_URL, res)
+            axiosInstance.post( API_ROUTES.USER_PUBLIC_KEY , res)
             .then( console.log("Public Key set") )
         })
         .catch(err => {

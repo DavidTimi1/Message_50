@@ -6,6 +6,8 @@ import axios from "axios";
 import { apiHost } from "../App";
 import Navbar from "../landing/Navbar";
 import { useTransitionOnLoad } from "../app/components/Hooks";
+import { API_ROUTES } from "../lib/routes";
+import axiosInstance from "../auth/axiosInstance";
 
 const placeholderDp = '/user-icon.svg'; 
 
@@ -45,11 +47,10 @@ const LoadingUserBrief = () => (
 
 
 const UserBrief = ({username}) => {
-    const userAPIRoute = apiHost + "/chat/api/user/" + username;
     const ref = useRef();
     useTransitionOnLoad(ref);
 
-    const userDetails = axios.get(userAPIRoute)
+    const userDetails = axiosInstance.get( API_ROUTES.USER(username) )
     .then ( ({data}) => ({
         dp: data.dp,
         bio: data.bio

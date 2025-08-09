@@ -9,6 +9,7 @@ import { saveFile } from "../../../db";
 import { AudThmb, FileThmb, ImgThmb, VidThmb } from "../page";
 import { useState } from "react";
 import { standardUnit } from "../../../utils";
+import { API_ROUTES } from "../../../lib/routes";
 
 
 
@@ -187,15 +188,13 @@ export function useFileDownload(){
     async function download(src, key, id){
         if (!src) return
 
-        const mediaDownloadUrl = "/media/" + src;
-
         // get media metadata
-        const metadata = await axiosInstance.get( `${mediaDownloadUrl}?metadata`, {
+        const metadata = await axios.get( API_ROUTES.MEDIA_METADATA(src) , {
             withCredentials: true,
         }).then(response => response.data )
 
         // get media metadata
-        await axiosInstance.get( mediaDownloadUrl, {
+        await axios.get( API_ROUTES.MEDIA(src), {
             responseType: 'arraybuffer',
             withCredentials: true,
             onDownloadProgress: (progressEvent) => {

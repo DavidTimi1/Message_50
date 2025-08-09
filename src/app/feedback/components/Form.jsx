@@ -7,6 +7,8 @@ import { Button } from "../../../components/Button";
 import { apiHost } from "../../../App";
 import axios  from "axios";
 import { Input } from "../../../sign-in/page";
+import { API_ROUTES } from "../../../lib/routes";
+import axiosInstance from "../../../auth/axiosInstance";
 
 
 
@@ -143,7 +145,6 @@ export const Form = ({closeModal}) => {
 
     function handleSubmit(e){
         e.preventDefault();
-        const FBendpoint = apiHost + "/feedback/message50?format=json";
         setStatus('loading');
         
         const form = e.target;
@@ -153,11 +154,9 @@ export const Form = ({closeModal}) => {
         fd.set("subscribed", Boolean(email))
         // // files.length && fd.set("image", files[0]);
 
-        axios.post(FBendpoint, fd)
+        axiosInstance.post( API_ROUTES.FEEDBACK , fd)
         .then( ({data}) => {
-            if (data.success){
-                setStatus(true);
-            }
+            setStatus(true);
         }).catch( error => {
             console.error(error)
             setStatus({

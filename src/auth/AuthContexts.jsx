@@ -3,6 +3,7 @@ import axiosInstance from './axiosInstance.js';
 import { apiHost } from '../App.jsx';
 import { loadDB, restartIDB } from '../db.jsx';
 import { useOnlineStatus } from '../app/components/Hooks.jsx';
+import { API_ROUTES } from '../lib/routes.js';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -15,9 +16,6 @@ export const AuthProvider = ({ children }) => {
         return authenticated ? authenticated : null;
     });
     const isOnline = useOnlineStatus();
-
-    const verifyUrl = apiHost + '/token/verify';
-    const refreshUrl = apiHost + '/token/refresh';
 
     // Login function
     const login = (mode) => {
@@ -46,7 +44,7 @@ export const AuthProvider = ({ children }) => {
             if (auth) {
                 try {
                     // Verify token using the axios instance
-                    await axiosInstance.post(verifyUrl);
+                    await axiosInstance.post( API_ROUTES.VERIFY_AUTH );
                     
                 } catch (err) {
                     // If token is invalid, logout
@@ -62,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         const refreshToken = async _ => {
 
             try {
-                const response = await axiosInstance.post(refreshUrl)
+                const response = await axiosInstance.post( API_ROUTES.REFRESH_AUTH );
 
                 // Extract the new access token from the response
                 const newAccessToken = response.data.access;

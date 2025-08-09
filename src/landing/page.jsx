@@ -12,6 +12,8 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { installPWA, usePWAContext } from '../lib/pwa';
+import axiosInstance from '../auth/axiosInstance';
+import { API_ROUTES } from '../lib/routes';
 
 
 const LandingPage = () => {
@@ -397,7 +399,7 @@ function Feedback() {
 
         const fd = new FormData(target);
 
-        axios.post(`${apiHost}/feedback/message50`, fd)
+        axiosInstance.post( API_ROUTES.FEEDBACK , fd)
         .then(res => {
             clearInputs();
             setState({ status: true, data: res.data.success });

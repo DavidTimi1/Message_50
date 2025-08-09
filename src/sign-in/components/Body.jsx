@@ -7,6 +7,8 @@ import axios from 'axios';
 import { Button } from '../../components/Button';
 import { apiHost } from '../../App';
 import { useAuth } from '../../auth/ProtectedRoutes';
+import { API_ROUTES } from '../../lib/routes';
+import axiosInstance from '../../auth/axiosInstance';
 
 
 const Body = ({isLogin}) => {
@@ -124,11 +126,10 @@ const Body = ({isLogin}) => {
 	)
 
 	function handleGuestSignIn(){
-		const guestUrl = apiHost + "/guest-login";
 		console.log("Logging in as guest...")
 		setStatus("pending");
 
-		axios.post(guestUrl)
+		axiosInstance.post( API_ROUTES.GUEST_AUTH )
 		.then((response) => {
 			console.log(response.data.message);
 			logUIIn('guest');
@@ -160,10 +161,7 @@ const Body = ({isLogin}) => {
 	}
 
 	function logInWithDetails(data){
-		const loginUrl = apiHost + "/login";
-		console.log("Logging in...")
-
-		axios.post(loginUrl, data)
+		axiosInstance.post( API_ROUTES.LOGIN , data)
 		.then((response) => {
 			console.log('Logged In successfully:', response.data);
 			logUIIn('normal');
@@ -180,9 +178,8 @@ const Body = ({isLogin}) => {
 
 	function registerWithDetails(form){
         const data = new FormData(form);
-		const regUrl = apiHost + "/register";
 
-        return axios.post(regUrl, data)
+        return axiosInstance.post( API_ROUTES.SIGNUP , data)
         .then((response) => {
             console.log('Registered successfully:', response.data);			
 			logInWithDetails(data);

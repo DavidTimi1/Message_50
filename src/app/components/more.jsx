@@ -10,11 +10,11 @@ export const More = ({openOverlays}) => {
 
     return (
         <>
-        <Overlay component={ProfileEdit} name='profile-edit' />
-        <Overlay component={ManageContact} name='manage-contact' />
-        <Overlay component={UserCard} name='user-card' />
-        <Overlay component={MediaViewer} name='media-viewer' />
-        <Overlay component={Feedback} name="feedback" />
+        <Overlay component={ProfileEdit} key='profile-edit' name='profile-edit' />
+        <Overlay component={ManageContact} key='manage-contact' name='manage-contact' />
+        <Overlay component={UserCard} key='user-card' name='user-card' />
+        <Overlay component={MediaViewer} key='media-viewer' name='media-viewer' />
+        <Overlay component={Feedback} key='feedback' name="feedback" />
         </>
     )
 

@@ -1,10 +1,10 @@
 import axiosInstance from "../../auth/axiosInstance";
 import { getContactDetailsFromDB, saveContactToDB } from "../../db";
+import { API_ROUTES } from "../../lib/routes";
 
 
 export const getUserDetails = async (handle, isOnline) => {
     let error, details, refresh = true;
-    const userAPIRoute = "/user/" + handle;
     const now = new Date().getTime();
 
     if (!handle){
@@ -23,7 +23,7 @@ export const getUserDetails = async (handle, isOnline) => {
     }
 
     if (isOnline && refresh) {
-        details = await axiosInstance.get(userAPIRoute)
+        details = await axiosInstance.get(API_ROUTES.USER(handle))
             .then ( ({data}) => {
                 const transData = {
                     id: data.id,

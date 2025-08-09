@@ -1,11 +1,10 @@
 import axios from 'axios';
-
-const DevMode = import.meta.env.MODE === 'development';
 const apiHost = import.meta.env.VITE_BACKEND_HOST;
+const apiVersion = import.meta.env.VITE_BACKEND_VERSION || 'v2';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-    baseURL: `${apiHost}/chat/api`, // Base URL for all API requests
+    baseURL: `${apiHost}/api/${apiVersion}`, // Base URL for all API requests
     withCredentials: true, // required for cross-origin cookies
 });
 
