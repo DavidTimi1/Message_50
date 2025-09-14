@@ -42,6 +42,23 @@ export const useContactName = (id) => {
     return name
 }
 
+export const useContactDetails = (id) => {
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        if (!id) return
+
+        getContactDetailsFromDB(id)
+        .then( res => {
+            if (res)
+                setData(res);
+        });
+
+    }, [id]);
+
+    return data
+}
+
 export const useTransitionOnLoad = (ref) => {
 
     useEffect(() => {

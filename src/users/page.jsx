@@ -1,13 +1,9 @@
 import { Suspense, useContext, useRef } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { UserContext } from "../contexts";
-import axios from "axios";
-
-import { apiHost } from "../App";
 import Navbar from "../landing/Navbar";
 import { useTransitionOnLoad } from "../app/components/Hooks";
-import { API_ROUTES } from "../lib/routes";
-import axiosInstance from "../auth/axiosInstance";
+import { useUserDetails } from "@/hooks/use-user-details";
 
 const placeholderDp = '/user-icon.svg'; 
 
@@ -50,13 +46,8 @@ const UserBrief = ({username}) => {
     const ref = useRef();
     useTransitionOnLoad(ref);
 
-    const userDetails = axiosInstance.get( API_ROUTES.USER(username) )
-    .then ( ({data}) => ({
-        dp: data.dp,
-        bio: data.bio
-    }))
-
-    const {bio, dp} = userDetails;
+    const {data: userDetails, isLoading, isError, error} = useUserDetails(username);
+    const {bio, dp} = userDetails || {};
 
     return (
         <div className="user-profile mx-auto flex-col gap-5 can-animate not-animated" style={{padding: "50px"}} ref={ref}>

@@ -2,8 +2,8 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons"
 import { IconBtn } from "../../../components/Button"
 import { useContext, useEffect, useState } from "react";
 import { ToggleOverlay } from "../../contexts";
-import { getUserDetails } from "../lib";
 import { useOnlineStatus } from "../../components/Hooks";
+import { useUserDetails } from "@/hooks/use-user-details";
 
 const placeholderImg = '/user-icon.svg'; 
 
@@ -59,15 +59,8 @@ export const ContactItem = ({data, Message}) => {
 
 export function UserProfilePic({handle, dp, width=""}){
     const isOnline = useOnlineStatus();
-    const [newDp, setDp] = useState(dp);
-
-    useEffect(() => {
-        if(dp) return 
-
-        getUserDetails(handle, isOnline)
-        .then( res => ( setDp( res.success.dp)) )
-
-    }, [dp, handle])
+    const {data: userDetails} = useUserDetails(handle);
+    const newDp = userDetails?.dp || dp;
 
     return(
         <div className="dp-img" style={{backgroundImage: `url(${newDp || placeholderImg})`, width: width}}></div>

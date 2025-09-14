@@ -9,7 +9,6 @@ import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket, newMsgEvent, socketSend } from "./components/Sockets";
-import { getUserDetails } from "./contacts/lib";
 import { useIsMobile, useOnlineStatus } from "./components/Hooks";
 import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
 import { decryptMessage } from "./crypt";
@@ -90,29 +89,7 @@ const Msg50App = () => {
     )
 
     async function toggleMessaging(handle, id) {
-        let success = false;
-
         if (!handle){
-            setChatting({ user: false });
-            return
-        }
-
-        await hasMessaged(handle)
-        .then( async count => {
-
-            if (count){
-                success = Boolean(count);
-                return
-            }
-
-            const queryUserExistence = getUserDetails(handle, isOnline);
-            await queryUserExistence.then( res => {
-                success = res.success || success
-
-            }).catch (console.error)
-        })
-
-        if (!success){
             setChatting({ user: false });
             return
         }

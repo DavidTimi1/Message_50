@@ -9,8 +9,8 @@ import { IconBtn, Button } from "../../../components/Button";
 import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { on, once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
-import { useOnlineStatus } from '../../components/Hooks';
-import { getUserDetails } from '../lib';
+import { useContactDetails, useContactName } from '../../components/Hooks';
+import { useUserDetails } from '@/hooks/use-user-details';
 
 const placeholderImg = '/user-icon.svg'; 
 
@@ -220,78 +220,79 @@ const Retry = ({note, retry}) => {
 
 
 const UserDetails = ({args, closeModal, navId, showError}) => {
-    const isOnline = useOnlineStatus();
-    const [data, setData] = useState(args === true? useContext(UserContext) : undefined);
+    const myData = useContext(UserContext);
+    const { data: userData, isLoading, isError, error: userError } = useUserDetails(args?.id);
 
     useEffect(() => {
-        if (data) return;
+        if (isError) {
+            showError(userError);
+            return;
+        }
 
-        getUserDetails(args.id, isOnline)
-        .then( async res => {
-            if (res.success){
-                setTimeout( () => setData(res.data), 500 )
-                
-            } else
-            showError(res.error)
-        })
-        .catch(_ => showError("An error occured"))
-
-    }, [isOnline]);
+    }, [isError, userError]);
     
-    const {name, handle, username, dp, bio, isSaved} = data || {};
+    useEffect(() => {
+        if (args === true && myData) {
+            setData(myData);
+        }
+    }, [args, myData]);
+    
+    const {name, handle, username, dp, bio} = userData || {};
     const primaryId = args === true? username : handle;
 
 
+    if (isLoading) {
+        return <LoadingDetails />
+    }
+
     return (
-        data ?
-            <div className="body fw flex-col gap-4">
-                <div className="mx-auto thmb">
-                    <div className="img-dp" style={{width: "150px"}}>
-                        <img src={dp ?? placeholderImg} alt='user profile picture' className="max" />
-                    </div>
-                    <div className="abs">
-                        <div className="dp-img" style={{width: "20px", backgroundColor: "var(--btn-col)"}}>
-                        </div>
-                    </div>
+        <div className="body fw flex-col gap-4">
+            <div className="mx-auto thmb">
+                <div className="img-dp" style={{width: "150px"}}>
+                    <img src={dp ?? placeholderImg} alt='user profile picture' className="max" />
                 </div>
-
-                <div className='flex-col mx-auto mid-align'>
-                    <span className="fs-4 fw-800"> {name || ''} </span>
-                    <small> {primaryId} </small>
-                </div>
-
-                <Actions id={handle} navId={navId} isSaved={isSaved} closeModal={closeModal} />
-                
-                <div>
-                    <small> Bio </small>
-                    <div className="fs-5 fw-200">
-                        { bio }
+                <div className="abs">
+                    <div className="dp-img" style={{width: "20px", backgroundColor: "var(--btn-col)"}}>
                     </div>
-                </div>
-
-                <div> <hr></hr> </div>
-                
-                <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
-                    <label className="flex mid-align gap-2">
-                        <FontAwesomeIcon icon={faEraser} size="lg" />
-                        <span> Clear Chats with {name || primaryId} </span>
-                    </label>
-                    
-                    <label className="flex mid-align gap-2 fs-5">
-                        <FontAwesomeIcon icon={faFlag} size="lg" />
-                        <span> Report {name || primaryId} </span>
-                    </label>
                 </div>
             </div>
-            :
-            <LoadingDetails />
+
+            <div className='flex-col mx-auto mid-align'>
+                <span className="fs-4 fw-800"> {name || ''} </span>
+                <small> {primaryId} </small>
+            </div>
+
+            <Actions id={handle} navId={navId} closeModal={closeModal} />
+            
+            <div>
+                <small> Bio </small>
+                <div className="fs-5 fw-200">
+                    { bio }
+                </div>
+            </div>
+
+            <div> <hr></hr> </div>
+            
+            <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
+                <label className="flex mid-align gap-2">
+                    <FontAwesomeIcon icon={faEraser} size="lg" />
+                    <span> Clear Chats with {name || primaryId} </span>
+                </label>
+                
+                <label className="flex mid-align gap-2 fs-5">
+                    <FontAwesomeIcon icon={faFlag} size="lg" />
+                    <span> Report {name || primaryId} </span>
+                </label>
+            </div>
+        </div>
     )
 }
 
 
-const Actions = ({id, closeModal, isSaved}) => {
+const Actions = ({id, closeModal}) => {
     const openMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
+    const isContact = !!useContactDetails(id);
 
     return (
         <div className="flex mid-align even-space actn" style={{flexWrap: "wrap"}}>
@@ -305,7 +306,7 @@ const Actions = ({id, closeModal, isSaved}) => {
                 </div>
             </button>
             {
-                isSaved? 
+                isContact? 
 
                 <button className="no-btn icon-btn" type="button" onClick={editContact}>
                     <div className="btn-bg abs-mid fw"></div>
