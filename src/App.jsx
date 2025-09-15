@@ -6,6 +6,7 @@ import userDp from './public/Nagi_0.jpg';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContexts";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // import Home from './home';
 // import { Media } from './media';
@@ -23,6 +24,7 @@ import { SignIn } from './sign-in/page';
 import UserProfilePage from './users/page';
 import { LoadingPage } from './components/Loading';
 import PWAProvider from './lib/pwa';
+import { CustomToaster } from './app/components/toaster';
 
 
 export const ProdName = "Message50";
@@ -34,9 +36,11 @@ export const apiHost = import.meta.env.VITE_BACKEND_HOST;
 
 const Msg50App = lazy(() => import('./app/page'))
 
-export const Msg50 = () => {
+const queryClient = new QueryClient();
 
+export const Msg50 = () => {
 	return (
+		<QueryClientProvider client={queryClient}>
 		<div className='max App'>
 		<PWAProvider>
         <AuthProvider>
@@ -57,10 +61,13 @@ export const Msg50 = () => {
 				</Routes>
 			</Router>
 			</UserProvider>
+
+			<CustomToaster />
 			
 		</AuthProvider>
 		</PWAProvider>
 		</div>
+		</QueryClientProvider>
 	)
 }
 

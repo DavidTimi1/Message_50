@@ -19,6 +19,9 @@ import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
 import { Link } from 'react-router-dom';
 import { UserProfilePic } from '../../contacts/components/ContactItem';
+import { useUserDetails } from '@/hooks/use-user-details';
+import {LoadingMessageList, LoadingMessageInterface} from './MsgListLoader';
+import { showToast } from '@/app/components/toaster';
 
 
 
@@ -33,8 +36,8 @@ export default function MsgInterface() {
     // const firstId = msgList[0]?.id, lastId = msgList?.[msgList.length - 1]?.id;
 
     const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
-    const chatContext = useContext(ChatContext), chatting = chatContext.cur;
-
+    const { cur: chatting, set: setChatting } = useContext(ChatContext);
+    const { data: userDetails, isLoading, isError, error} = useUserDetails(chatting);
 
     const select = state?.selected;
 
@@ -42,7 +45,7 @@ export default function MsgInterface() {
     useEffect(() => {
         let t_id, ignore = false;
 
-        if (chatting) {
+        if (chatting && userDetails) {
 
             t_id = setTimeout(() => {
                 if (ignore) return
@@ -58,6 +61,13 @@ export default function MsgInterface() {
         }
 
     }, [chatting]);
+    
+    useEffect(() => {
+        if (chatting && isError) {
+            showToast("Error loading user details", "error");
+            close();
+        }
+    }, [chatting, error, close]);
 
     const isSelecting = Boolean(select?.length);
     useEffect(() => {
@@ -89,20 +99,28 @@ export default function MsgInterface() {
                     <div className='abs max'>
                     </div>
 
-                    <MsgListProvider viewMsg={viewMsg}>
-                        <MsgList
-                            toggleSelect={toggleSelection}
-                            selected={select ?? []}
-                            chatting={chatting}
-                        />
+                    {
+                        isLoading ? (
+                            <LoadingMessageInterface />
 
-                        <div className='fw'>
-                            {preview.on && <PreviewFile data={preview.data} closePreview={() => previewFile(undefined, true)} />}
+                        ) : (
+                            <MsgListProvider viewMsg={viewMsg}>
+                                <MsgList
+                                    toggleSelect={toggleSelection}
+                                    selected={select ?? []}
+                                    chatting={chatting}
+                                />
+        
+                                <div className='fw'>
+                                    {preview.on && <PreviewFile data={preview.data} closePreview={() => previewFile(undefined, true)} />}
+        
+                                    <Footer previewFile={previewFile} />
+                                </div>
+        
+                            </MsgListProvider>
+                        )
+                    }
 
-                            <Footer previewFile={previewFile} />
-                        </div>
-
-                    </MsgListProvider>
                 </div>
 
             </div>
@@ -173,19 +191,18 @@ export default function MsgInterface() {
         if (!el || el.classList.contains("close")) return;
     
         once(transitionEnd, el, () => {
-            chatContext.set(false);
+            setChatting(false);
             setState({});
         });
     
         el.classList.add("close");
     }
-
 }
 
 
 const Heading = ({ selected, closeMsging, clearSelection }) => {
-    const chatContext = useContext(ChatContext), chatting = chatContext.cur;
-    const selecting = selected?.length, online = true; // options = state.opts
+    const { cur: chatting } = useContext(ChatContext);
+    const selecting = selected?.length;
     
     const name = useContactName(chatting);
 
