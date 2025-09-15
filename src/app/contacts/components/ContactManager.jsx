@@ -122,7 +122,8 @@ export const ManageContact = ({ show, args }) => {
 
 const Form = ({NEW, id, showMessage}) => {
     const formRef = useRef();
-    const name = NEW? '' : useContactName(id);
+    const contactName = useContactName(id);
+    const name = NEW? '' : contactName;
     // const {updateContact} = useContactUpdate(); 
 
 

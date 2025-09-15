@@ -50,7 +50,7 @@ if (navigator.getInstalledRelatedApps) {
       console.error('Error fetching related apps:', error);
     });
 } else {
-  console.log('getInstalledRelatedApps is not supported on this browser.');
+  console.warn('getInstalledRelatedApps is not supported on this browser.');
 }
 
 
@@ -65,9 +65,7 @@ const PWAProvider = ({ children }) => {
 
   useEffect(() => {
     const appInstalled = () => {
-      // Log install to analytics
       setInstalled(true);
-      console.log('INSTALL: Success');
     };
 
     const installPrompt = (e) => {
@@ -83,7 +81,6 @@ const PWAProvider = ({ children }) => {
         .addEventListener('change', () => {
           // Log display mode change to analytics
           setDisplay(getPWADisplayMode());
-          console.log('DISPLAY_MODE_CHANGED', getPWADisplayMode());
         });
     };
 

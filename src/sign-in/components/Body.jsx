@@ -126,12 +126,10 @@ const Body = ({isLogin}) => {
 	)
 
 	function handleGuestSignIn(){
-		console.log("Logging in as guest...")
 		setStatus("pending");
 
 		axiosInstance.post( API_ROUTES.GUEST_AUTH )
 		.then((response) => {
-			console.log(response.data.message);
 			logUIIn('guest');
 			setStatus(true);
 		})
@@ -163,7 +161,6 @@ const Body = ({isLogin}) => {
 	function logInWithDetails(data){
 		axiosInstance.post( API_ROUTES.LOGIN , data)
 		.then((response) => {
-			console.log('Logged In successfully:', response.data);
 			logUIIn('normal');
 			setStatus(true);
 		})
@@ -180,8 +177,7 @@ const Body = ({isLogin}) => {
         const data = new FormData(form);
 
         return axiosInstance.post( API_ROUTES.SIGNUP , data)
-        .then((response) => {
-            console.log('Registered successfully:', response.data);			
+        .then((response) => {		
 			logInWithDetails(data);
 			return data;
 			

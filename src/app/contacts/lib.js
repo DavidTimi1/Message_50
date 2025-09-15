@@ -1,4 +1,4 @@
-import axiosInstance from "../../auth/axiosInstance";
+import axiosInstance from "@/auth/axiosInstance";
 import { getContactDetailsFromDB, saveContactToDB } from "../../db";
 import { API_ROUTES } from "../../lib/routes";
 
@@ -56,5 +56,41 @@ export const getUserDetails = async (handle, isOnline) => {
     return {
         success: true,
         data: details
+    }
+}
+
+export const fetchUserDetails = (handle) => {
+    const now = new Date().getTime();
+
+    try {
+        const response = axiosInstance.get(API_ROUTES.USER(handle));
+        return {
+            ...response.data,
+            lastUpdated: now
+        };
+
+    } catch (error) {
+        if (error?.response?.status === 404) {
+            throw new Error("User not found");
+        }
+        throw new Error("Could not get user details");
+    }
+}
+
+export const fetchMyDetails = () => {
+    const now = new Date().getTime();
+
+    try {
+        const response = axiosInstance.get(API_ROUTES.USER_ME);
+        return {
+            ...response.data,
+            lastUpdated: now
+        };
+
+    } catch (error) {
+        if (error?.response?.status === 404) {
+            throw new Error("User not found");
+        }
+        throw new Error("Could not get user details");
     }
 }

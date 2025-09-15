@@ -20,6 +20,7 @@ export const ChatList = () => {
 
     const [chats, setChats] = useState([]), initThreshold = 50;
     const [pendingList, setPendingList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const compound = [...pendingList, ...chats].sort((prev, next) => prev.time - next.time);
     compound.reverse();
@@ -36,7 +37,7 @@ export const ChatList = () => {
         .then(res => {
             setChats(res.data);
             setPendingList(res.unsent);
-
+            setIsLoading(false);
         })
             
         // for realtime chats updates
@@ -115,19 +116,23 @@ export const ChatList = () => {
     return (
         <div className="chat-list custom-scroll max" ref={ref}>
             <ol className='content max'>
-                {compound.length ?
+                {
+                    isLoading ? (
+                        <LoadingChatList />
+                        
+                    ) : compound.length ?
 
-                    compound.map(chat => {
-                        const { handle, receivers } = chat;
+                        compound.map(chat => {
+                            const { handle, receivers } = chat;
 
-                        return (
-                            <ChatItem
-                                key={handle === 'multiple' ? String(receivers) : handle}
-                                Message={toggleMessaging}
-                                data={chat}
-                            />
-                        )
-                    })
+                            return (
+                                <ChatItem
+                                    key={handle === 'multiple' ? String(receivers) : handle}
+                                    Message={toggleMessaging}
+                                    data={chat}
+                                />
+                            )
+                        })
                     :
                     <>
                         <li className="no-message"> You do not have any chats. </li>

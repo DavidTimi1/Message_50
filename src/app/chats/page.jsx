@@ -1,6 +1,6 @@
 import './page.css';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 
 import { SideShelf } from './components/SideShelf';

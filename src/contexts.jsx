@@ -1,104 +1,76 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect } from "react";
 import { useAuth } from "./auth/ProtectedRoutes";
-import { apiHost } from "./App";
 import { generateKeyPair, getPrivateKey } from './app/crypt.js';
 
 import axiosInstance from "./auth/axiosInstance";
 import { DBrestart } from "./db.jsx";
 import { API_ROUTES } from "./lib/routes.js";
+import { CURRENT_USER_QUERY_KEY, useMyDetails } from "./hooks/use-user-details";
+import { showToast } from "./app/components/toaster";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const UserContext = createContext(null);
 
 
 // AuthProvider Component
-export const UserProvider = ({ children, devData }) => {
-	const [userData, setUserData] = useState(() => {
-        const data = localStorage.getItem('userdata');
-		let parsedData;
-		try {
-			parsedData = data? JSON.parse(data) : {};
-		} catch {
-			parsedData = {}
-		}
-        return {...parsedData, reload: reloadUserData};
-    });
-
+export const UserProvider = ({ children }) => {
 	const isAuth = Boolean( useAuth().auth );
-	const isError = Boolean( userData.error );
-	const username = userData.username;
+
+	const {data: userData, isLoading, isError, error} = useMyDetails(!isAuth);
+	const queryClient = useQueryClient();
+
+	const userObject = { 
+		...(userData || {}), 
+		isLoading,
+		error: isError && error.message, 
+		reload: reloadUserData 
+	};
 	
-	useEffect(() => {
-		let ignore = false;
+	useEffect(async () => {
+		if (userData) {
+			const public_key = userData?.public_key;
+			
+			let privateKey;
 
-		if (isError) 
-			return;
+			try {
+				privateKey = await getPrivateKey();
+			} catch (err) {
+				console.warn("Error getting private key:", err);
+			}
 
-		if (!isAuth && username){
-			setUserData({reload: reloadUserData});
-
-		} else if (isAuth && !username) {
-			axiosInstance.get(API_ROUTES.USER_ME)
-			.then( async res => {
-				if (ignore) return;
-
-				const {dp, public_key} = res.data;
-				let privateKey;
-
+			if (!public_key || !privateKey || DBrestart) {
 				try {
-					privateKey = await getPrivateKey();
+					await setUserKeyPair();
+					reloadUserData();
+
 				} catch (err) {
-					console.warn("Error getting private key:", err);
+					console.error("Error setting user key pair:", err);
+					showToast('Error setting up encryption keys. Please try signing out and back in.', {type: 'error'});
 				}
-
-				if (!public_key || !privateKey || DBrestart) {
-					setUserKeyPair()
-				}
-
-				localStorage.setItem('userdata', JSON.stringify(res.data));
-				setUserData({...res.data, dp: dp, reload: reloadUserData})
-			})
-			.catch((error) => {
-				console.error('Error Loading Data:', error);
-
-				if (!error.response){
-					setUserData({error: "network", reload: reloadUserData})
-				}
-
-			});
-
+			}
 		}
 
-		return () => ignore = true;
-	}, [isAuth, username]);
+	}, [userData, reloadUserData]);
 
     return (
-        <UserContext.Provider value={userData}>
+        <UserContext.Provider value={userObject}>
 			{children}
         </UserContext.Provider>
     );
 
 	function reloadUserData(){
-		if (isAuth) {
-			axiosInstance.get(API_ROUTES.USER_ME)
-			.then( res => {
-				localStorage.setItem('userdata', JSON.stringify(res.data));
-				setUserData({...res.data, reload: reloadUserData})
-			})
-			.catch((error) => {
-				console.error('Error Loading Data:', error);
-			});
-
-		}
+		queryClient.invalidateQueries({
+			queryKey: CURRENT_USER_QUERY_KEY
+		})
 	}
 };
 
 
 
-function setUserKeyPair() {
+async function setUserKeyPair() {
     generateKeyPair()
         .then(res => {
             axiosInstance.post( API_ROUTES.USER_PUBLIC_KEY , res)
-            .then( console.log("Public Key set") )
         })
         .catch(err => {
             throw err

@@ -13,3 +13,17 @@ export const useUserDetails = (handle) => {
         refetchOnWindowFocus: false,
     })
 }
+
+export const CURRENT_USER_QUERY_KEY = ['user-details', 'me'];
+
+export const useMyDetails = (abort) => {
+    return useQuery({
+        queryKey: CURRENT_USER_QUERY_KEY,
+        queryFn: () => fetchUserDetails(),
+        enabled: !abort,
+        staleTime: 1000 * 60 * 20, // 20 mins
+        cacheTime: 1000 * 60 * 60 * 24 * 7, // 1 week
+        retry: 1,
+        refetchOnWindowFocus: false,
+    })
+}

@@ -89,8 +89,6 @@ export const progressUpload = (url, upId, progressFunc, data, responseType = "js
         let xhr = new XMLHttpRequest();
 
         xhr.upload.onloadstart = _ => {
-            console.log("Upload has begun");
-
             xhr.upload.onprogress = progressFunc;
         }
 

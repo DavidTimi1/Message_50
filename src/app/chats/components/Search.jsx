@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { contactsTable, loadDB, msgsTable, openTrans } from '../../../db';
 import { ContactResultItem, MsgResultItem } from './SearchResults';
-import { DevMode } from '../../../App';
 
 const navId = 'searchGeneral';
 
@@ -201,7 +200,6 @@ export default function SearchWindow({ closeSearch, initFilters }) {
         }
         
     }
-
     
     function handleCLClick(e){
         const { target } = e;

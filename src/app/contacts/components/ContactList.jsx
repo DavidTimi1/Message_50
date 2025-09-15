@@ -3,114 +3,126 @@ import { ChatContext, ToggleOverlay } from "../../contexts";
 import { ContactItem } from "./ContactItem";
 import { $ } from "../../../utils";
 import { contactsTable, loadDB, openTrans } from "../../../db";
+import LoadingContactList from "./contactListLoader";
 
 
 const ContactUpdateContext = createContext(null);
 
 export const ContactList = () => {
     const [contacts, setContacts] = useState({});
+    const [isloading, setIsLoading] = useState(true);
     const ref = useRef(null);
 
-    const hashes = Object.keys(contacts).sort( (a, b) => a > b ? 1 : a == b ? 0 : -1 );
+    const hashes = Object.keys(contacts).sort((a, b) => a > b ? 1 : a == b ? 0 : -1);
 
     const toggleMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
 
     useEffect(() => {
         getContacts()
-        .then(setContacts)
+            .then((data) => {
+                setContacts(data);
+                setIsLoading(false);
+            })
 
     }, [])
 
 
     return (
-        <ContactUpdateContext.Provider value={{updateContact: update}}>
+        <ContactUpdateContext.Provider value={{ updateContact: update }}>
             <div className="contact-list custom-scroll max">
-                <div className='content' 
-                    ref={ref} 
-                    onClick={handleClick} 
-                    onContextMenu={handleContextMenu}
-                >
-                    { hashes.length? 
+                {
+                    isloading ? (
+                        <LoadingContactList />
 
-                        hashes.map( hash => {
-                            const hashBucket = contacts[hash];
+                    ) : (
+                        <div className='content'
+                            ref={ref}
+                            onClick={handleClick}
+                            onContextMenu={handleContextMenu}
+                        >
+                            {hashes.length ?
 
-                            return hashBucket.sort( sortByName )
-                            .map( person =>{
-                                const {handle} = person;
+                                hashes.map(hash => {
+                                    const hashBucket = contacts[hash];
 
-                                if (handle === 'multiple') return;
+                                    return hashBucket.sort(sortByName)
+                                        .map(person => {
+                                            const { handle } = person;
 
-                                return (
-                                    <ContactItem
-                                        key={handle}
-                                        Message={toggleMessaging}
-                                        data={person}
-                                    /> 
-                                )
-                            })
-                        })
+                                            if (handle === 'multiple') return;
 
-                        : 
+                                            return (
+                                                <ContactItem
+                                                    key={handle}
+                                                    Message={toggleMessaging}
+                                                    data={person}
+                                                />
+                                            )
+                                        })
+                                })
 
-                        <>
-                            <div className="no-message"> You do not have any contacts. </div>
-                            <div className="new-ptr">
-                                Click the add contact icon to create a new contact.
-                            </div>
-                        </>
+                                :
 
-                    }
-                </div>
+                                <>
+                                    <div className="no-message"> You do not have any contacts. </div>
+                                    <div className="new-ptr">
+                                        Click the add contact icon to create a new contact.
+                                    </div>
+                                </>
+
+                            }
+                        </div>
+                    )
+                }
             </div>
         </ContactUpdateContext.Provider>
     )
 
 
-    function handleClick(e){
-        const {target} = e;
+    function handleClick(e) {
+        const { target } = e;
 
         const el = target.closest(".contact-cont"), clickedMenu = target.closest(".contact-cont .dropdown");
 
         if (!el) return;
 
-        if (clickedMenu){
+        if (clickedMenu) {
             // menu was clicked
         } else {
-            toggleOverlay('user-card', {id: el.dataset.id});
+            toggleOverlay('user-card', { id: el.dataset.id });
         }
     }
 
-    function handleContextMenu(e){
-        const {target} = e;
+    function handleContextMenu(e) {
+        const { target } = e;
         e.preventDefault();
 
         const el = target.closest(".contact-cont"), dropdown = el && $('q.icon-btn', el);
 
-        if (dropdown){
-            dropdown.click();           
+        if (dropdown) {
+            dropdown.click();
         }
     }
 
-    function update(contact, isDeleted=false){
-        let {id, name} = contact;
+    function update(contact, isDeleted = false) {
+        let { id, name } = contact;
         name = name ?? "~" + id;
-                
+
         let hash = name.charAt(0).toUpperCase();
         hash = hash.toLowerCase() == hash ? '#' : hash
 
         if (id === 'multiple') return;
 
         setContacts(prev => {
-            const contacts = {...prev};
+            const contacts = { ...prev };
 
-            if (hash in contacts){
+            if (hash in contacts) {
                 const hashBucket = contacts[hash];
-                const index = hashBucket.findIndex( c => c.handle === id );
+                const index = hashBucket.findIndex(c => c.handle === id);
 
-                if (index > -1){
-                    if (isDeleted){
+                if (index > -1) {
+                    if (isDeleted) {
                         hashBucket.splice(index, 1);
 
                         if (hashBucket.length === 0)
@@ -132,42 +144,42 @@ export const ContactList = () => {
 export const useContactUpdate = _ => useContext(ContactUpdateContext);
 
 
-function getContacts(){
+function getContacts() {
     const contactsHashTable = {};
-    
+
 
     return loadDB()
-    .then( DB => new Promise((res, rej) => {
+        .then(DB => new Promise((res, rej) => {
 
-        let req = openTrans(DB, contactsTable).openCursor();
+            let req = openTrans(DB, contactsTable).openCursor();
 
-        req.onsuccess = (e) => {
-            let cursor = e.target.result;
+            req.onsuccess = (e) => {
+                let cursor = e.target.result;
 
-            if (cursor) {
+                if (cursor) {
 
-                const {handle, name} = cursor.value, id = handle, detail = { id, handle, name: name ?? "~" + handle }
-                
-                let char = (detail.name).charAt(0).toUpperCase();
-                char = char.toLowerCase() == char ? '#' : char
+                    const { handle, name } = cursor.value, id = handle, detail = { id, handle, name: name ?? "~" + handle }
 
-                if (!(char in contactsHashTable))
-                    contactsHashTable[char] = []
+                    let char = (detail.name).charAt(0).toUpperCase();
+                    char = char.toLowerCase() == char ? '#' : char
 
-                contactsHashTable[char].push(detail);
-                contactsHashTable[char].sort( sortByName );
+                    if (!(char in contactsHashTable))
+                        contactsHashTable[char] = []
 
-                cursor.continue();
+                    contactsHashTable[char].push(detail);
+                    contactsHashTable[char].sort(sortByName);
 
-            } else
-                res(contactsHashTable);
-        }
+                    cursor.continue();
 
-        req.onerror = (e) => rej(e.target.error)
-    }))
+                } else
+                    res(contactsHashTable);
+            }
+
+            req.onerror = (e) => rej(e.target.error)
+        }))
 }
 
 
-function sortByName(a, b){
-    return ( a.name > b.name ? 1 : a.name == b.name ? 0 : -1 )
+function sortByName(a, b) {
+    return (a.name > b.name ? 1 : a.name == b.name ? 0 : -1)
 }

@@ -7,12 +7,13 @@ import { getMessages, loadMoreMessages } from './components/Messaging';
 import { getMsg } from "../../db";
 import { newMsgEvent } from "../components/Sockets";
 import { on } from "../../utils";
+import { LoadingMessageList } from "./components/MsgListLoader";
 
 
 
-export const MsgListProvider = ({children}) => {
+export const MsgListProvider = ({ children }) => {
     const [reply, setReply] = useState();
-    const [preview, setPrev] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const [msgList, setMsgList] = useState([]);
     const [pendingList, setPendingList] = useState([]);
@@ -30,10 +31,11 @@ export const MsgListProvider = ({children}) => {
         if (!chatting) return;
 
         getMessages(chatting, viewMsg)
-        .then(res => {
-            setMsgList(res.data)
-            setPendingList(res.unsent)
-        })
+            .then(res => {
+                setMsgList(res.data)
+                setPendingList(res.unsent)
+                setIsLoading(false)
+            })
 
         // for realtime messages updates
         const handleEvent = e => {
@@ -43,7 +45,7 @@ export const MsgListProvider = ({children}) => {
             if (data.notSent)
                 setPendingList(prev => [...prev, data]);
             else
-                setMsgList( prev => [...prev, data]);
+                setMsgList(prev => [...prev, data]);
         };
         on(newMsgEvent, handleEvent)
 
@@ -55,7 +57,7 @@ export const MsgListProvider = ({children}) => {
 
     }, [chatting]);
 
-    
+
     useEffect(() => {
         if (!chatting) return
 
@@ -67,46 +69,53 @@ export const MsgListProvider = ({children}) => {
 
                 // get message and add to list to be displayed
                 const newMsgID = status.args?.newID;
-                if (newMsgID){
+                if (newMsgID) {
                     getMsg(newMsgID)
-                    .then( msg => {
-                        if (msg){
-                            setMsgList( prev => [...prev, msg] )
-                                
-                            setPendingList(prev => {
-                                const clone = [...prev];
-                                clone.splice(index, 1);
-                                return clone
-                            })
-                        }
-                    })
+                        .then(msg => {
+                            if (msg) {
+                                setMsgList(prev => [...prev, msg])
+
+                                setPendingList(prev => {
+                                    const clone = [...prev];
+                                    clone.splice(index, 1);
+                                    return clone
+                                })
+                            }
+                        })
                 }
-                
+
             }
         }
 
     }, [chatting, msgsStatus]);
-    
+
 
 
     return (
         <MsgListContext.Provider value={{
-            cur: msgList, 
+            cur: msgList,
             pending: pendingList,
             addNotSent,
             loadPreviousMsgs,
             replyTo,
             reply,
         }}>
-            { children }
+            {
+                isLoading ? (
+                    <LoadingMessageList />
+                ) : (
+                    children
+                )
+
+            }
         </MsgListContext.Provider>
     )
 
-    
+
     function replyTo(id) {
         setReply(id)
     }
-    
+
     function loadPreviousMsgs() {
         loadMoreMessages(null, firstId)
             .then(msgs => {

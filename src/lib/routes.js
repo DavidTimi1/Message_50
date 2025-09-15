@@ -16,7 +16,7 @@ export const API_ROUTES = {
     MEDIA_METADATA: (media_id) => `media/${media_id}?metadata`,
     MEDIA_UPLOAD: "media/upload",
 
-    USER_PUBLIC_KEY: "user/public-key",
+    USER_PUBLIC_KEY: "user/public-key/",
     PUBLIC_KEYS: (usernames) => {
         const params = new URLSearchParams();
         usernames.forEach(username => params.append("username", username));
