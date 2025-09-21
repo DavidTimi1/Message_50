@@ -51,6 +51,12 @@
         opacity: 1;
         visibility: visible;
         transition: opacity .3s ease-in-out;
+        
+        &.loading-content {
+          opacity: 0;
+          visibility: hidden;
+          overflow: hidden;
+        }
       }
 
       #pre-loading {
@@ -96,7 +102,7 @@
   </head>
   <body class="mega-max">
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" class="max" style="opacity: 0; visibility: hidden;">
+    <div id="root" class="max loading-content">
       <main><div><div><header><div><h2> Message50 </h2><button type="button"> Search </button></div><div><div> Chats </div><div><button>New Chat</button><button>AI Chat</button><h3> Message50 </h3></div></div></header><section><ol><li data-id="d2174597-fd76-4ad7-8d25-fb5393604cc8"><div><div title="test2">test2</div><small>1 mo</small></div><span> Hopeyoure good sha </span></li><li data-id="9a3c8d2e-25dc-43ce-9d92-32532f6fb010"><div><div title="test3">test3</div><small>1 mo</small></div><span> Sent while offline!! </span></li></ol></section></div><div><button disabled=""> AI chatbot </button><button> search contacts </button></div></div><div><h5> Help &amp; Feedback </h5><form method="post" action="/feedback/message50"><label><span>Feedback Intent: </span><select name="subject" required=""><option value="" disabled="" selected=""> Choose a Feedback type </option><option value="Comment"> Leave a Feedback Comment </option><option value="Help"> Need Help? </option><option value="Bug"> Report a bug </option></select></label><label>Email (optional, for follow-up):</label><button type="submit">Send</button><span> Drop here to add file </span></form></div></main>
     </div>
 
@@ -128,7 +134,7 @@
           const loader = document.getElementById("pre-loading");
           const root = document.getElementById("root");
           loader.style.display = "none"; 
-          root.style.opacity = root.style.visibility = "";
+          root.classList.remove("loading-content");
 
         }, 500);
       });

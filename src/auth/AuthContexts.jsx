@@ -4,6 +4,7 @@ import { apiHost } from '../App.jsx';
 import { loadDB, restartIDB } from '../db.jsx';
 import { useOnlineStatus } from '../app/components/Hooks.jsx';
 import { API_ROUTES } from '../lib/routes.js';
+import { showToast } from '@/app/components/toaster.jsx';
 
 // Create the AuthContext
 export const AuthContext = createContext();
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
     const login = (mode) => {
         // store in local storage
         localStorage.setItem('authed', mode);
+        localStorage.setItem('new-login', 'true');
         setAuth(mode);
     };
 
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }) => {
         // remove from local storage
         localStorage.removeItem('userdata');
         localStorage.removeItem('authed');
+        localStorage.removeItem('new-login');
         
         setAuth(null);
 
@@ -45,11 +48,12 @@ export const AuthProvider = ({ children }) => {
                 try {
                     // Verify token using the axios instance
                     await axiosInstance.post( API_ROUTES.VERIFY_AUTH );
+                    localStorage.removeItem('new-login');
                     
                 } catch (err) {
                     // If token is invalid, logout
                     if (err.response?.status === 401) {
-                        refreshToken()
+                        refreshToken();
                     } else {
                         console.error("Error verifying token:", err);
                     }
@@ -63,17 +67,24 @@ export const AuthProvider = ({ children }) => {
                 const response = await axiosInstance.post( API_ROUTES.REFRESH_AUTH );
 
                 // Extract the new access token from the response
-                const newAccessToken = response.data.access;
+                // const newAccessToken = response.data.access;
 
-                login(newAccessToken, refreshToken); // Update the auth state with the new token
+                login('refresh');
 
             } catch (error) {
                 if (error.response?.status === 401) {
                     logout();
+
+                    if (localStorage.getItem('new-login') === 'true') {
+                        showToast("This app makes use of third-party cookies for secure authentication. \n Please enable third-party cookies in your browser settings to ensure proper functionality.", { type: 'info', duration: 10000 });
+                    }
+                    
                 } else {
                     console.error("Error refreshing token:", error.response?.data || error.message);
                 }
             }
+
+            localStorage.removeItem('new-login');
         };
 
         isOnline && verifyToken();
