@@ -73,12 +73,11 @@ export const AuthProvider = ({ children }) => {
 
             } catch (error) {
                 if (error.response?.status === 401) {
-                    logout();
-
                     if (localStorage.getItem('new-login') === 'true') {
                         showToast("This app makes use of third-party cookies for secure authentication. \n Please enable third-party cookies in your browser settings to ensure proper functionality.", { type: 'info', duration: 10000 });
                     }
                     
+                    logout();                    
                 } else {
                     console.error("Error refreshing token:", error.response?.data || error.message);
                 }
