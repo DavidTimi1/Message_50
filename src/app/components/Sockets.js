@@ -33,7 +33,6 @@ export function connectSocket(){
     SOCKET = new WebSocket(socketHost);
 
     SOCKET.onopen = () => {
-        console.log('Connected to socket server');
         retries = 0;
 
         heartbeatTimer = setInterval(() => {

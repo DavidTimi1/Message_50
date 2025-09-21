@@ -1,4 +1,4 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useRef } from "react";
 import { useAuth } from "./auth/ProtectedRoutes";
 import { generateKeyPair, getPrivateKey } from './app/crypt.js';
 
@@ -11,25 +11,28 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const UserContext = createContext(null);
 
+const MAX_RETRIES = 3;
 
 // AuthProvider Component
 export const UserProvider = ({ children }) => {
-	const isAuth = Boolean( useAuth().auth );
+	const isAuth = Boolean(useAuth().auth);
+	const retries = useRef(0);
 
-	const {data: userData, isLoading, isError, error} = useMyDetails(!isAuth);
+	const { data: userData, isLoading, isError, error } = useMyDetails(!isAuth);
 	const queryClient = useQueryClient();
 
-	const userObject = { 
-		...(userData || {}), 
+	const userObject = {
+		...(userData || {}),
 		isLoading,
-		error: isError && error.message, 
-		reload: reloadUserData 
+		error: isError && error.message,
+		reload: reloadUserData
 	};
-	
-	useEffect(async () => {
-		if (userData) {
+
+	useEffect(() => {
+
+		async function getKeysAndSetIfNeeded() {
 			const public_key = userData?.public_key;
-			
+
 			let privateKey;
 
 			try {
@@ -39,26 +42,39 @@ export const UserProvider = ({ children }) => {
 			}
 
 			if (!public_key || !privateKey || DBrestart) {
+
+				if (retries.current >= MAX_RETRIES) {
+					console.error("Max retries reached for setting user key pair.");
+					showToast('Error setting up encryption keys. Please try signing out and back in.', { type: 'error' });
+					return;
+				}
+				retries.current += 1;
+
 				try {
 					await setUserKeyPair();
 					reloadUserData();
+					retries.current = 0;
 
 				} catch (err) {
 					console.error("Error setting user key pair:", err);
-					showToast('Error setting up encryption keys. Please try signing out and back in.', {type: 'error'});
+					showToast('Error setting up encryption keys. Please try signing out and back in.', { type: 'error' });
 				}
 			}
 		}
 
-	}, [userData, reloadUserData]);
+		if (userData?.username) {
+			getKeysAndSetIfNeeded();
+		}
 
-    return (
-        <UserContext.Provider value={userObject}>
+	}, [userData]);
+
+	return (
+		<UserContext.Provider value={userObject}>
 			{children}
-        </UserContext.Provider>
-    );
+		</UserContext.Provider>
+	);
 
-	function reloadUserData(){
+	function reloadUserData() {
 		queryClient.invalidateQueries({
 			queryKey: CURRENT_USER_QUERY_KEY
 		})
@@ -68,11 +84,11 @@ export const UserProvider = ({ children }) => {
 
 
 async function setUserKeyPair() {
-    generateKeyPair()
-        .then(res => {
-            axiosInstance.post( API_ROUTES.USER_PUBLIC_KEY , res)
-        })
-        .catch(err => {
-            throw err
-        })
+	generateKeyPair()
+		.then(res => {
+			axiosInstance.post(API_ROUTES.USER_PUBLIC_KEY, res)
+		})
+		.catch(err => {
+			throw err
+		})
 }

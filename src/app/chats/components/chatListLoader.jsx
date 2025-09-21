@@ -1,4 +1,5 @@
 import Skeleton from "@/app/components/skeleton";
+import { useEffect, useState } from "react";
 
 const LoadingChatList = ({ count = 3 }) => {
     const skeletons = Array.from({ length: count }, (_, index) => (
@@ -16,11 +17,11 @@ const LoadingChatList = ({ count = 3 }) => {
 
 
 const LoadingChatListItem = () => {
-  return (
+  const [returnContent, setReturnContent] = useState(<></>);
+  const loaderContent = (
     <li className='chat-cont br-1'>
       <div className='abs-mid br-1 max'>
-        <div className='fw flex mid-align' style={{ justifyContent: "space-between", padding: "10px 5px" }}>
-          {/* Top placeholder area, if any */}
+        <div className='fw flex mid-align'>
         </div>
       </div>
       <div className='max mid-align flex gap-2 br-1' style={{ padding: "10px 5px" }}>
@@ -50,5 +51,15 @@ const LoadingChatListItem = () => {
         </div>
       </div>
     </li>
-  );
+  )
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setReturnContent(loaderContent);
+    }, 500); // Delay of 500ms before showing the content
+
+    return () => clearTimeout(timer);
+  }, [loaderContent]);
+  
+  return returnContent
 };

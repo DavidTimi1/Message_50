@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserDetails } from "@/app/contacts/lib";
+import { fetchMyDetails, fetchUserDetails } from "@/app/contacts/lib";
 
 
 export const useUserDetails = (handle) => {
@@ -19,7 +19,7 @@ export const CURRENT_USER_QUERY_KEY = ['user-details', 'me'];
 export const useMyDetails = (abort) => {
     return useQuery({
         queryKey: CURRENT_USER_QUERY_KEY,
-        queryFn: () => fetchUserDetails(),
+        queryFn: fetchMyDetails,
         enabled: !abort,
         staleTime: 1000 * 60 * 20, // 20 mins
         cacheTime: 1000 * 60 * 60 * 24 * 7, // 1 week

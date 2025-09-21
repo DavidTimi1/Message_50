@@ -8,7 +8,6 @@ import Navbar from './Navbar';
 import { useTransitionOnLoad } from '../app/components/Hooks';
 import { Button } from '../components/Button';
 import { Input } from '../sign-in/page';
-import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { installPWA, usePWAContext } from '../lib/pwa';
@@ -49,7 +48,7 @@ const LandingPage = () => {
                             with Friends and Family <br />
                         </h1>
 
-                        <p className='fs-6 fw-light text2-col'>
+                        <p className='fs-6 color-text2'>
                             Experience quick seamless and secure communication. <br /> The best messaging app for you
                         </p>
 
@@ -195,7 +194,7 @@ const Features = () => (
                     </div>
                     <div className="">
                         <h2 className="fs-3 feature-title">{feature.title}</h2>
-                        <p className="fw-light fs-6">{feature.description}</p>
+                        <p className="color-text2 fs-6">{feature.description}</p>
                     </div>
                 </li>
             ))}
@@ -329,7 +328,7 @@ const Gallery = () => {
                                 <h2 className='fw-bold fs-2'>
                                     {feature.title}
                                 </h2>
-                                <p className="text2-col fw-light">
+                                <p className="color-text2">
                                     <small>{feature.description}</small>
                                 </p>
                             </div>

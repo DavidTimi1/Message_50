@@ -252,3 +252,7 @@ label.nv-input {
     padding-right: 35px;
   }
 }
+
+.color-text2 {
+  color: var(--text2-col);
+}

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const placeholderImg = '/user-icon.svg';
 import axiosInstance from "../../../auth/axiosInstance";
 import { API_ROUTES } from "../../../lib/routes";
+import { showToast } from "@/app/components/toaster";
 
 
 
@@ -16,9 +17,7 @@ export const ProfileBrief = () => {
     const toggleOverlay = useContext(ToggleOverlay);
     const User = useContext(UserContext);
 
-
     return (
-
         <div className="settings-sec fw br-5">
             <div className="flex mid-align gap-2">
                 <button className="no-btn flex mid-align grow gap-4" onClick={showUserCard}>
@@ -198,7 +197,8 @@ export const ProfileEdit = ({ show }) => {
             User.reload();
 
         }).catch(err => {
-            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.")
+            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.");
+            showToast("Failed to update profile", { type: "error" });
             console.error(err);
         })
     }

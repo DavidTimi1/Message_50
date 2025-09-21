@@ -5,12 +5,13 @@ import './UserCard.css';
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconBtn, Button } from "../../../components/Button";
-import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { on, once, transitionEnd } from "../../../utils";
+import { Button } from "../../../components/Button";
+import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
-import { useContactDetails, useContactName } from '../../components/Hooks';
+import { useContactDetails, useContactName, useOnlineStatus } from '../../components/Hooks';
 import { useUserDetails } from '@/hooks/use-user-details';
+import { useQueryClient } from "@tanstack/react-query";
 
 const placeholderImg = '/user-icon.svg'; 
 
@@ -24,6 +25,9 @@ export const UserCard = ({ show, args }) => {
     const navId = 'user-card';
     const ref = useRef(null), winRef = useRef(null), dragZone = useRef(null), contentRef = useRef(null), inMotion = useRef(false), Obj = useRef({ touchY: undefined, lastTop: 0, dir: "down" });
     const toggleOverlay = useContext(ToggleOverlay);
+
+    const queryClient = useQueryClient();
+    const isOnline = useOnlineStatus();
 
 
     // Close function with animation handling
@@ -106,6 +110,11 @@ export const UserCard = ({ show, args }) => {
 
     function retry(){
         setError();
+        if (!isOnline || args === true) return;
+
+		queryClient.invalidateQueries({
+			queryKey: ['user-details', args?.id]
+		})
     }
     
     // when started touching
@@ -237,7 +246,8 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
         }
     }, [args, myData]);
     
-    const {name, handle, username, dp, bio} = userData || {};
+    const {handle, username, dp, bio} = userData || {};
+    const name = useContactName(handle || username);
     const primaryId = args === true? username : handle;
 
 

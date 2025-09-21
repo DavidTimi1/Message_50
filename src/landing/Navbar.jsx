@@ -202,7 +202,7 @@ function Menu({show, closeMenu}){
                             </Link>
 
                             { !isInstallable &&
-                                <small className='mx-auto fw-light text-italic' style={{color: "var(--text2-col)"}}>
+                                <small className='mx-auto colo text-italic' style={{color: "var(--text2-col)"}}>
                                     Your device currently doesn't support installation of this WebApp. <br /> 
                                     To do this visit options menu and click "Add to Home Screen". <br />
                                     If installed already, click "Open In App".

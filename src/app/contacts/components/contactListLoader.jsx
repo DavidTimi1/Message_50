@@ -1,15 +1,26 @@
 import Skeleton from "@/app/components/skeleton";
 
 const LoadingContactList = ({ count = 3 }) => {
+  const [returnContent, setReturnContent] = useState(<></>);
     const skeletons = Array.from({ length: count }, (_, index) => (
         <LoadingContactListItem key={index} />
     ));
 
-    return (
+    const loaderContent = (
         <ul className="list-unstyled">
             {skeletons}
         </ul>
     );
+    
+    useEffect(() => {
+    const timer = setTimeout(() => {
+        setReturnContent(loaderContent);
+    }, 500); // Delay of 500ms before showing the content
+
+    return () => clearTimeout(timer);
+    }, [loaderContent]);
+    
+    return returnContent
 };
 
 export default LoadingContactList;

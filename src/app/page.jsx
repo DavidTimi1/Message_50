@@ -9,8 +9,8 @@ import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { connectSocket, disconnectSocket, newMsgEvent, socketSend } from "./components/Sockets";
-import { useIsMobile, useOnlineStatus } from "./components/Hooks";
-import { hasMessaged, IDBPromise, loadDB, openTrans, msgsTable } from "../db";
+import { useIsMobile } from "./components/Hooks";
+import { IDBPromise, loadDB, openTrans, msgsTable } from "../db";
 import { decryptMessage } from "./crypt";
 import { UserContext } from "../contexts";
 import { Button } from "../components/Button";
@@ -19,14 +19,9 @@ import CustomLoader from "../components/Loading";
 import DesktopLayout from "./desktop-layout/Layout.";
 import MobileLayout from "./mobile-layout/Layout";
 
-
-
-
 const Msg50App = () => {
     const [chatting, setChatting] = useState({ user: false });
     const [overlays, setOverlays] = useState(new Map());
-    const isOnline = useOnlineStatus();
-    const [msgFrom, jumpTo] = useState();
     const userError = useContext(UserContext).error;
 
     const navigate = useNavigate();

@@ -13,6 +13,7 @@ import { UserProfilePic } from '../../contacts/components/ContactItem';
 import { TextualFile } from '../../media/page';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
+import LoadingChatList from './chatListLoader';
 
 
 export const ChatList = () => {

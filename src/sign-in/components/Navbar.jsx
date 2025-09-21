@@ -20,6 +20,9 @@ export default function Navbar({scroll}){
     return (
         <div className={"navbar fw" + (scroll? " scroll" : "") }>
             <section className='fw pad'>
+                <div className="fw bg-warning text-white p-2 text-center br-5">
+                    This WebApp is currently under maintenance. Some features may be offline. 🛠
+                </div>
                 <nav className="lap-nav nav fw flex mid-align" style={{justifyContent: "space-between"}}>
                     <a href="/" className="no-link flex-rev mid-align gap-1 brand" 
                         {...( PWAIsActive? {rel: 'noreferrer noopener', target: '_blank'} : {})}
