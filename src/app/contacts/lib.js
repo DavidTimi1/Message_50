@@ -82,6 +82,7 @@ export const fetchMyDetails = () => {
 
     try {
         const response = axiosInstance.get(API_ROUTES.USER_ME);
+        console.log(response)
         return {
             ...response.data,
             lastUpdated: now
