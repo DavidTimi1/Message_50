@@ -19,7 +19,6 @@ export const UserProvider = ({ children }) => {
 	const retries = useRef(0);
 
 	const { data: userData, isLoading, isError, error } = useMyDetails(!isAuth);
-	console.log("User Data:", userData, isAuth);
 	const queryClient = useQueryClient();
 
 	const userObject = {

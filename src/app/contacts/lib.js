@@ -59,11 +59,11 @@ export const getUserDetails = async (handle, isOnline) => {
     }
 }
 
-export const fetchUserDetails = (handle) => {
+export const fetchUserDetails = async(handle) => {
     const now = new Date().getTime();
 
     try {
-        const response = axiosInstance.get(API_ROUTES.USER(handle));
+        const response = await axiosInstance.get(API_ROUTES.USER(handle));
         return {
             ...response.data,
             lastUpdated: now
@@ -77,12 +77,11 @@ export const fetchUserDetails = (handle) => {
     }
 }
 
-export const fetchMyDetails = () => {
+export const fetchMyDetails = async() => {
     const now = new Date().getTime();
 
     try {
-        const response = axiosInstance.get(API_ROUTES.USER_ME);
-        console.log(response)
+        const response = await axiosInstance.get(API_ROUTES.USER_ME);
         return {
             ...response.data,
             lastUpdated: now

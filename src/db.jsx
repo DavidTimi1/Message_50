@@ -54,7 +54,6 @@ export function restartIDB() {
     let deleteRequest = indexedDB.deleteDatabase("messages_db");
     deleteRequest.onsuccess = _ => {
         loadedDB = false;
-        console.log("Successfully closed indexeddb");
         console.log("Restarting indexeddb ...");
 
         const IDBrequest = indexedDB.open(dbName, 1);
@@ -89,7 +88,6 @@ function IDBUpgrade(e) {
 
         // delete all object stores first
         for (let store of DB.objectStoreNames) {
-            console.log("Deleting " + store + " store");
             DB.deleteObjectStore(store);
         }
     }
@@ -156,14 +154,11 @@ function IDBSuccess(e){
             loadedDB = true;
             
             dispatchEvent(new Event(dbEvent));
-            console.log("Indexeddb is ready to go!");
         })
 
     } else {
         loadedDB = true;
-        
         dispatchEvent(new Event(dbEvent));
-        console.log("Indexeddb is ready to go!");
     }
 
 }

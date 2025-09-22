@@ -51,10 +51,7 @@ async function storePrivateKeyInIndexedDB(privateKey) {
         IDBPromise( 
             openTrans(db, "keys", "readwrite").put(privateKeyObject)
 
-        ).then(() => {
-            console.log("Private key stored successfully");
-
-        }).catch((error) => {
+        ).catch((error) => {
             console.error("Failed to store private key:", error);
         });
 
