@@ -73,16 +73,13 @@ export default function SearchWindow({ closeSearch, initFilters }) {
 
     }, [query, onlyContacts, filters]);
 
-
     useEffect(() => {
         let t_id = setTimeout(() => {
-            pushState(navId, close);
-            myRef.current.classList.remove("close");
-
-        }, 50)
+            pushState(navId, close); // incase nav buttons are used
+            myRef.current.classList.remove("close")
+        })
 
         return () => clearTimeout(t_id);
-
     }, [pushState])
 
     useEffect(() => {

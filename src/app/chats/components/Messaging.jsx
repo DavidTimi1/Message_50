@@ -7,23 +7,20 @@ import { MsgListContext } from '../contexts';
 
 import { once, title, transitionEnd, standardUnit, int, $ } from "../../../utils";
 import { openTrans, getMsg, msgsTable, offlineMsgsTable, loadDB } from '../../../db';
-import { DevMode } from '../../../App';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faArrowDown, faCircleInfo, faCopy, faFile, faShare, faTentArrowsDown, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faArrowDown, faCircleInfo, faCopy, faFile, faShare, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import { MsgItem } from './MsgItem';
 import { Footer } from './MsgingFooter';
 import { IconBtn } from "../../../components/Button";
 import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
-import { Link } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';
 import { UserProfilePic } from '../../contacts/components/ContactItem';
 import { useUserDetails } from '@/hooks/use-user-details';
-import {LoadingMessageList, LoadingMessageInterface} from './MsgListLoader';
+import { LoadingMessageList } from './MsgListLoader';
 import { showToast } from '@/app/components/toaster';
-
-
 
 
 
@@ -37,39 +34,34 @@ export default function MsgInterface() {
 
     const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
     const { cur: chatting, set: setChatting } = useContext(ChatContext);
-    const { data: userDetails, isLoading, isError, error} = useUserDetails(chatting);
+    const { data: userDetails, isLoading, isError, error } = useUserDetails(chatting);
 
     const select = state?.selected;
 
 
     useEffect(() => {
-        let t_id, ignore = false;
-
-        if (chatting && userDetails) {
-
-            t_id = setTimeout(() => {
-                if (ignore) return
-
+        if (chatting) {
+            let t_id = setTimeout(() => {
                 pushState(navId, close); // incase nav buttons are used
                 mainRef.current.classList.remove("close")
-            }, 100)
-        }
+            })
 
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
+            return () => clearTimeout(t_id);
+            
+        } else {
+            removeState(navId)
         }
-
     }, [chatting]);
-    
+
     useEffect(() => {
         if (chatting && isError) {
             showToast("Error loading user details", "error");
             close();
         }
-    }, [chatting, error, close]);
+    }, [chatting, isError]);
 
     const isSelecting = Boolean(select?.length);
+
     useEffect(() => {
         if (!chatting) return
 
@@ -83,11 +75,32 @@ export default function MsgInterface() {
 
     }, [chatting, isSelecting]);
 
+    if (!chatting) {
+        return (
+            <div className="max flex-col mid-align gap-2 no-content" style={{ justifyContent: "center" }}>
+                <Routes>
+                    <Route path='/' element={
+                        <>
+                            <div className="dp-img rounded-0" style={{ width: "100px", backgroundColor: "transparent", overflow: "visible", height: "100px", backgroundImage: "url(/logo.png)" }}></div>
+                            Click on a chat item to view messages
+                        </>
+                    } />
+                    <Route path='*' element={
+                        <>
+                            <div className="dp-img rounded-0" style={{ width: "100px", backgroundColor: "transparent", overflow: "visible", height: "100px", backgroundImage: "url(/logo.png)" }}></div>
+                            Send and receive messages even without your phone
+                            <span className="abs-mid" style={{ bottom: "30px", top: "unset" }}>
+                                <span className="smaller"> 🔒 </span> End-to-end encrypted
+                            </span>
+                        </>
+                    } />
+                </Routes>
+            </div>
+        )
+    }
 
     return (
-        chatting &&
-
-        <aside id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef} >
+        <aside id="messaging" className={`interface close trans-right ${styles.msging}`} ref={mainRef}>
             <div className="max flex-col">
                 <Heading
                     closeMsging={handleCloseClick}
@@ -95,13 +108,13 @@ export default function MsgInterface() {
                     clearSelection={clearSelection}
                 />
 
-                <div className="fw grow flex-col" style={{overflow: "hidden"}}>
+                <div className="fw grow flex-col" style={{ overflow: "hidden" }}>
                     <div className='abs max'>
                     </div>
 
                     {
-                        isLoading ? (
-                            <LoadingMessageInterface />
+                        true ? (
+                            <LoadingMessageList />
 
                         ) : (
                             <MsgListProvider viewMsg={viewMsg}>
@@ -110,13 +123,13 @@ export default function MsgInterface() {
                                     selected={select ?? []}
                                     chatting={chatting}
                                 />
-        
+
                                 <div className='fw'>
                                     {preview.on && <PreviewFile data={preview.data} closePreview={() => previewFile(undefined, true)} />}
-        
+
                                     <Footer previewFile={previewFile} />
                                 </div>
-        
+
                             </MsgListProvider>
                         )
                     }
@@ -163,7 +176,6 @@ export default function MsgInterface() {
 
     }
 
-
     function previewFile(data, stateIsRemoved) {
         if (data) {
             setPrev({
@@ -182,19 +194,21 @@ export default function MsgInterface() {
     }
 
     function handleCloseClick() {
-        const removed = removeState(navId);
-        if (!removed) close(); // fallback
+        close(); // fallback
     }
 
     function close() {
         const el = mainRef.current;
-        if (!el || el.classList.contains("close")) return;
-    
+        if (!el || el.classList.contains("close")) {
+            setChatting(false);
+            return
+        }
+
         once(transitionEnd, el, () => {
             setChatting(false);
             setState({});
         });
-    
+
         el.classList.add("close");
     }
 }
@@ -203,7 +217,7 @@ export default function MsgInterface() {
 const Heading = ({ selected, closeMsging, clearSelection }) => {
     const { cur: chatting } = useContext(ChatContext);
     const selecting = selected?.length;
-    
+
     const name = useContactName(chatting);
 
     const toggleOverlay = useContext(ToggleOverlay);
@@ -219,9 +233,9 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
                         <div>
                             <UserProfilePic width="30px" handle={chatting} />
                             {
-                                
+
                                 <div className="abs online-bubble">
-                                    <div className="dp-img" style={{width: "10px", backgroundColor: "var(--btn-col)"}}>
+                                    <div className="dp-img" style={{ width: "10px", backgroundColor: "var(--btn-col)" }}>
                                     </div>
                                 </div>
                             }
@@ -258,7 +272,7 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
     )
 
     function showUserProfile() {
-        toggleOverlay('user-card', {id: chatting});
+        toggleOverlay('user-card', { id: chatting });
     }
 }
 
@@ -266,29 +280,29 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
 const MsgList = ({ selected, toggleSelect, chatting }) => {
     const listElem = useRef(), bottomBtn = useRef();
 
-    const { replyTo, cur, pending } = useContext( MsgListContext ), msgList = cur, pendingList = pending;
+    const { replyTo, cur, pending } = useContext(MsgListContext), msgList = cur, pendingList = pending;
 
     const selectOn = Boolean(selected.length);
 
     useEffect(handleScroll, []);
 
     return (
-        <div className={`${styles.content} ${selectOn? 'blockscroll' : ''} msglist fw grow custom-scroll`}
+        <div className={`${styles.content} ${selectOn ? 'blockscroll' : ''} msglist fw grow custom-scroll`}
             onContextMenu={handleContextMenu}
             onScroll={handleScroll}
             onClick={handleClick}
             ref={listElem}
         >
             <div className="fw">
-            <small className='mx-auto banner'>
-                Messages between you and
-                <span style={{color: "var(--btn-col)"}}> {chatting} </span>
-                are
-                <Link to="https://en.wikipedia.org/wiki/End-to-end_encryption" target="_blank" className="no-link m-1">
-                    end-to-end encrypted
-                </Link>
-                🔒
-            </small>
+                <small className='mx-auto banner'>
+                    Messages between you and
+                    <span style={{ color: "var(--btn-col)" }}> {chatting} </span>
+                    are
+                    <Link to="https://en.wikipedia.org/wiki/End-to-end_encryption" target="_blank" className="no-link m-1">
+                        end-to-end encrypted
+                    </Link>
+                    🔒
+                </small>
             </div>
             {
                 msgList.map(msg => {
@@ -315,7 +329,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             key={msg.id}
                             id={msg.id}
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
-                            details={{...msg, notSent: true, sent: true}}
+                            details={{ ...msg, notSent: true, sent: true }}
                             replyTo={replyTo}
                         />
                     )
@@ -323,7 +337,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
 
             }
 
-            <div className='flex' ref={bottomBtn} style={{position: "sticky", bottom: "-20px", justifyContent: "flex-end"}}>
+            <div className='flex' ref={bottomBtn} style={{ position: "sticky", bottom: "-20px", justifyContent: "flex-end" }}>
                 <IconBtn icon={faArrowDown} onClick={scrollToBtm} bg="var(--body-col)" />
             </div>
 
@@ -351,12 +365,12 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
         }
     }
 
-    function scrollToBtm(){
+    function scrollToBtm() {
         listElem.current.scrollTop = listElem.current.scrollHeight;
     }
 
-    function handleScroll(e){
-        if (listElem.current.scrollHeight - (listElem.current.scrollTop + listElem.current.clientHeight) < 30){
+    function handleScroll(e) {
+        if (listElem.current.scrollHeight - (listElem.current.scrollTop + listElem.current.clientHeight) < 30) {
             bottomBtn?.current?.classList?.add("disappear");
 
         } else {
@@ -383,21 +397,12 @@ const PreviewFile = ({ data, closePreview }) => {
 
 
     useEffect(() => {
-        let t_id, ignore = false;
-
-        t_id = setTimeout(() => {
-            if (ignore) return
-
+        let t_id = setTimeout(() => {
             pushState(previewStateId, close); // incase nav buttons are used
             mainRef.current.classList.remove("close")
-        }, 100)
+        })
 
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-
+        return () => clearTimeout(t_id);
     }, [pushState]);
 
 
@@ -538,25 +543,25 @@ export function loadMoreMessages(afterId, beforeId) {
         !range && rej();
 
         return loadDB()
-        .then(DB => IDBPromise (
+            .then(DB => IDBPromise(
                 openTrans(DB, msgsTable)
-                .openCursor(...range)
-                .onsuccess = e => {
-                    let cursor = e.target.result;
+                    .openCursor(...range)
+                    .onsuccess = e => {
+                        let cursor = e.target.result;
 
-                    if (cursor && i < 20) {
-                        let id = cursor.primaryKey;
+                        if (cursor && i < 20) {
+                            let id = cursor.primaryKey;
 
-                        list.append(cursor.value)
+                            list.append(cursor.value)
 
-                        i++;
-                        cursor.continue();
-                    } else {
-                        res(list);
+                            i++;
+                            cursor.continue();
+                        } else {
+                            res(list);
+                        }
                     }
-                }
             )
-        )
+            )
     })
 
 }

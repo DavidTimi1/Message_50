@@ -5,7 +5,7 @@ import { StateNavigatorContext, ToggleOverlay } from "../contexts";
 
 import { changeTheme } from '../../theme.js';
 import { once, transitionEnd } from "../../utils";
-import { faBell, faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faStar, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBoltLightning, faComments, faFolder, faGears, faMessage, faMoon, faStar, faSun, faUsers, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IconBtn } from "../../components/Button.jsx";
@@ -23,21 +23,13 @@ export function NavBar({ open }) {
     const { pushState, removeState } = useContext( StateNavigatorContext );
 
     useEffect(() => {
-        let t_id, ignore = false;
-        
         if (open){
-
-            t_id = setTimeout(() => {
-                if (ignore) return
-
+            let t_id = setTimeout(() => {
                 pushState(navId, close); // incase nav buttons are used
                 mainRef.current.classList.remove("close")
-            }, 100)
-        }
+            })
 
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
+            return () => clearTimeout(t_id);
         }
     }, [open])
 

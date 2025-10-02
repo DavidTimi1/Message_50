@@ -199,7 +199,6 @@
 
 }
 
-
 .even-space {
     justify-content: space-evenly;
 }
@@ -210,6 +209,11 @@
 
 .br-1 {
   border-radius: 1em;
+}
+
+.no-content {
+    filter: grayscale(1);
+    color: gray;
 }
 
 @media screen and (max-width: 768px) {

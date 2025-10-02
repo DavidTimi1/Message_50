@@ -37,31 +37,23 @@ export const MediaViewer = ({ show, args }) => {
     }, [toggleOverlay, navId]);
 
 
+    // Close the overlay if the type is not viewable
     useEffect(() => {
         if (show && !viewable) {
-            // Close the overlay if the type is not viewable
             close();
         }
     }, [show, viewable, close]);
 
     useEffect(() => {
-        let t_id, ignore = false;
+        if (!show) return
+        
+        let t_id = setTimeout(() => {
+            pushState(navId, close); // incase nav buttons are used
+            mainRef.current.classList.remove("close")
+        })
 
-        if (show) {
-            t_id = setTimeout(() => {
-                if (ignore) return
-
-                pushState(navId, close); // incase nav buttons are used
-                mainRef.current.classList.remove("close")
-            }, 100)
-        }
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-
-    }, [show, navId, pushState, close]);
+        return () => clearTimeout(t_id);
+    }, [show]);
 
 
     return (

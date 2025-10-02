@@ -48,26 +48,15 @@ export const ManageContact = ({ show, args }) => {
 
 
     useEffect(() => {
+        if (!show) return
+        
+        let t_id = setTimeout(() => {
+            pushState(navId, close); // incase nav buttons are used
+            ref.current.classList.remove("close")
+        })
 
-        let t_id, ignore = false;
-
-        if (show){
-
-            t_id = setTimeout(() => {
-                if (ignore) return
-
-                pushState( navId, close ); // incase nav buttons are used
-                ref.current.classList.remove("close")
-            }, 100)
-
-        }
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-
-    }, [show, navId, pushState, close]);
+        return () => clearTimeout(t_id);
+    }, [show]);
 
     useEffect(() => {
         if(completed && !completed.error)

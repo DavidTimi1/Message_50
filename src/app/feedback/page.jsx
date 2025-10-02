@@ -11,36 +11,24 @@ export const Feedback = ({ show }) => {
     const mainRef = useRef(null), navId = 'feedback';
     const toggleOverlay = useContext(ToggleOverlay);
 
-    const { pushState, removeState } = useContext( StateNavigatorContext );
+    const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const close = useCallback(() => {
         toggleOverlay('feedback', false);
-
     }, [toggleOverlay]);
 
-
     useEffect(() => {
-        const dialog =  mainRef.current;
-        let ignore = false;
+        const dialog = mainRef.current;
 
         if (show) {
-            setTimeout(() => {
-                if (ignore) return
-
-                pushState(navId, close); // incase nav buttons are used
-                dialog.showModal();
-            }, 100)
-
+            pushState(navId, close); // incase nav buttons are used
+            dialog.showModal();
 
         } else {
-
-           dialog.close();
+            dialog.close();
+            removeState(navId)
         }
-
-        return () => ignore = true
-
-    }, [show, navId, pushState, close]);
-    
+    }, [show]);
 
 
     return (
@@ -53,10 +41,8 @@ export const Feedback = ({ show }) => {
     )
 
 
-    function handleCloseClick(){
-        const removed = removeState(navId);
-        if (!removed) close(); // fallback
+    function handleCloseClick() {
+        close();
     }
-
 }
 

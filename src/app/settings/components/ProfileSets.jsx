@@ -83,43 +83,34 @@ export const ProfileEdit = ({ show }) => {
     // Close function with animation handling
     const close = () => {
         // Trigger animation class
-        if (ref.current) {
+        console.log("called!")
+        if (ref.current?.classList.contains("close")) {
+            once(transitionEnd, ref.current, handleTransitionEnd);
             ref.current.classList.add("close");
 
         } else {
             setTimeout(handleTransitionEnd);
         }
 
-        // Wait for the transition/animation to complete
-        once(transitionEnd, ref.current, handleTransitionEnd);
-
         function handleTransitionEnd() {
             toggleOverlay(navId, false);
         }
     }
 
-
     useEffect(() => {
-
-        let t_id, ignore = false;
-
         if (show) {
+            let t_id = setTimeout(() => {
+                pushState(navId, close);
+                ref.current?.classList?.remove("close");
+            })
+    
+            return () => clearTimeout(t_id);
 
-            t_id = setTimeout(() => {
-                if (ignore) return
-
-                pushState(navId, close); // incase nav buttons are used
-                ref.current.classList.remove("close")
-            }, 100)
-
+        } else {
+            removeState(navId);
         }
 
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-
-    }, [show, navId, pushState, close]);
+    }, [show]);
 
 
     return (
@@ -156,26 +147,7 @@ export const ProfileEdit = ({ show }) => {
     )
 
     function handleCloseClick() {
-        return new Promise(res => {
-            const el = ref.current;
-            if (!el) {
-                res(false);
-                return;
-            }
-
-            // If already closing, resolve immediately
-            if (el.classList.contains("close")) {
-                res(removeState(navId));
-                return;
-            }
-
-            // Attach listener before triggering transition
-            once(transitionEnd, el, () => {
-                res(removeState(navId));
-            });
-
-            el.classList.add("close");
-        });
+        close();
     }
 
 
@@ -192,15 +164,15 @@ export const ProfileEdit = ({ show }) => {
 
         const fd = new FormData(e.target);
 
-        axiosInstance.post( API_ROUTES.PROFILE_EDIT , fd)
-        .then(() => {
-            User.reload();
+        axiosInstance.post(API_ROUTES.PROFILE_EDIT, fd)
+            .then(() => {
+                User.reload();
 
-        }).catch(err => {
-            setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.");
-            showToast("Failed to update profile", { type: "error" });
-            console.error(err);
-        })
+            }).catch(err => {
+                setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.");
+                showToast("Failed to update profile", { type: "error" });
+                console.error(err);
+            })
     }
 }
 
@@ -208,7 +180,7 @@ export const ProfileEdit = ({ show }) => {
 const DPBtn = ({ setProfile }) => {
 
     return (
-        <label className="no-btn icon-btn" >
+        <label className="no-btn icon-btn">
             <div className="abs-mid btn-bg fw" style={{ "--bg": "var(--btn-col)" }}></div>
             <FontAwesomeIcon icon={faCamera} size="xl" color="white" />
             <input onInput={handleInput} type="file" accept="image/*" name="dp" className="hide" />
@@ -260,7 +232,7 @@ const ProfileForm = () => {
                         <FontAwesomeIcon icon={faUser} size="xl" />
                         <div className="flex-col gap-1">
                             <small> Username </small>
-                            <input className="fw" ref={nameRef} readOnly />
+                            <input className="fw" name="username" ref={nameRef} readOnly />
                         </div>
                     </div>
                 </label>

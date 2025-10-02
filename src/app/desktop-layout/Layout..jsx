@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { ChatsPage } from "../chats/page";
 import { DesktopNavBar } from "./Navbar";
 import { MediaPage } from "../media/page";
 import { SettingsPage } from "../settings/page";

@@ -5,14 +5,14 @@ import { faCircleCheck, faSpinner, faUpload } from "@fortawesome/free-solid-svg-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "../../../components/Button";
 import { apiHost } from "../../../App";
-import axios  from "axios";
+import axios from "axios";
 import { Input } from "../../../sign-in/page";
 import { API_ROUTES } from "../../../lib/routes";
 import axiosInstance from "../../../auth/axiosInstance";
 
 
 
-export const Form = ({closeModal}) => {
+export const Form = ({ closeModal }) => {
     const [mode, setMode] = useState('')
     const [status, setStatus] = useState(false);
     const [files, setFiles] = useState([]);
@@ -29,13 +29,13 @@ export const Form = ({closeModal}) => {
         <form method="post" action="/feedback/message50" className="feedback-body flex-col gap-3 grow"
             ref={ref}
             onDragEnter={handleDragOver}
-            onDragOver={handleDragOver} 
-            onDragLeave={handleDragLeave} 
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onSubmit={handleSubmit}
         >
             {
-                status === true ?
+                status === true ? (
                     <div className="abs-mid">
                         <div className="flex-col mid-align gap-2 center-text">
                             <FontAwesomeIcon icon={faCircleCheck} size="3x" />
@@ -44,44 +44,55 @@ export const Form = ({closeModal}) => {
                             </span>
                         </div>
                     </div>
-
-                :
-
+                ) : (
                     <>
-                    {
-                        status.error &&
-                        <div className="err-msg center-text">
-                            {status.error}
-                        </div>
-                    }
-
-                    <SelectMode handleChange={changeMode} selected={mode} />
-
-                    <Input name="email" type="email" className="fw"
-                        label="Email (optional, for follow-up):"
-                        placeholder="Enter your email"
-                        style={{ backgroundColor: "var(--body2-col)" }} 
-                    />
-
-                    <textarea name="message" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
-                    {/* <Attachment files={files} remove={removeFile} add={addFile} /> */}
-
-                    {mode === 'Comment' && <Rating />}
-
-                    <Button type="submit">
                         {
-                            status === 'loading' ?
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                            :
-                            "Send"
+                            status.error &&
+                            <div className="err-msg center-text">
+                                {status.error}
+                            </div>
                         }
-                    </Button>
 
-                    <div className="drop-info flex-col gap-2 abs-mid center-text">
-                        <FontAwesomeIcon icon={faUpload} size="3x" />
-                        <span> Drop here to add file </span>
-                    </div>
+                        <SelectMode handleChange={changeMode} selected={mode} />
+
+                        <label>
+                            <span className="sr-only">
+                                email address
+                            </span>
+                            <Input name="email" type="email" className="fw"
+                                autoComplete="on"
+                                label="Email (optional, for follow-up):"
+                                placeholder="Enter your email"
+                                style={{ backgroundColor: "var(--body2-col)" }}
+                            />
+                        </label>
+
+
+                        <label htmlFor="feedback-message">
+                            <span className="sr-only">
+                                feedback message
+                            </span>
+                            <textarea id="feedback-message" name="message" maxLength="800" rows="8" className="fw" style={{ backgroundColor: "var(--body2-col)" }} required></textarea>
+                        </label>
+                        {/* <Attachment files={files} remove={removeFile} add={addFile} /> */}
+
+                        {mode === 'Comment' && <Rating />}
+
+                        <Button type="submit">
+                            {
+                                status === 'loading' ?
+                                    <FontAwesomeIcon icon={faSpinner} spin />
+                                    :
+                                    "Send"
+                            }
+                        </Button>
+
+                        <div className="drop-info flex-col gap-2 abs-mid center-text">
+                            <FontAwesomeIcon icon={faUpload} size="3x" />
+                            <span> Drop here to add file </span>
+                        </div>
                     </>
+                )
             }
 
         </form>
@@ -93,27 +104,27 @@ export const Form = ({closeModal}) => {
         setMode(value);
     }
 
-    function handleDragOver(e){
+    function handleDragOver(e) {
         e.preventDefault();
-        
-        if (ref.current){
+
+        if (ref.current) {
             ref.current.classList.add("dragging")
         }
     }
 
-    function handleDragLeave(e){
+    function handleDragLeave(e) {
         e.stopPropagation();
         ref.current && ref.current.classList.remove("dragging")
     }
 
-    function handleDrop(e){
+    function handleDrop(e) {
         e.preventDefault();
         e.stopPropagation();
 
         if (!ref.current) return
-           
+
         ref.current.classList.remove("dragging")
-        
+
         const files = e.dataTransfer.files;
         addFile(files);
     }
@@ -123,7 +134,7 @@ export const Form = ({closeModal}) => {
         img && URL.revokeObjectURL(img);
 
         setFiles(prevFiles => {
-            const newFiles = [ ...prevFiles ]
+            const newFiles = [...prevFiles]
             newFiles.splice(id, 1)
 
             return newFiles
@@ -134,19 +145,19 @@ export const Form = ({closeModal}) => {
         for (let file of files) {
             let imgURL = URL.createObjectURL(file);
 
-            setFiles( prevFiles => [
-                    ...prevFiles, {
-                        img: imgURL, file
-                    }
-                ]
+            setFiles(prevFiles => [
+                ...prevFiles, {
+                    img: imgURL, file
+                }
+            ]
             )
         }
     }
 
-    function handleSubmit(e){
+    function handleSubmit(e) {
         e.preventDefault();
         setStatus('loading');
-        
+
         const form = e.target;
         const fd = new FormData(form);
 
@@ -154,15 +165,15 @@ export const Form = ({closeModal}) => {
         fd.set("subscribed", Boolean(email))
         // // files.length && fd.set("image", files[0]);
 
-        axiosInstance.post( API_ROUTES.FEEDBACK , fd)
-        .then( ({data}) => {
-            setStatus(true);
-        }).catch( error => {
-            console.error(error)
-            setStatus({
-                error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
+        axiosInstance.post(API_ROUTES.FEEDBACK, fd)
+            .then(({ data }) => {
+                setStatus(true);
+            }).catch(error => {
+                console.error(error)
+                setStatus({
+                    error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
+                })
             })
-        })
     }
 }
 

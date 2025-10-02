@@ -76,11 +76,11 @@ const Body = ({isLogin}) => {
 								<div className='mx-auto'> OR </div>
 							</div>
 
-							<Input type="text" name="username" label="Username*" placeholder='Enter your username' autoComplete={isLogin? 'username' : undefined} />
+							<Input type="text" name="username" label="Username*" placeholder='Enter your username' autoComplete='on' />
 
-							{ !isLogin && <Input type="email" name="email" label="Email*" placeholder='Enter your email address' autoComplete={isLogin? 'email' : undefined} /> }
+							{ !isLogin && <Input type="email" name="email" label="Email*" placeholder='Enter your email address' autoComplete='on' /> }
 							
-							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={8} autoComplete={isLogin? 'msg50-password' : undefined} />
+							<Input type="password" name="password" label="Password*" placeholder='Enter your password' minLength={isLogin? undefined : 8} autoComplete='on' />
 
 							{/* <div className='flex fw' style={{justifyContent: "flex-end"}}>
 								<Link className='no-link' to='/reset'>

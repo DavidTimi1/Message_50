@@ -5,22 +5,22 @@ import './UserCard.css';
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ChatContext, StateNavigatorContext, ToggleOverlay } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "../../../components/Button";
-import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Button, IconBtn } from "../../../components/Button";
+import { faEraser, faFlag, faMessage, faPencil, faPlusCircle, faSpinner, faTriangleExclamation, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { once, transitionEnd } from "../../../utils";
 import { UserContext } from "../../../contexts";
-import { useContactDetails, useContactName, useOnlineStatus } from '../../components/Hooks';
+import { useContactDetails, useContactName, useIsMobile, useOnlineStatus } from '../../components/Hooks';
 import { useUserDetails } from '@/hooks/use-user-details';
 import { useQueryClient } from "@tanstack/react-query";
 
-const placeholderImg = '/user-icon.svg'; 
+const placeholderImg = '/user-icon.svg';
 
 
 
 export const UserCard = ({ show, args }) => {
     const [err, setError] = useState();
-    
-    const { pushState, removeState } = useContext( StateNavigatorContext );
+
+    const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const navId = 'user-card';
     const ref = useRef(null), winRef = useRef(null), dragZone = useRef(null), contentRef = useRef(null), inMotion = useRef(false), Obj = useRef({ touchY: undefined, lastTop: 0, dir: "down" });
@@ -28,17 +28,18 @@ export const UserCard = ({ show, args }) => {
 
     const queryClient = useQueryClient();
     const isOnline = useOnlineStatus();
+    const isMobile = useIsMobile();
 
 
     // Close function with animation handling
     const close = useCallback(() => {
         // Trigger animation class
-        if (winRef.current){
+        if (winRef.current) {
             ref.current.style.transform = '';
             winRef.current.classList.add("close");
 
         } else {
-            setTimeout(handleTransitionEnd); 
+            setTimeout(handleTransitionEnd);
         }
 
         // Wait for the transition/animation to complete
@@ -51,54 +52,53 @@ export const UserCard = ({ show, args }) => {
 
 
     useEffect(() => {
+        if (!show) return
+        
+        let t_id = setTimeout(() => {
+            pushState(navId, close); // incase nav buttons are used
+            winRef.current.classList.remove("close")
+        })
 
-        let t_id, ignore = false;
-
-        if (show){
-
-            t_id = setTimeout(() => {
-                if (ignore) return
-
-                pushState( navId, close ); // incase nav buttons are used
-                winRef.current.classList.remove("close")
-            }, 100)
-
-        }
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-        }
-
-    }, [show, navId, pushState, close]);
+        return () => clearTimeout(t_id);
+    }, [show]);
 
 
     return (
         show &&
-        <div id="user-card" className="max pop-up-window close"
+        <div id="user-card" className={isMobile ? ("max pop-up-window close") : ("interface close")}
             ref={winRef}
             onClick={handleCloseClick}
         >
             <div className='max'>
-                <div className="pop-up-container flex-col abs fw" 
+                <div className="pop-up-container flex-col abs fw"
                     // onTouchStart={handleTouchStart}
                     // onTouchMove={handleTouchMove}
                     // onTouchEnd={handleTouchEnd}
                     ref={ref}
                 >
                     <div className="fw">
-                        <div ref={dragZone} onClick={handleCloseClick} style={{padding: "5px"}}>
-                            <div className="notch mx-auto"></div>
-                        </div>
+                        {
+                            isMobile ? (
+                                <div ref={dragZone} onClick={handleCloseClick} style={{ padding: "5px" }}>
+                                    <div className="notch mx-auto"></div>
+                                </div>
+                            ) : (
+                                <div className="mx-auto" style={{width: "max-content"}}>
+                                    <IconBtn icon={faChevronDown} onClick={handleCloseClick} className="mx-auto">
+                                        close
+                                    </IconBtn>
+                                </div>
+                            )
+                        }
                     </div>
 
                     <div className="custom-scroll grow fw" ref={contentRef} onClick={
                         e => e.stopPropagation()
                     }>
                         {
-                            err?
-                                <Retry note={err} retry={retry} />
-                            :
+                            err ?
+                                <Retry note={err?.message} retry={retry} />
+                                :
                                 <UserDetails navId={navId} closeModal={handleCloseClick} args={args} showError={setError} />
                         }
                     </div>
@@ -108,17 +108,17 @@ export const UserCard = ({ show, args }) => {
 
     )
 
-    function retry(){
+    function retry() {
         setError();
         if (!isOnline || args === true) return;
 
-		queryClient.invalidateQueries({
-			queryKey: ['user-details', args?.id]
-		})
+        queryClient.invalidateQueries({
+            queryKey: ['user-details', args?.id]
+        })
     }
-    
+
     // when started touching
-    function handleTouchStart(e){
+    function handleTouchStart(e) {
         // prevent pop up translate while scrolling
         if (contentRef.current.scrollTop > 5) {
             inMotion.current = false;
@@ -134,7 +134,7 @@ export const UserCard = ({ show, args }) => {
     }
 
     // when moving
-    function handleTouchMove(e){
+    function handleTouchMove(e) {
         // prevent pop up translate while scrolling
         if (contentRef.current.scrollTop > 5) {
             inMotion.current = false;
@@ -160,64 +160,63 @@ export const UserCard = ({ show, args }) => {
     }
 
     // when popup is closed
-    function handleTouchEnd(e){
+    function handleTouchEnd(e) {
         ref.current.classList.remove("no-trans"); // to re-enable transitions
         e.stopPropagation();
         e.preventDefault();
 
         if (Obj.current.dir == "down") close()
 
-            // hide popup
-            // this.main.style.transform = "translateY(100%)";
+        // hide popup
+        // this.main.style.transform = "translateY(100%)";
 
-            // once(transitionEnd, this.main, _ => that.win.style.display = "none");
+        // once(transitionEnd, this.main, _ => that.win.style.display = "none");
 
-            // // failsafe if transition end doesnt fire
-            // setTimeout(_ => {
-            //     if (that.win.style.display == "block") that.win.style.display = "none"
-            // }, 500);
+        // // failsafe if transition end doesnt fire
+        // setTimeout(_ => {
+        //     if (that.win.style.display == "block") that.win.style.display = "none"
+        // }, 500);
 
         else
             // just re-position
             ref.current.style.transform = '';
     }
+
     function handleCloseClick() {
         return new Promise(res => {
-          const el = ref.current;
-          const winEl = winRef.current;
-      
-          if (!el || !winEl) {
-            res(false);
-            return;
-          }
-      
-          // If already closed, resolve immediately
-          if (winEl.classList.contains("close")) {
-            res(removeState(navId));
-            return;
-          }
-      
-          once(transitionEnd, winEl, () => {
-            res(removeState(navId));
-          });
-      
-          // Clear transform before triggering transition
-          el.style.transform = '';
-      
-          // Add class to start transition
-          winEl.classList.add("close");
-        });
-      }
-      
+            const el = ref.current;
+            const winEl = winRef.current;
 
+            if (!el || !winEl) {
+                res(false);
+                return;
+            }
+
+            // If already closed, resolve immediately
+            if (winEl.classList.contains("close")) {
+                res(removeState(navId));
+                return;
+            }
+
+            once(transitionEnd, winEl, () => {
+                res(removeState(navId));
+            });
+
+            // Clear transform before triggering transition
+            el.style.transform = '';
+
+            // Add class to start transition
+            winEl.classList.add("close");
+        });
+    }
 }
 
 
-const Retry = ({note, retry}) => {
-
+const Retry = ({ note, retry }) => {
     return (
-        <div className="body fw flex-col gap-1">
-            <div className="fw center-text" style={{color: "red"}}>
+        <div className="body fw flex-col gap-2">
+            <div className="fw flex mid-align gap-1 center-text" style={{ color: "red", justifyContent: "center" }}>
+                <FontAwesomeIcon icon={faTriangleExclamation} />
                 <span> {note} </span>
             </div>
             <Button onClick={retry}>
@@ -228,7 +227,7 @@ const Retry = ({note, retry}) => {
 }
 
 
-const UserDetails = ({args, closeModal, navId, showError}) => {
+const UserDetails = ({ args, closeModal, navId, showError }) => {
     const myData = useContext(UserContext);
     const { data: userData, isLoading, isError, error: userError } = useUserDetails(args?.id);
 
@@ -239,16 +238,10 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
         }
 
     }, [isError, userError]);
-    
-    useEffect(() => {
-        if (args === true && myData) {
-            setData(myData);
-        }
-    }, [args, myData]);
-    
-    const {handle, username, dp, bio} = userData || {};
+
+    const { handle, username, dp, bio } = (args === true ? myData : userData) || {};
     const name = useContactName(handle || username);
-    const primaryId = args === true? username : handle;
+    const primaryId = args === true ? username : handle;
 
 
     if (isLoading) {
@@ -258,11 +251,11 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
     return (
         <div className="body fw flex-col gap-4">
             <div className="mx-auto thmb">
-                <div className="img-dp" style={{width: "150px"}}>
+                <div className="img-dp" style={{ width: "150px" }}>
                     <img src={dp ?? placeholderImg} alt='user profile picture' className="max" />
                 </div>
                 <div className="abs">
-                    <div className="dp-img" style={{width: "20px", backgroundColor: "var(--btn-col)"}}>
+                    <div className="dp-img" style={{ width: "20px", backgroundColor: "var(--btn-col)" }}>
                     </div>
                 </div>
             </div>
@@ -273,22 +266,22 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
             </div>
 
             <Actions id={handle} navId={navId} closeModal={closeModal} />
-            
+
             <div>
                 <small> Bio </small>
                 <div className="fs-5 fw-200">
-                    { bio }
+                    {bio}
                 </div>
             </div>
 
             <div> <hr></hr> </div>
-            
-            <div className="flex-col gap-2 fs-5" style={{color: "red"}}>
+
+            <div className="flex-col gap-2 fs-5" style={{ color: "red" }}>
                 <label className="flex mid-align gap-2">
                     <FontAwesomeIcon icon={faEraser} size="lg" />
                     <span> Clear Chats with {name || primaryId} </span>
                 </label>
-                
+
                 <label className="flex mid-align gap-2 fs-5">
                     <FontAwesomeIcon icon={faFlag} size="lg" />
                     <span> Report {name || primaryId} </span>
@@ -299,13 +292,13 @@ const UserDetails = ({args, closeModal, navId, showError}) => {
 }
 
 
-const Actions = ({id, closeModal}) => {
+const Actions = ({ id, closeModal }) => {
     const openMessaging = useContext(ChatContext).set;
     const toggleOverlay = useContext(ToggleOverlay);
     const isContact = !!useContactDetails(id);
 
     return (
-        <div className="flex mid-align even-space actn" style={{flexWrap: "wrap"}}>
+        <div className="flex mid-align even-space actn" style={{ flexWrap: "wrap" }}>
             <button className="no-btn icon-btn" type="button" onClick={loadMessages}>
                 <div className="btn-bg abs-mid fw"></div>
                 <div className="flex-col mid-align">
@@ -316,64 +309,64 @@ const Actions = ({id, closeModal}) => {
                 </div>
             </button>
             {
-                isContact? 
+                isContact ?
 
-                <button className="no-btn icon-btn" type="button" onClick={editContact}>
-                    <div className="btn-bg abs-mid fw"></div>
-                    <div className="flex-col mid-align">
-                        <FontAwesomeIcon icon={faPencil} size="xl" />
-                        <small>
-                            Edit
-                        </small>
-                    </div>
-                </button>
-                :
-            
-                <button className="no-btn icon-btn" type="button" onClick={saveContact}>
-                    <div className="btn-bg abs-mid fw"></div>
-                    <div className="flex-col mid-align">
-                        <FontAwesomeIcon icon={faPlusCircle} size="xl" />
-                        <small>
-                            Save
-                        </small>
-                    </div>
-                </button>
+                    <button className="no-btn icon-btn" type="button" onClick={editContact}>
+                        <div className="btn-bg abs-mid fw"></div>
+                        <div className="flex-col mid-align">
+                            <FontAwesomeIcon icon={faPencil} size="xl" />
+                            <small>
+                                Edit
+                            </small>
+                        </div>
+                    </button>
+                    :
+
+                    <button className="no-btn icon-btn" type="button" onClick={saveContact}>
+                        <div className="btn-bg abs-mid fw"></div>
+                        <div className="flex-col mid-align">
+                            <FontAwesomeIcon icon={faPlusCircle} size="xl" />
+                            <small>
+                                Save
+                            </small>
+                        </div>
+                    </button>
             }
 
             {/* Invite ?? */}
         </div>
     )
 
-    function loadMessages(){
+    function loadMessages() {
         closeModal()
-        .then(done => {
-            if (done){
-                setTimeout(() => openMessaging(id), 100)
-            }
-        })           
-        
+            .then(done => {
+                if (done) {
+                    setTimeout(() => openMessaging(id), 100)
+                }
+            })
+
     }
 
-    function editContact(){
+    function editContact() {
         closeModal()
-        .then(done => {
-            if (done)
-                toggleOverlay('manage-contact', {NEW: false, id})
-        })
+            .then(done => {
+                if (done)
+                    toggleOverlay('manage-contact', { NEW: false, id })
+            })
     }
 
-    function saveContact(){
+    function saveContact() {
         closeModal()
-        .then(done => {
-            if (done)
-                toggleOverlay('manage-contact', {NEW: true, id: id})
-        })           
+            .then(done => {
+                if (done)
+                    toggleOverlay('manage-contact', { NEW: true, id: id })
+            })
     }
 }
 
 
 const LoadingDetails = () => (
-    <div className="flex align-center gap-2" style={{justifyContent: "center"}}>
+    <div className="flex align-center gap-2" style={{ justifyContent: "center" }}>
         <FontAwesomeIcon icon={faSpinner} size="xl" spin />
         <span>
             Loading ...
