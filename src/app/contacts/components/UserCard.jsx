@@ -56,7 +56,7 @@ export const UserCard = ({ show, args }) => {
         
         let t_id = setTimeout(() => {
             pushState(navId, close); // incase nav buttons are used
-            winRef.current.classList.remove("close")
+            winRef.current?.classList?.remove("close")
         })
 
         return () => clearTimeout(t_id);
@@ -65,7 +65,8 @@ export const UserCard = ({ show, args }) => {
 
     return (
         show &&
-        <div id="user-card" className={isMobile ? ("max pop-up-window close") : ("interface close")}
+        <div id="user-card" 
+            className={isMobile ? ("max pop-up-window close") : ("interface close")}
             ref={winRef}
             onClick={handleCloseClick}
         >

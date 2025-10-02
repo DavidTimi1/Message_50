@@ -7,9 +7,7 @@ import { ContactsPage } from "../contacts/page";
 import { More } from "../components/more";
 
 
-export default function MobileLayout({overlays}){
-
-    
+export default function MobileLayout(){
     return (
         <>
             <NavBar open={overlays.has('navbar')} />
@@ -31,7 +29,7 @@ export default function MobileLayout({overlays}){
 
             </Routes>
 
-            <More openOverlays={overlays} />
+            <More />
 
         </>
     )

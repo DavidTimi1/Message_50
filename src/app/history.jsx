@@ -94,22 +94,38 @@ export const useStateNavigation = () => {
     }
     
 
-    function removeState(state) {
-        const index = stateStack.current.map(s => s.state).lastIndexOf(state);
+    function removeState(...states) {
+        let did = false;
+
+        for (let item of states){
+            const index = stateStack.current.map(s => s.state).lastIndexOf(item);
+          
+            if (index === -1) continue;
+            did = true;
+          
+            const toRemove = stateStack.current.splice(index, 1);
+          
+            // Call all `onPop`s from top to target state
+            for (const entry of toRemove.reverse()) {
+              entry.onPop?.();
+            }
+          }
+          return did
+        // const index = stateStack.current.map(s => s.state).lastIndexOf(state);
       
-        if (index === -1) return;
+        // if (index === -1) return;
       
-        const toRemove = stateStack.current.splice(index);
+        // const toRemove = stateStack.current.splice(index);
       
-        // Call all `onPop`s from top to target state
-        for (const entry of toRemove.reverse()) {
-          entry.onPop?.();
-        }
+        // // Call all `onPop`s from top to target state
+        // for (const entry of toRemove.reverse()) {
+        //   entry.onPop?.();
+        // }
       
-        // Actually go back in browser history
-        navigate(-1 - index);
+        // // Actually go back in browser history
+        // navigate(-1 - index);
       
-        return true;
+        return did;
       }
       
 };

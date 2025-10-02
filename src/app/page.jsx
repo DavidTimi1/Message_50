@@ -21,7 +21,7 @@ import MobileLayout from "./mobile-layout/Layout";
 
 const Msg50App = () => {
     const [chatting, setChatting] = useState({ user: false });
-    const [overlays, setOverlays] = useState(new Map());
+    const [overlays, setOverlays] = useState([]);
     const userError = useContext(UserContext).error;
 
     const navigate = useNavigate();
@@ -67,11 +67,10 @@ const Msg50App = () => {
                     <ToggleOverlay.Provider value={toggleOverlay}>
                         <SendMsgsProvider>
 
-
                             <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
                                 { 
-                                    isMobile? <MobileLayout overlays={overlays} /> :
-                                    <DesktopLayout overlays={overlays} />
+                                    isMobile? <MobileLayout overlays /> :
+                                    <DesktopLayout overlays />
                                 }
                             </ChatContext.Provider>
 
@@ -98,11 +97,21 @@ const Msg50App = () => {
     }
 
 
-    function toggleOverlay(name, value) {
+    function toggleOverlay(name, value, list) {
+        if (list){
+            return overlays
+        }
         // keep history
         setOverlays(prev => {
-            const list = new Map(prev);
-            value ? list.set(name, value) : list.delete(name);
+            const list = [...prev];
+            const index = list.findIndex(overlay => overlay.name === name);
+
+            if (index !== -1)
+                list.splice(list.findIndex(overlay => overlay.name === name), 1);
+
+            if (value) {
+                list.push({ name, value });
+            }
 
             return list
         });

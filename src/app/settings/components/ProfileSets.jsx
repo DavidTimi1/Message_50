@@ -82,9 +82,7 @@ export const ProfileEdit = ({ show }) => {
 
     // Close function with animation handling
     const close = () => {
-        // Trigger animation class
-        console.log("called!")
-        if (ref.current?.classList.contains("close")) {
+        if (!ref.current?.classList?.contains("close")) {
             once(transitionEnd, ref.current, handleTransitionEnd);
             ref.current.classList.add("close");
 

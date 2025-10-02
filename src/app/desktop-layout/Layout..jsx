@@ -10,7 +10,7 @@ import MsgInterface from "../chats/components/Messaging";
 import "./desktop.css";
 
 
-export default function DesktopLayout({overlays, viewMsg}){
+export default function DesktopLayout({ viewMsg}){
 
     return (
         <div id="desktop" className="max">
@@ -46,7 +46,7 @@ export default function DesktopLayout({overlays, viewMsg}){
             </div>
 
             <div className="more-pool fh">
-                <More openOverlays={overlays} />
+                <More />
             </div>
 
         </div>
