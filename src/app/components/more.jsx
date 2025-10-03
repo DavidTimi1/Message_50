@@ -3,8 +3,7 @@ import { UserCard } from "../contacts/components/UserCard";
 import { Feedback } from "../feedback/page";
 import { ProfileEdit } from "../settings/components/ProfileSets";
 import { MediaViewer } from "../media/components/MediaViewer";
-import { useContext } from "react";
-import { ToggleOverlay } from "../contexts";
+import { useOverlayData } from "@/hooks/use-overlay";
 
 
 export const More = () => {
@@ -20,8 +19,8 @@ export const More = () => {
 }
 
 function Overlay({ component, name }) {
-    const openOverlays = useContext(ToggleOverlay)(null, null, true);
-    const show = openOverlays.find(item => item.name === name)?.value, visible = Boolean(show);
+    const data = useOverlayData(name);
+    const visible = !!data;
 
-    return component({ show: visible, args: show })
+    return component({ show: visible, args: data })
 }

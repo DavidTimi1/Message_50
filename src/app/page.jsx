@@ -69,8 +69,8 @@ const Msg50App = () => {
 
                                 <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
                                     {
-                                        isMobile ? <MobileLayout overlays /> :
-                                            <DesktopLayout overlays />
+                                        isMobile ? <MobileLayout /> :
+                                            <DesktopLayout />
                                     }
                                 </ChatContext.Provider>
 

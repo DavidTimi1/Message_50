@@ -5,27 +5,30 @@ import { MediaPage } from "../media/page";
 import { SettingsPage } from "../settings/page";
 import { ContactsPage } from "../contacts/page";
 import { More } from "../components/more";
+import { useOverlayData } from "@/hooks/use-overlay";
 
 
-export default function MobileLayout(){
+export default function MobileLayout() {
+    const isOpenNavbar = !!useOverlayData('navbar');
+
     return (
         <>
-            <NavBar open={overlays.has('navbar')} />
+            <NavBar open={isOpenNavbar} />
 
             <Routes>
-                <Route path='/' element={ <ChatsPage /> } />
+                <Route path='/' element={<ChatsPage />} />
 
-                <Route path='/media' element={ <MediaPage /> } />
+                <Route path='/media' element={<MediaPage />} />
 
                 {/* <Route path='/notifications' element={
                     <NotificationsPage />
                     } /> */}
 
-                <Route path='/settings' element={ <SettingsPage /> } />
+                <Route path='/settings' element={<SettingsPage />} />
 
-                <Route path='/contacts' element={ <ContactsPage /> } />
+                <Route path='/contacts' element={<ContactsPage />} />
 
-                <Route path='*' element={ <Navigate to="/app" replace /> } />
+                <Route path='*' element={<Navigate to="/app" replace />} />
 
             </Routes>
 

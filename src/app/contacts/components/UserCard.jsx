@@ -34,13 +34,13 @@ export const UserCard = ({ show, args }) => {
     // Close function with animation handling
     const close = useCallback(() => {
         // Trigger animation class
-        if (winRef.current) {
-            ref.current.style.transform = '';
-            winRef.current.classList.add("close");
-
-        } else {
+        if (!winRef.current) {
             setTimeout(handleTransitionEnd);
+            return;
         }
+
+        ref.current.style.transform = '';
+        winRef.current.classList.add("close");
 
         // Wait for the transition/animation to complete
         once(transitionEnd, ref.current, handleTransitionEnd);
@@ -53,7 +53,7 @@ export const UserCard = ({ show, args }) => {
 
     useEffect(() => {
         if (!show) return
-        
+
         let t_id = setTimeout(() => {
             pushState(navId, close); // incase nav buttons are used
             winRef.current?.classList?.remove("close")
@@ -65,7 +65,7 @@ export const UserCard = ({ show, args }) => {
 
     return (
         show &&
-        <div id="user-card" 
+        <div id="user-card"
             className={isMobile ? ("max pop-up-window close") : ("interface close")}
             ref={winRef}
             onClick={handleCloseClick}
@@ -84,7 +84,7 @@ export const UserCard = ({ show, args }) => {
                                     <div className="notch mx-auto"></div>
                                 </div>
                             ) : (
-                                <div className="mx-auto" style={{width: "max-content"}}>
+                                <div className="mx-auto" style={{ width: "max-content" }}>
                                     <IconBtn icon={faChevronDown} onClick={handleCloseClick} className="mx-auto">
                                         close
                                     </IconBtn>

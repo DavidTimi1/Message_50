@@ -24,21 +24,17 @@ export const ManageContact = ({ show, args }) => {
     const close = useCallback(() => {
         const el = ref.current;
 
-        // Guard: fallback with timeout if ref is missing
         if (!el) {
-            setTimeout(handleTransitionEnd); // ← adjust to your actual CSS duration
+            setTimeout(handleTransitionEnd);
             return;
         }
 
         // If already closing, don't re-trigger
         if (el.classList.contains("close")) return;
-
         
         // Wait for transition end, then clean up
         once(transitionEnd, el, handleTransitionEnd);
-        
         el.classList.add("close");
-
 
         function handleTransitionEnd() {
             toggleOverlay(navId, false);
