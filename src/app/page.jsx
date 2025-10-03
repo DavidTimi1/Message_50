@@ -27,7 +27,7 @@ const Msg50App = () => {
     const navigate = useNavigate();
     const location = useLocation(), locationState = location.state;
     const authenticated = useAuth().auth;
-    
+
     const isMobile = useIsMobile();
 
 
@@ -37,7 +37,7 @@ const Msg50App = () => {
         const socket = connectSocket();
 
         socket.addEventListener('message', handleMessageReceipt);
-        setTimeout(()=> {socketSend("ready")}, 1000);
+        setTimeout(() => { socketSend("ready") }, 1000);
 
         return () => {
             socket.removeEventListener('message', handleMessageReceipt)
@@ -51,39 +51,39 @@ const Msg50App = () => {
         if (queriedUser) {
             // same route jsut remove the state
             navigate(window.location.pathname, { replace: true, state: null });
-            toggleOverlay('user-card', {id: queriedUser});
+            toggleOverlay('user-card', { id: queriedUser });
         }
     }, [locationState])
 
 
     return (
-        // <ProtectedRoute>
-        <main className="max main-app">
-            {
-                // userError?
-                //     <BlankErrorPage />
-                // :
-                <StateNavigatorProvider>
-                    <ToggleOverlay.Provider value={toggleOverlay}>
-                        <SendMsgsProvider>
+        <ProtectedRoute>
+            <main className="max main-app">
+                {
+                    // userError?
+                    //     <BlankErrorPage />
+                    // :
+                    <StateNavigatorProvider>
+                        <ToggleOverlay.Provider value={toggleOverlay}>
+                            <SendMsgsProvider>
 
-                            <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
-                                { 
-                                    isMobile? <MobileLayout overlays /> :
-                                    <DesktopLayout overlays />
-                                }
-                            </ChatContext.Provider>
+                                <ChatContext.Provider value={{ cur: chatting.user, set: toggleMessaging, id: chatting.msgId }}>
+                                    {
+                                        isMobile ? <MobileLayout overlays /> :
+                                            <DesktopLayout overlays />
+                                    }
+                                </ChatContext.Provider>
 
-                        </SendMsgsProvider>
-                    </ToggleOverlay.Provider>
-                </StateNavigatorProvider>
-            }
-        </main>
-        // </ProtectedRoute>
+                            </SendMsgsProvider>
+                        </ToggleOverlay.Provider>
+                    </StateNavigatorProvider>
+                }
+            </main>
+        </ProtectedRoute>
     )
 
     async function toggleMessaging(handle, id) {
-        if (!handle){
+        if (!handle) {
             setChatting({ user: false });
             return
         }
@@ -98,7 +98,7 @@ const Msg50App = () => {
 
 
     function toggleOverlay(name, value, list) {
-        if (list){
+        if (list) {
             return overlays
         }
         // keep history
@@ -121,16 +121,16 @@ const Msg50App = () => {
 
 export default Msg50App;
 
-async function handleMessageReceipt(msgEvent){
+async function handleMessageReceipt(msgEvent) {
     const json_data = msgEvent.data;
     const parsed = json_data && JSON.parse(json_data)
     const type = parsed.type, payload = parsed.data;
 
-    if (['new-message', 'status-change'].includes(type)){
+    if (['new-message', 'status-change'].includes(type)) {
         let decryptedMsg;
 
         try {
-            const {encryptedData, iv, key, file} = payload.data
+            const { encryptedData, iv, key, file } = payload.data
             decryptedMsg = await decryptMessage(key, encryptedData, iv, Boolean(file));
 
         } catch (error) {
@@ -139,24 +139,24 @@ async function handleMessageReceipt(msgEvent){
 
         }
 
-        if (type === 'new-message'){
+        if (type === 'new-message') {
             const file = payload.data.file;
 
             const fullMsgData = {
                 id: payload.id, sent: false, key: undefined,
                 ...decryptedMsg,
-                file: file? {...file, key: decryptedMsg.key} : file
+                file: file ? { ...file, key: decryptedMsg.key } : file
             }
-            
-            loadDB()
-            .then( DB => (
-                IDBPromise (
-                    openTrans(DB, msgsTable, 'readwrite')
-                    .put( fullMsgData )
-                )
-            ))
 
-            dispatchEvent( new CustomEvent(newMsgEvent, {detail: fullMsgData}) )
+            loadDB()
+                .then(DB => (
+                    IDBPromise(
+                        openTrans(DB, msgsTable, 'readwrite')
+                            .put(fullMsgData)
+                    )
+                ))
+
+            dispatchEvent(new CustomEvent(newMsgEvent, { detail: fullMsgData }))
 
         } else {
 
@@ -164,7 +164,7 @@ async function handleMessageReceipt(msgEvent){
 
     }
 
-        
+
 
 }
 
@@ -181,22 +181,22 @@ const BlankErrorPage = () => {
     }, []);
 
     return (
-            <div className="max flex-col mid-align gap-4 p-4 center-text" style={{justifyContent: "center"}}>
-                {
-                    graceOver?
+        <div className="max flex-col mid-align gap-4 p-4 center-text" style={{ justifyContent: "center" }}>
+            {
+                graceOver ?
                     <>
-                    <span style={{fontSize: "50px"}}> ⚠ </span>
-                    <div>
-                        <b> Error </b> - Something went wrong while fetching user data <br></br>
-                        <em> Try checking your internet connection </em>
-                    </div>
-                    <Button onClick={() => window.location.reload()}>
-                        Reload Page
-                    </Button>
+                        <span style={{ fontSize: "50px" }}> ⚠ </span>
+                        <div>
+                            <b> Error </b> - Something went wrong while fetching user data <br></br>
+                            <em> Try checking your internet connection </em>
+                        </div>
+                        <Button onClick={() => window.location.reload()}>
+                            Reload Page
+                        </Button>
                     </>
                     :
                     <CustomLoader />
-                }
-            </div>
+            }
+        </div>
     )
 }
