@@ -167,6 +167,5 @@ For any inquiries or feedback, please visit our [Contact Us](#contact-us) page o
 ## Additional Resources
 - **Privacy Policy**: [Privacy Policy](./privacy.pdf)
 - **Terms of Use**: [Terms of Use](./terms.pdf)
-- **Developer Portfolio**: [David Uwagbale's Portfolio](https://davidtimi1.github.io)
-- **GitHub Profile**: [David Uwagbale's GituMailavidTmailto:devs.message50@gmail.com
-ev_did
+- **Developer Portfolio**: [David Uwagbale's Portfolio](https://davidtimi.tech)
+- **Mail**: [Message50 Devs](mailto:devs.message50@gmail.com)
