@@ -12,6 +12,8 @@ import { dbName, getFile, getMsg, IDBPromise, updateMessage } from '../../../db'
 import { ChatContext, SendMsgContext } from '../../contexts';
 import StatusIcon from '../../components/status';
 import { useFileDownload } from '../../media/components/Details';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '../../../components/Skeleton';
 
 
 export const MsgItem = (props) => {
@@ -124,37 +126,30 @@ export const MsgItem = (props) => {
 
 
 function MsgLink({ chatting, id }) {
-    const [status, setStatus] = useState(false);
     const { cur, set } = useContext( ChatContext );
 
-    useEffect(() => {
-        if (!id) return
-
-        getMsg(id)
-            .then(msg => {
-                // if it is continue else remove
-                if (msg) {
-                    // TODO check if name is saved
-                    let person = msg.sent? "You" : msg.person;
-
-                    if (msg.status === 'x') {
-                        setStatus(false);
-                    } else {
-                        setStatus({
-                            name: person,
-                            text: msg.textContent.slice(0, 30)
-                        })
-                    }
-                } else {
-                    setStatus(false);
-                }
-            })
-    })
+    const { data: status, isLoading } = useQuery({
+        queryKey: ["msg-reply", id],
+        queryFn: async () => {
+            const msg = await getMsg(id);
+            if (!msg || msg.status === 'x') return false;
+            return {
+                name: msg.sent ? "You" : msg.person,
+                text: msg.textContent?.slice(0, 30) || "Attachment"
+            };
+        },
+        enabled: !!id,
+        staleTime: 1000 * 60 * 60, // cache for 1 hour
+    });
 
     return (
         <>
             {
-                status ?
+                isLoading ?
+                    <div className="no-btn fw" style={{ overflow: "hidden", padding: "5px" }}>
+                        <Skeleton height="35px" width="100%" borderRadius="4px" />
+                    </div>
+                : status ?
                     <div className="no-btn fw" style={{ overflow: "hidden" }} onClick={showMsg}>
                         <small className="fw flex-col msg-reply">
                             <div className="crop-excess" style={{ color: "var(--btn-col)" }}>

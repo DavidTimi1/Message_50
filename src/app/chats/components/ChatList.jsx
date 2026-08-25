@@ -16,74 +16,22 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import LoadingChatList from './chatListLoader';
 
 
+import { useChats } from '../../../api';
+import { useQueryClient } from '@tanstack/react-query';
+
 export const ChatList = () => {
     const ref = useRef(null);
+    const queryClient = useQueryClient();
 
-    const [chats, setChats] = useState([]), initThreshold = 50;
-    const [pendingList, setPendingList] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: chatsData, isLoading } = useChats();
+    const chats = chatsData?.data || [];
+    const pendingList = chatsData?.unsent || [];
 
     const compound = [...pendingList, ...chats].sort((prev, next) => prev.time - next.time);
     compound.reverse();
 
     const toggleMessaging = useContext(ChatContext).set;
-
-    const firstId = chats[0]?.id, lastId = chats?.[chats.length - 1]?.id;
-
     const { msgsStatus } = useContext(SendMsgContext);
-
-
-    useEffect(() => {
-        getChats(initThreshold)
-        .then(res => {
-            setChats(res.data);
-            setPendingList(res.unsent);
-            setIsLoading(false);
-        })
-            
-        // for realtime chats updates
-        const handleEvent = e => {
-            const data = e.detail;
-            const pending = data.notSent;
-
-            //  regardless find the index and replace occurences
-            setChats( prev => {
-                const clone = [...prev];
-                const index = clone.findIndex( msg => msg.handle === data.handle);
-
-                if (index > -1 && !pending)
-                    clone.splice(index, 1, data) // replace message
-                else if (!pending)
-                    clone.push(data); // add message
-                else if (index > -1)
-                    clone.splice(index, 1) // remove it
-                    
-                return clone
-            })
-
-            // admission for only unsent
-            setPendingList( prev => {
-                const clone = [...prev];
-                const index = clone.findIndex( msg => msg.handle === data.handle);
-
-                if (pending && index > -1) // if pending and exists
-                    clone.splice(index, 1, data)
-                else if (pending) // if it doesnt exits
-                    clone.push(data);
-                else if (index > -1) // not pending - remove
-                    clone.splice(index, 1);
-                    
-                return clone
-            })
-        };
-        on(newMsgEvent, handleEvent)
-
-        return ()=> {
-            removeEventListener(newMsgEvent, handleEvent)
-        }
-
-    }, []);
-
 
     useEffect(() => {
         // to effect status changes
@@ -91,27 +39,38 @@ export const ChatList = () => {
             const index = pendingList.findIndex(val => val.id === statusObj.id);
 
             if (index > -1 && statusObj.status === true) {
-
-                setPendingList(prev => {
-                    const clone = [...prev];
-
-                    clone.splice(index, 1);
-
-                    return clone
-                })
-
                 // get message and add to list to be displayed
                 const newMsgID = statusObj.args?.newID;
                 if (newMsgID){
                     getMsg(newMsgID)
                     .then( msg => {
-                        msg && setChats( prev => [...prev, msg] )
+                        if (msg) {
+                            queryClient.setQueryData(["chats"], (old) => {
+                                if (!old) return old;
+                                const newUnsent = [...old.unsent];
+                                const unsentIdx = newUnsent.findIndex(v => v.id === statusObj.id);
+                                if (unsentIdx > -1) {
+                                    newUnsent.splice(unsentIdx, 1);
+                                }
+                                const newData = [...old.data];
+                                const chatIdx = newData.findIndex(c => c.handle === msg.handle);
+                                if (chatIdx > -1) {
+                                    newData.splice(chatIdx, 1, msg);
+                                } else {
+                                    newData.push(msg);
+                                }
+                                return {
+                                    unsent: newUnsent,
+                                    data: newData
+                                };
+                            });
+                        }
                     })
                 }
             }
         }
 
-    }, [msgsStatus]);
+    }, [msgsStatus, pendingList, queryClient]);
 
 
     return (

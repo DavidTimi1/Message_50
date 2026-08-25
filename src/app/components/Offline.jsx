@@ -6,7 +6,7 @@ import { IDBPromise, openTrans, msgsTable, offlineMsgsTable, loadDB } from "../.
 import { SendMsgContext } from "../contexts";
 import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../crypt.js";
 import axiosInstance from "../../auth/axiosInstance.js";
-import { socketSend } from "./Sockets.js";
+import { useSocket } from "../contexts/SocketContext.jsx";
 import { UserContext } from "../../contexts.jsx";
 import { API_ROUTES } from "../../lib/routes.js";
 
@@ -177,7 +177,7 @@ const deleteMessageFromStore = (id) => {
 const useMessageSender = () => {
     const {updateMsgStatus} = useContext( SendMsgContext );
     const {username} = useContext(UserContext);
-
+    const { sendMsg } = useSocket();
 
     return {send: run}
 
@@ -231,15 +231,16 @@ const useMessageSender = () => {
             .then( async(fileObj) => {
                 // get public keys
                 const publicKeys = await getPubicKeys(receivers.filter( rec => rec !== username ));
-    
-                // for each receiver
-                for (let uuid in publicKeys) {
-                    let publicKey = publicKeys[uuid]
-                    if (!publicKey) return
-    
-                    // encrypt the key to encrypted data
-                    const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
-                    
+                const recipientUuids = Object.keys(publicKeys);
+                
+                if (recipientUuids.length === 0) return data.id;
+
+                if (recipientUuids.length === 1) {
+                    // Single recipient
+                    const uuid = recipientUuids[0];
+                    const publicKey = publicKeys[uuid];
+                    const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) );
+
                     const jsonData = {
                         id,
                         receiverID: uuid,
@@ -248,11 +249,31 @@ const useMessageSender = () => {
                             key: encryptedKey,
                             file: fileObj,
                         }
+                    };
+
+                    sendMsg("new-message", jsonData);
+                    return data.id;
+                } else {
+                    // Multi-recipient broadcast
+                    const keys = {};
+                    for (const uuid of recipientUuids) {
+                        const publicKey = publicKeys[uuid];
+                        if (publicKey) {
+                            keys[uuid] = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) );
+                        }
                     }
-    
-                    // send all to server / each using websocket
-                    socketSend("new-message", jsonData)
-                    return data.id
+
+                    const jsonData = {
+                        id,
+                        data: {
+                            iv, encryptedData,
+                            file: fileObj,
+                        },
+                        keys
+                    };
+
+                    sendMsg("broadcast", jsonData);
+                    return data.id;
                 }
             })
         })
