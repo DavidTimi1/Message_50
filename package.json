@@ -23,12 +23,16 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vite test",
-    "watch": "vite build --watch"
+    "watch": "vite build --watch",
+    "prerender": "node scripts/prerender.js"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
+  },
+  "devDependencies": {
+    "puppeteer": "^25.9.0"
   }
 }

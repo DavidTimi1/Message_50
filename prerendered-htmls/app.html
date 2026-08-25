@@ -7,23 +7,24 @@
     <meta name="keywords" content="Messaging, Secure Messaging, Instant Messaging, Message50, e2ee, end-to-end">
     <meta name="robots" content="index, follow">
     
-    <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="public/logo192.png" />
+    <link rel="icon" href="public/favicon.ico" />
+    <link rel="manifest" href="public/manifest.json" />
     
-    <meta name="description" content="End-to-end Encrypted Messaging Web Application. Quick, Secure and Seamless Messaging Platform!" />
+    <meta name="description" content="Securely chat E2EE with Message50 web app." />
     <title>App | Message50</title>
 
     <!-- Theme Color for Mobile Browsers -->
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#030508">
-    <link rel="icon" href="/favicon.ico" />
+
+
+    <link rel="icon" href="public/favicon.ico" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" as="style">
-    
 
     <script type="module">
       import { initTheme } from '/src/theme.js';
@@ -32,7 +33,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">   
     
-    <meta property="og:title" content="App | Message50 - E2EE Chat App">
+    <meta property="og:title" content="Message50 - E2EE Chat App">
     <meta property="og:description" content="End-to-end Encrypted Messaging Web Application. Quick, Secure and Seamless Messaging Platform!" >
     <meta property="og:url" content="https://message50-frontend.vercel.app">
     <meta property="og:site_name" content="Message50 - E2EE Chat App">
@@ -40,7 +41,7 @@
     <meta property="og:image" content="https://message50-frontend.vercel.app/large-img.jpg">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="App | Message50 - E2EE Chat App">
+    <meta name="twitter:title" content="Message50 - E2EE Chat App">
     <meta name="twitter:description" content="End-to-end Encrypted Messaging Web Application. Quick, Secure and Seamless Messaging Platform!">
     <meta name="twitter:image" content="https://message50-frontend.vercel.app/large-img.jpg">
     <meta name="twitter:url" content="https://message50-frontend.vercel.app">
@@ -56,6 +57,8 @@
           opacity: 0;
           visibility: hidden;
           overflow: hidden;
+          max-width: 100vw;
+          max-height: 100vh;
         }
       }
 
@@ -102,8 +105,7 @@
   </head>
   <body class="mega-max">
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" class="max loading-content">
-      <main><div><div><header><div><h2> Message50 </h2><button type="button"> Search </button></div><div><div> Chats </div><div><button>New Chat</button><button>AI Chat</button><h3> Message50 </h3></div></div></header><section><ol><li data-id="d2174597-fd76-4ad7-8d25-fb5393604cc8"><div><div title="test2">test2</div><small>1 mo</small></div><span> Hopeyoure good sha </span></li><li data-id="9a3c8d2e-25dc-43ce-9d92-32532f6fb010"><div><div title="test3">test3</div><small>1 mo</small></div><span> Sent while offline!! </span></li></ol></section></div><div><button disabled=""> AI chatbot </button><button> search contacts </button></div></div><div><h5> Help &amp; Feedback </h5><form method="post" action="/feedback/message50"><label><span>Feedback Intent: </span><select name="subject" required=""><option value="" disabled="" selected=""> Choose a Feedback type </option><option value="Comment"> Leave a Feedback Comment </option><option value="Help"> Need Help? </option><option value="Bug"> Report a bug </option></select></label><label>Email (optional, for follow-up):</label><button type="submit">Send</button><span> Drop here to add file </span></form></div></main>
+    <div id="root" class="max loading-content"><div class="max App"><div id="sign-in" class="max"><div class="navbar fw"><section class="fw pad"><div class="fw bg-warning text-white p-2 text-center br-5">This WebApp is currently under maintenance. Some features may be offline. 🛠</div><nav class="lap-nav nav fw flex mid-align" style="justify-content: space-between;"><a href="/" class="no-link flex-rev mid-align gap-1 brand"><h2 class="brand fh fs-3"> Message50 </h2></a><div class="menu flex mid-align"><a class="nav-item" href="/#features">Features</a><a class="nav-item" href="/#faqs">FAQS</a><a class="nav-item" href="/#contact-us">Contact Us</a></div><div></div></nav><div class="mobile-nav nav fw flex mid-align"><div class="flex mid-align gap-1"><h2 class="brand fh fs-3"> Message50 </h2></div><div style="--col: var(--foreground);"><button type="button" class="no-btn icon-btn"><div class="abs-mid btn-bg fw"></div><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" class="svg-inline--fa fa-bars fa-xl " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"></path></svg><span class="sr-only">  </span></button></div></div></section></div><main class="box fw pad mt-0 can-animate"><header class="mb-4 center-text"><h1> Welcome Back </h1></header><form class="mx-auto"><div class="abs-top max form-bg"><div class="abs circle" style="background-color: var(--body2-col); width: 100px; top: -30px; left: -50px;"></div><div class="abs circle" style="background-color: var(--btn-col); width: 50px; top: -20px; right: -20px;"></div><div class="abs circle" style="background-color: var(--text-col); width: 50px; bottom: -20px; left: -20px;"></div><div class="abs circle" style="background-color: var(--sec-col); width: 100px; bottom: -30px; right: -50px;"></div></div><div class="max form-body br-1"><div class="fw flex-col gap-3"><button class="my-btn no-btn br-5" type="button"><div class="btn-bg"><div class="btn max">Continue as Guest User</div></div></button><div class="fw or"><div class="mx-auto"> OR </div></div><label class="fw nv-input br-1 flex-col gap-2"><div><small class="lb">Username*</small><input class="fw" type="text" name="username" placeholder="Enter your username" required="" autocomplete="on"></div><small>  </small></label><label class="fw nv-input br-1 flex-col gap-2"><div><small class="lb">Password*</small><input class="fw" type="password" name="password" placeholder="Enter your password" required="" autocomplete="on"></div><small>  </small></label><button class="my-btn no-btn br-5" type="submit"><div class="btn-bg"><div class="btn max">Login</div></div></button><div class="flex mx-auto gap-2" style="justify-content: center;"><span>Don't have an account? </span><a class="no-link" href="/register??next=/app">Register here</a></div></div></div></form></main><footer class="mx-auto center-text"><div class="flex gap-2" style="flex-wrap: wrap;"><span><a class="no-link" rel="noreferrer noopener" href="/privacy.pdf" target="_blank">Privacy Policy<span class="sr-only"> for Message50 </span></a></span><span> | </span><span><a class="no-link" rel="noreferrer noopener" href="/terms.pdf" target="_blank">Terms of Use<span class="sr-only"> for Message50 </span></a></span><span>© 2026 Message50 All Rights Reserved.</span></div></footer></div><div data-rht-toaster="" style="position: fixed; z-index: 9999; inset: 16px; pointer-events: none;"></div></div></div><div><a rel="noopener noreferrer" href="https://github.com/DavidTimi1" target="_blank">Link to github repo</a><a href="/app"> Get Started </a></div></nav><div><h2> Message50 </h2><a rel="noopener noreferrer" href="https://github.com/DavidTimi1" target="_blank">Link to github repo</a></div></section><div><header><h1>Connect Privately with Friends and Family </h1><p>Experience quick seamless and secure communication.  The best messaging app for you</p><em>Message50 is the best, fastest and most secure messaging application</em><a href="/app"><span> Get Started </span> <span>with enhanced communication</span></a></header><section><h1> Why Choose Message50? </h1><ol><li><div>🔒</div><div><h2>End-to-End Encryption</h2><p>Your messages stay private - always.</p></div></li><li><div>🌍</div><div><h2>Cross-Platform</h2><p>Access your chats anytime, anywhere.</p></div></li><li><div>⚡</div><div><h2>Lightning Fast</h2><p>Instant delivery with cutting-edge technology.</p></div></li><li><div>🖥️</div><div><h2>User-Friendly Interface</h2><p>Navigate effortlessly with our intuitive design.</p></div></li><li><div>📤</div><div><h2>Media Sharing</h2><p>Share images, videos, and documents seamlessly.</p></div></li></ol></section><section><ul><li><h2>End-to-End Encryption</h2><p>Your messages stay private - always. We use state-of-the-art encryption technology to ensure that only you and the intended recipient can access your messages, providing unparalleled privacy and security.</p></li><li><h2>Cross-Platform</h2><p>Access your chats anytime, anywhere. Whether you're on your phone, tablet, or desktop, our platform ensures a seamless experience across all your devices, keeping you connected wherever you go.</p></li><li><h2>Lightning Fast</h2><p>Instant delivery with cutting-edge technology. Experience real-time communication with no delays, ensuring your messages are delivered as quickly as you can type them.</p></li><li><h2>Media Sharing</h2><p>Share images, videos, and documents seamlessly. All media files are also end-to-end encrypted, ensuring complete privacy and security.</p></li></ul></section><section><h1> Frequently Asked Questions </h1><ul><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0">Is my data secure on this platform?</button></h2><p>Yes, we use end-to-end encryption (e2ee) to ensure your data remains private and secure.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">Can I use this platform on multiple devices?</button></h2><p>Absolutely! Our platform is cross-platform and works seamlessly on all your devices.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">How fast is the message delivery?</button></h2><p>Messages are delivered instantly using our cutting-edge technology.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">What is end-to-end encryption (E2EE)?</button></h2><p>End-to-end encryption ensures that only you and the person you're communicating with can read the messages. No one else, not even the platform, can access your messages.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">Can anyone intercept my messages?</button></h2><p>No, with E2EE, messages are encrypted on your device and decrypted only on the recipient's device, making interception impossible.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">Are media files also encrypted?</button></h2><p>Yes, all media files, including images, videos, and documents, are encrypted to ensure complete privacy and security.</p></li><li><h2><button type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">What happens if I lose my device?</button></h2><p>If you lose your device, your messages cannot be accessed without your private key. Always ensure you have a backup of your encryption keys.</p></li></ul></section><div><div><div> Message50 </div><footer><div><a rel="noreferrer noopener" href="/privacy.pdf" target="_blank">Privacy Policy<span> for Message50 </span></a><span> | </span><a rel="noreferrer noopener" href="/terms.pdf" target="_blank">Terms of Use<span> for Message50 </span></a></div><span>© 2025 Message50 All Rights Reserved.</span><em>Message50 is developed by Dev_id (David Uwagbale)<a href="https://github.com/DavidTimi1">Link to David's github profile</a><a href="https://davidtimi1.github.io">Link to David's portfolio website</a></em></footer></div><section><h2>We Value Your Feedback</h2><form method="post" action="http://localhost:5173/feedback/message50"><div><label>Name*</label><label>Email*</label></div><label>Subject*</label><label>Message*</label><label>Subscribe to receiving updates on our progress</label><button type="submit">Send Feedback</button></form></section></div></div></main>
     </div>
 
     <div id="pre-loading">
@@ -146,7 +148,7 @@
       You can add webfonts, meta tags, or analytics to this file.
       The build step will place the bundled scripts into the <body> tag.
     -->
-    <script type="module" src="../src/index.jsx"></script>
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>
 
