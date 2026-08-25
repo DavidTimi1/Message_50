@@ -6,7 +6,6 @@ import { SendMsgContext } from "../../contexts";
 import { decryptMediaFile } from "../../crypt";
 import { saveFile } from "../../../db";
 import { AudThmb, FileThmb, ImgThmb, VidThmb } from "../page";
-import { useState } from "react";
 import { standardUnit } from "../../../utils";
 import { API_ROUTES } from "../../../lib/routes";
 import { getMediaMetadata, downloadMediaFile } from "../../../api";
