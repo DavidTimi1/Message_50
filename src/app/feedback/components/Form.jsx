@@ -4,11 +4,8 @@ import { Rating } from "./Rating";
 import { faCircleCheck, faSpinner, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "../../../components/Button";
-import { apiHost } from "../../../App";
-import axios from "axios";
 import { Input } from "../../../sign-in/page";
-import { API_ROUTES } from "../../../lib/routes";
-import axiosInstance from "../../../auth/axiosInstance";
+import { useSubmitFeedback } from "../../../api";
 
 
 
@@ -16,6 +13,7 @@ export const Form = ({ closeModal }) => {
     const [mode, setMode] = useState('')
     const [status, setStatus] = useState(false);
     const [files, setFiles] = useState([]);
+    const submitFeedback = useSubmitFeedback();
 
     const ref = useRef(null);
 
@@ -163,17 +161,18 @@ export const Form = ({ closeModal }) => {
 
         const email = form["email"]?.value?.trim();
         fd.set("subscribed", Boolean(email))
-        // // files.length && fd.set("image", files[0]);
-
-        axiosInstance.post(API_ROUTES.FEEDBACK, fd)
-            .then(({ data }) => {
+        
+        submitFeedback.mutate(fd, {
+            onSuccess: () => {
                 setStatus(true);
-            }).catch(error => {
-                console.error(error)
+            },
+            onError: (error) => {
+                console.error(error);
                 setStatus({
                     error: error.response?.data?.detail || error.message || "An error occurred. Please try again."
-                })
-            })
+                });
+            }
+        });
     }
 }
 

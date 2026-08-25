@@ -7,9 +7,8 @@ import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const placeholderImg = '/user-icon.svg';
-import axiosInstance from "../../../auth/axiosInstance";
-import { API_ROUTES } from "../../../lib/routes";
 import { showToast } from "@/app/components/toaster";
+import { useUpdateProfile } from "../../../api";
 
 
 
@@ -78,6 +77,7 @@ export const ProfileEdit = ({ show }) => {
     const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const [dp, setDp] = useState(userDp);
+    const updateProfileMutation = useUpdateProfile();
 
 
     // Close function with animation handling
@@ -123,9 +123,9 @@ export const ProfileEdit = ({ show }) => {
                 </div>
 
                 {
-                    error &&
+                    (error || updateProfileMutation.isError) &&
                     <div className="err-msg">
-                        {error}
+                        {error || updateProfileMutation.error?.message}
                     </div>
                 }
 
@@ -138,7 +138,7 @@ export const ProfileEdit = ({ show }) => {
                             <DPBtn setProfile={setProfile} />
                         </div>
                     </div>
-                    <ProfileForm />
+                    <ProfileForm isPending={updateProfileMutation.isPending} />
                 </form>
             </div>
         </div>
@@ -161,16 +161,18 @@ export const ProfileEdit = ({ show }) => {
         e.preventDefault();
 
         const fd = new FormData(e.target);
-
-        axiosInstance.post(API_ROUTES.PROFILE_EDIT, fd)
-            .then(() => {
+        
+        updateProfileMutation.mutate(fd, {
+            onSuccess: () => {
                 User.reload();
-
-            }).catch(err => {
+                showToast("Profile updated successfully");
+            },
+            onError: (err) => {
                 setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.");
-                showToast("Failed to update profile", { type: "error" });
+                showToast("Failed to update profile", "error");
                 console.error(err);
-            })
+            }
+        });
     }
 }
 
@@ -197,7 +199,7 @@ const DPBtn = ({ setProfile }) => {
 }
 
 
-const ProfileForm = () => {
+const ProfileForm = ({ isPending }) => {
     const { username, bio } = useContext(UserContext);
     const nameRef = useRef(null), bioRef = useRef(null);
 
@@ -248,7 +250,9 @@ const ProfileForm = () => {
                 </label>
 
                 <div className='flex fw' style={{ position: "sticky", bottom: "10px", justifyContent: "right" }}>
-                    <Button type="submit"> Save </Button>
+                    <Button type="submit" disabled={isPending}> 
+                        {isPending ? "Saving..." : "Save"} 
+                    </Button>
                 </div>
             </div>
         </div>

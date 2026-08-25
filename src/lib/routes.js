@@ -10,6 +10,8 @@ export const API_ROUTES = {
 
     USER_ME: "user/me",
     USER: (user_id) => `user/${user_id}`,
+    USER_SEARCH: "user/search",
+    USER_SETTINGS: "user/settings",
     PROFILE_EDIT: "user/profile-edit",
     
     MEDIA: (media_id) => `media/${media_id}`,
