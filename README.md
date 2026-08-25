@@ -118,6 +118,30 @@ Message_50/ # Root Directory
 
 ---
 
+## Frontend Architecture & E2EE Sync (v2 Upgrade)
+
+### React Query Hooks (`src/api/index.js`)
+All side-effects, settings mutations, profile updates, and E2EE key/message queries are managed using `@tanstack/react-query` to provide clean caching, transition skeletons, and error boundary behaviors.
+- `useMessages(chatting, viewMsg)`: Hydrates messages from local IndexedDB, providing reactive updates when real-time socket events mutate the query cache.
+- `useChats()`: Hydrates the active chat threads from IndexedDB.
+- `useUserSettings()` / `useUpdateUserSettings()`: Queries and modifies user preferences from `/api/v2/user/settings`.
+- `useUpdateProfile()`: Handles avatar image and bio uploads targeting `/api/v2/user/profile-edit`.
+- `useSubmitFeedback()`: Submits user feedback reports.
+
+### WebSocket Framework & Real-Time Sync
+WebSocket connections (`ws/chat/`) are initiated via `<SocketProvider>` in `SocketContext.jsx`. The connection:
+1. Hydrates offline messages automatically upon connection by sending `{"action": "ready"}`.
+2. Maintains a keepalive ping every 25 seconds.
+3. Automatically halts reconnection loops and redirects to `/login` if auth verification fails (`e.code === 400`).
+
+#### Message Flows & Status ACK Protocols
+- **Typing States**: Typing triggers emit `{"action": "typing", "receiverID": "...", "isTyping": true}`. Inbound typing events update `["typing", senderID]` cache variables to trigger instant header and bubble indicator renders.
+- **Delivery ACK**: When online, incoming `new-message` events are decrypted, persisted to IndexedDB, and immediately acknowledged by emitting `{"action": "status-ack", "status": "d"}` back to the sender.
+- **Read ACK**: When Bob views Alice's conversation thread, the frontend filters all unread incoming messages and emits `{"action": "status-ack", "status": "r"}` for each message. The local IndexedDB is simultaneously updated to prevent duplicate emissions.
+- **Optimistic Caching**: Sending messages appends a transient item to both the message outbox (`["messages"]`) and the thread outbox (`["chats"]`). The UI reflects the pending state (clock icon) immediately.
+
+---
+
 ## Backend Repository
 The backend code for Message_50 is hosted in a separate repository [`MSG50-BE`](https://github.com/davidtimi1/MSG50-BE). It handles server-side operations, including user authentication, message storage, and real-time communication using WebSockets.
 
