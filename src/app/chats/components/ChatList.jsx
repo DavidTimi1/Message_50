@@ -33,44 +33,7 @@ export const ChatList = () => {
     const toggleMessaging = useContext(ChatContext).set;
     const { msgsStatus } = useContext(SendMsgContext);
 
-    useEffect(() => {
-        // to effect status changes
-        for (let statusObj of msgsStatus) {
-            const index = pendingList.findIndex(val => val.id === statusObj.id);
 
-            if (index > -1 && statusObj.status === true) {
-                // get message and add to list to be displayed
-                const newMsgID = statusObj.args?.newID;
-                if (newMsgID){
-                    getMsg(newMsgID)
-                    .then( msg => {
-                        if (msg) {
-                            queryClient.setQueryData(["chats"], (old) => {
-                                if (!old) return old;
-                                const newUnsent = [...old.unsent];
-                                const unsentIdx = newUnsent.findIndex(v => v.id === statusObj.id);
-                                if (unsentIdx > -1) {
-                                    newUnsent.splice(unsentIdx, 1);
-                                }
-                                const newData = [...old.data];
-                                const chatIdx = newData.findIndex(c => c.handle === msg.handle);
-                                if (chatIdx > -1) {
-                                    newData.splice(chatIdx, 1, msg);
-                                } else {
-                                    newData.push(msg);
-                                }
-                                return {
-                                    unsent: newUnsent,
-                                    data: newData
-                                };
-                            });
-                        }
-                    })
-                }
-            }
-        }
-
-    }, [msgsStatus, pendingList, queryClient]);
 
 
     return (
@@ -140,8 +103,11 @@ const ChatItem = ({ data, Message }) => {
                     <div className='grow crop-excess'>
                         <div className="flex chat-msg gap-1 mid-align">
                             {
-                                sent &&
+                                sent ?
                                 <StatusIcon statusChar={status} />
+                                : (!sent && status !== 'r') ?
+                                <span className="unread-badge"></span>
+                                : null
                             }
                             {
                                 file && <TextualFile fileInfo={file} hasText={Boolean(textContent)} />

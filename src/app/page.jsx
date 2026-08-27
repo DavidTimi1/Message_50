@@ -10,9 +10,9 @@ import { SendMsgsProvider } from "./components/Offline";
 import { StateNavigatorProvider } from "./history";
 import ProtectedRoute, { useAuth } from "../auth/ProtectedRoutes";
 import { newMsgEvent } from "./components/Sockets";
-import { SocketProvider, useSocketEvent } from "./contexts/SocketContext";
+import { SocketProvider, useSocket, useSocketEvent } from "./contexts/SocketContext";
 import { useIsMobile } from "./components/Hooks";
-import { IDBPromise, loadDB, openTrans, msgsTable, updateMessage, getContactDetailsFromDB } from "../db";
+import { IDBPromise, loadDB, openTrans, msgsTable, updateMessage, getContactDetailsFromDB, getMsg } from "../db";
 import { decryptMessage } from "./crypt";
 import axiosInstance from "../auth/axiosInstance";
 import { API_ROUTES } from "../lib/routes";
@@ -26,7 +26,7 @@ import MobileLayout from "./mobile-layout/Layout";
 const Msg50App = () => {
     const [chatting, setChatting] = useState({ user: false });
     const [overlays, setOverlays] = useState([]);
-    const userError = useContext(UserContext).error;
+    const userError = useContext(UserContext)?.error;
     const queryClient = useQueryClient();
 
     const navigate = useNavigate();
@@ -46,6 +46,10 @@ const Msg50App = () => {
             toggleOverlay('user-card', { id: queriedUser });
         }
     }, [locationState])
+
+    useEffect(() => {
+        setOverlays([]);
+    }, [location.pathname])
 
 
     return (
@@ -135,7 +139,12 @@ async function handleMessageReceipt(msgEvent, queryClient, sendMsg) {
         return;
     }
 
-    if (['new-message', 'status-change'].includes(type)) {
+    if (type === 'key-update') {
+        queryClient.invalidateQueries({ queryKey: ["public-keys"] });
+        return;
+    }
+
+    if (type === 'new-message') {
         let decryptedMsg;
 
         try {
@@ -144,87 +153,93 @@ async function handleMessageReceipt(msgEvent, queryClient, sendMsg) {
 
         } catch (error) {
             console.error('Failed to decrypt message:', error);
-            return
+            return;
         }
 
-        if (type === 'new-message') {
-            const file = (payload.data || payload).file;
-            
-            const activeChat = queryClient.getQueryData(["active-chat"]);
-            const isCurrentChat = (activeChat === decryptedMsg.handle);
-            const statusVal = isCurrentChat ? 'r' : 'd';
+        const file = (payload.data || payload).file;
+        
+        const activeChat = queryClient.getQueryData(["active-chat"]);
+        const isCurrentChat = (activeChat === decryptedMsg.handle);
+        const statusVal = isCurrentChat ? 'r' : 'd';
 
-            const fullMsgData = {
-                id: payload.id, sent: false, key: undefined,
-                ...decryptedMsg,
-                status: statusVal,
-                file: file ? { ...file, key: decryptedMsg.key } : file
+        const fullMsgData = {
+            id: payload.id, sent: false, key: undefined,
+            ...decryptedMsg,
+            status: statusVal,
+            file: file ? { ...file, key: decryptedMsg.key } : file
+        }
+
+        // Immediately send a status-ack for delivery ('d') or read ('r')
+        // Get sender UUID
+        getContactDetailsFromDB(decryptedMsg.handle).then(async (contact) => {
+            let senderUuid = contact?.id;
+            if (!senderUuid) {
+                const keys = await axiosInstance.get(API_ROUTES.PUBLIC_KEYS([decryptedMsg.handle])).then(r => r.data).catch(() => ({}));
+                senderUuid = Object.keys(keys)[0];
             }
+            if (senderUuid) {
+                sendMsg("status-ack", {
+                    receiverID: senderUuid,
+                    id: payload.id,
+                    status: statusVal
+                });
+            }
+        });
 
-            // Immediately send a status-ack for delivery ('d') or read ('r')
-            // Get sender UUID
-            getContactDetailsFromDB(decryptedMsg.handle).then(async (contact) => {
-                let senderUuid = contact?.id;
-                if (!senderUuid) {
-                    const keys = await axiosInstance.get(API_ROUTES.PUBLIC_KEYS([decryptedMsg.handle])).then(r => r.data).catch(() => ({}));
-                    senderUuid = Object.keys(keys)[0];
-                }
-                if (senderUuid) {
-                    sendMsg("status-ack", {
-                        receiverID: senderUuid,
-                        id: payload.id,
-                        status: statusVal
-                    });
-                }
-            });
+        loadDB()
+            .then(DB => (
+                IDBPromise(
+                    openTrans(DB, msgsTable, 'readwrite')
+                        .put(fullMsgData)
+                )
+            ))
+            .then(() => {
+                // Update messages cache
+                queryClient.setQueriesData({ queryKey: ["messages", decryptedMsg.handle] }, (old) => {
+                    if (!old) return old;
+                    // Prevent duplicates
+                    if (old.data.some(m => m.id === fullMsgData.id)) return old;
+                    return {
+                        ...old,
+                        data: [...old.data, fullMsgData]
+                    };
+                });
 
-            loadDB()
-                .then(DB => (
-                    IDBPromise(
-                        openTrans(DB, msgsTable, 'readwrite')
-                            .put(fullMsgData)
-                    )
-                ))
-                .then(() => {
-                    // Update messages cache
-                    queryClient.setQueriesData({ queryKey: ["messages", decryptedMsg.handle] }, (old) => {
-                        if (!old) return old;
-                        return {
-                            ...old,
-                            data: [...old.data, fullMsgData]
-                        };
-                    });
+                // Update chats list cache
+                queryClient.setQueryData(["chats"], (old) => {
+                    if (!old) return old;
+                    const newData = [...old.data];
+                    const index = newData.findIndex(c => c.handle === decryptedMsg.handle);
+                    if (index > -1) {
+                        newData.splice(index, 1, fullMsgData);
+                    } else {
+                        newData.push(fullMsgData);
+                    }
+                    return {
+                        ...old,
+                        data: newData
+                    };
+                });
+            })
 
-                    // Update chats list cache
-                    queryClient.setQueryData(["chats"], (old) => {
-                        if (!old) return old;
-                        const newData = [...old.data];
-                        const index = newData.findIndex(c => c.handle === decryptedMsg.handle);
-                        if (index > -1) {
-                            newData.splice(index, 1, fullMsgData);
-                        } else {
-                            newData.push(fullMsgData);
-                        }
-                        return {
-                            ...old,
-                            data: newData
-                        };
-                    });
-                })
+    } else if (type === 'status-change') {
+        const statusData = payload.data; // { status: "r", senderID: "..." }
+        const messageId = payload.message_id;
+        
+        // update in IDB
+        updateMessage(messageId, 'status', statusData.status);
+        
+        // Get the message to resolve the correct chat handle (username)
+        getMsg(messageId).then(msg => {
+            if (!msg) return;
+            const chatHandle = msg.handle;
 
-        } else if (type === 'status-change') {
-            const statusData = payload.data; // { status: "r", senderID: "..." }
-            const messageId = payload.message_id;
-            
-            // update in IDB
-            updateMessage(messageId, 'status', statusData.status);
-            
             // update react query messages cache
-            queryClient.setQueriesData({ queryKey: ["messages", statusData.senderID] }, (old) => {
+            queryClient.setQueriesData({ queryKey: ["messages", chatHandle] }, (old) => {
                 if (!old) return old;
                 return {
                     ...old,
-                    data: old.data.map(msg => msg.id === messageId ? { ...msg, status: statusData.status } : msg)
+                    data: old.data.map(m => m.id === messageId ? { ...m, status: statusData.status } : m)
                 };
             });
 
@@ -233,10 +248,10 @@ async function handleMessageReceipt(msgEvent, queryClient, sendMsg) {
                 if (!old) return old;
                 return {
                     ...old,
-                    data: old.data.map(msg => msg.id === messageId ? { ...msg, status: statusData.status } : msg)
+                    data: old.data.map(m => m.id === messageId ? { ...m, status: statusData.status } : m)
                 };
             });
-        }
+        });
     }
 }
 

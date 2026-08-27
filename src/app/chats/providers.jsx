@@ -26,58 +26,7 @@ export const MsgListProvider = ({ children }) => {
 
     const { msgsStatus } = useContext(SendMsgContext);
 
-    useEffect(() => {
-        if (!chatting) return;
 
-        // to effect status changes
-        for (let status of msgsStatus) {
-            const index = pendingList.findIndex(val => val.id === status.id);
-
-            if (index > -1 && status.status === true) {
-
-                // get message and add to list to be displayed
-                const newMsgID = status.args?.newID;
-                if (newMsgID) {
-                    getMsg(newMsgID)
-                        .then(msg => {
-                            if (msg) {
-                                queryClient.setQueryData(["messages", chatting, viewMsg], (old) => {
-                                    if (!old) return old;
-                                    const newUnsent = [...old.unsent];
-                                    newUnsent.splice(index, 1);
-                                    return {
-                                        data: [...old.data, msg],
-                                        unsent: newUnsent
-                                    };
-                                });
-
-                                queryClient.setQueryData(["chats"], (old) => {
-                                    if (!old) return old;
-                                    const newUnsent = [...old.unsent];
-                                    const unsentIdx = newUnsent.findIndex(v => v.id === status.id);
-                                    if (unsentIdx > -1) {
-                                        newUnsent.splice(unsentIdx, 1);
-                                    }
-                                    const newData = [...old.data];
-                                    const chatIdx = newData.findIndex(c => c.handle === msg.handle);
-                                    if (chatIdx > -1) {
-                                        newData.splice(chatIdx, 1, msg);
-                                    } else {
-                                        newData.push(msg);
-                                    }
-                                    return {
-                                        unsent: newUnsent,
-                                        data: newData
-                                    };
-                                });
-                            }
-                        })
-                }
-
-            }
-        }
-
-    }, [chatting, msgsStatus, pendingList, queryClient, viewMsg]);
 
     useEffect(() => {
         if (isLoading || !messagesData || !chatting) return;

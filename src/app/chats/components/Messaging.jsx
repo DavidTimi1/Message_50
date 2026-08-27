@@ -35,7 +35,7 @@ export default function MsgInterface() {
 
     const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
     const { cur: chatting, set: setChatting } = useContext(ChatContext);
-    const { data: userDetails, isLoading, isError, error } = useUserDetails(chatting);
+    // const { data: userDetails, isLoading, isError, error } = useUserDetails(chatting);
 
     const select = state?.selected;
 
@@ -48,18 +48,18 @@ export default function MsgInterface() {
             })
 
             return () => clearTimeout(t_id);
-            
+
         } else {
             removeState(navId)
         }
     }, [chatting]);
 
-    useEffect(() => {
-        if (chatting && isError) {
-            showToast("Error loading user details", "error");
-            close();
-        }
-    }, [chatting, isError]);
+    // useEffect(() => {
+    //     if (chatting && isError) {
+    //         showToast("Error loading user details", "error");
+    //         close();
+    //     }
+    // }, [chatting, isError]);
 
     const isSelecting = Boolean(select?.length);
 
@@ -68,7 +68,7 @@ export default function MsgInterface() {
 
         if (isSelecting) {
             pushState(selectNavId, clearSelection);
-            navigator.vibrate(100);
+            navigator.vibrate?.(100);
 
         } else {
             removeState(selectNavId);
@@ -216,7 +216,7 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
     const name = useContactName(chatting);
 
     const toggleOverlay = useContext(ToggleOverlay);
-    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], enabled: !!chatting });
+    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], queryFn: () => false, staleTime: Infinity, enabled: !!chatting });
 
     return (
         <div className="msging-heading">
@@ -237,8 +237,8 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
                             }
                         </div>
 
-                        <div className="fs-4 fw-800"> 
-                            {chatting && title(name)} 
+                        <div className="fs-4 fw-800">
+                            {chatting && title(name)}
                             {isTyping && <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--btn-col)', marginLeft: '8px' }}>typing...</span>}
                         </div>
                     </div>
@@ -282,7 +282,9 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
     const { replyTo, cur, pending } = useContext(MsgListContext), msgList = cur, pendingList = pending;
 
     const selectOn = Boolean(selected.length);
-    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], enabled: !!chatting });
+    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], queryFn: () => false, staleTime: Infinity, enabled: !!chatting });
+
+    const lastSentMsgId = [...msgList].reverse().find(msg => msg.sent)?.id;
 
     useEffect(handleScroll, []);
 
@@ -315,6 +317,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
                             details={msg}
                             replyTo={replyTo}
+                            isLastSent={msg.id === lastSentMsgId}
                         />
                     )
                 })
