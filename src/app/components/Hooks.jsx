@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { on } from "../../utils";
-import { getContactDetailsFromDB } from "../../db";
+import { getContactDetailsFromDB, saveContactToDB } from "../../db";
 import { DevMode } from "../../App";
+import { useUserDetails } from "../../hooks/use-user-details";
 
 
 
@@ -27,19 +28,42 @@ export const useOnlineStatus = () => {
 
 
 export const useContactName = (id) => {
-    const [ name, setName ] = useState(id);
+    const [localName, setLocalName] = useState(null);
+    const { data: userDetails } = useUserDetails(localName ? null : id);
 
     useEffect(() => {
-        if (!id) return
+        if (!id) return;
 
         getContactDetailsFromDB(id)
-        .then( res => {
-            setName(res?.name ?? id);
+        .then(res => {
+            if (res?.name) {
+                setLocalName(res.name);
+            } else if (res) {
+                // If it is in IndexedDB contacts table but doesn't have a name, set to username/id
+                setLocalName(res.handle || id);
+            } else {
+                setLocalName(null);
+            }
         });
-
     }, [id]);
 
-    return name
+    useEffect(() => {
+        if (userDetails && !localName) {
+            const transData = {
+                handle: userDetails.username,
+                name: userDetails.username, // Fallback name is the username itself
+                dp: userDetails.dp,
+                bio: userDetails.bio,
+                lastUpdated: new Date().getTime()
+            };
+            saveContactToDB(transData).then(() => {
+                setLocalName(userDetails.username);
+            });
+        }
+    }, [userDetails, localName]);
+
+    if (localName) return localName;
+    return userDetails?.username || id;
 }
 
 export const useContactDetails = (id) => {

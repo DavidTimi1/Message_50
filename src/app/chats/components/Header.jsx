@@ -14,7 +14,7 @@ const placeholderImg = '/user-icon.svg';
 
 export const Header = ({ startSearch }) => {
     const toggleOverlay = useContext(ToggleOverlay);
-    const userDp = useContext(UserContext).dp;
+    const userDp = useContext(UserContext)?.dp;
 
     const isOnline = useOnlineStatus();
 

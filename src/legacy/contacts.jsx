@@ -8,7 +8,7 @@ import { sanitize } from '../ui/helpers';
 
 
 export default function ProfilePic({ src, children }) {
-    const User = useContext(UserContext), userLogo = src || User.dp
+    const User = useContext(UserContext), userLogo = src || User?.dp
 
     return (
         <BgImg src={userLogo}>

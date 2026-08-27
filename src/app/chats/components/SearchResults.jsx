@@ -35,7 +35,7 @@ export const MsgResultItem = ({ data }) => {
 
 
 export const ContactResultItem = ({data}) => {
-    const {id, dp, bio} = data;
+    const id = data?.id , dp = data?.dp, bio = data?.bio;
     const name = useContactName(id);
 
     return (

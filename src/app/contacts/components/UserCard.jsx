@@ -34,6 +34,7 @@ export const UserCard = ({ show, args }) => {
     // Close function with animation handling
     const close = useCallback(() => {
         // Trigger animation class
+            console.log("this ran")
         if (!winRef.current) {
             setTimeout(handleTransitionEnd);
             return;
@@ -46,6 +47,7 @@ export const UserCard = ({ show, args }) => {
         once(transitionEnd, ref.current, handleTransitionEnd);
 
         function handleTransitionEnd() {
+            console.log("trasition ran")
             toggleOverlay(navId, false);
         }
     }, [toggleOverlay, navId]);
@@ -184,31 +186,8 @@ export const UserCard = ({ show, args }) => {
     }
 
     function handleCloseClick() {
-        return new Promise(res => {
-            const el = ref.current;
-            const winEl = winRef.current;
-
-            if (!el || !winEl) {
-                res(false);
-                return;
-            }
-
-            // If already closed, resolve immediately
-            if (winEl.classList.contains("close")) {
-                res(removeState(navId));
-                return;
-            }
-
-            once(transitionEnd, winEl, () => {
-                res(removeState(navId));
-            });
-
-            // Clear transform before triggering transition
-            el.style.transform = '';
-
-            // Add class to start transition
-            winEl.classList.add("close");
-        });
+        const did = removeState(navId)
+        if (!did) close();
     }
 }
 

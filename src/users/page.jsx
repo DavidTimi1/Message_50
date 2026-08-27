@@ -9,7 +9,7 @@ const placeholderDp = '/user-icon.svg';
 
 const UserProfilePage = () => {
     const { username } = useParams(); // Get the username from the URL
-    const currentUser = useContext(UserContext).username;
+    const currentUser = useContext(UserContext)?.username;
 
     if (!username) {
         return <Navigate to="/app" replace />;

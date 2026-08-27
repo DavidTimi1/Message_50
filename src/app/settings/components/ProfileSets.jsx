@@ -71,18 +71,19 @@ export const ProfileEdit = ({ show }) => {
     const ref = useRef(null), navId = 'profile-edit';
 
     const toggleOverlay = useContext(ToggleOverlay);
-    const User = useContext(UserContext), userDp = User.dp;
+    const User = useContext(UserContext), userDp = User?.dp;
     const [error, setError] = useState();
 
     const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const [dp, setDp] = useState(userDp);
+    const [isDirty, setIsDirty] = useState(false);
     const updateProfileMutation = useUpdateProfile();
 
 
     // Close function with animation handling
     const close = () => {
-        if (!ref.current?.classList?.contains("close")) {
+        if (ref.current && !ref.current?.classList?.contains("close")) {
             once(transitionEnd, ref.current, handleTransitionEnd);
             ref.current.classList.add("close");
 
@@ -97,6 +98,7 @@ export const ProfileEdit = ({ show }) => {
 
     useEffect(() => {
         if (show) {
+            setIsDirty(false);
             let t_id = setTimeout(() => {
                 pushState(navId, close);
                 ref.current?.classList?.remove("close");
@@ -109,6 +111,20 @@ export const ProfileEdit = ({ show }) => {
         }
 
     }, [show]);
+
+    useEffect(() => {
+        if (!isDirty) return;
+
+        let f;
+        on('beforeunload', f = e => {
+            const leaveMsg = "Changes you made may not be saved."
+            e.returnValue = leaveMsg;
+
+            return leaveMsg
+        })
+
+        return () => window.removeEventListener('beforeunload', f)
+    }, [isDirty]);
 
 
     return (
@@ -138,7 +154,7 @@ export const ProfileEdit = ({ show }) => {
                             <DPBtn setProfile={setProfile} />
                         </div>
                     </div>
-                    <ProfileForm isPending={updateProfileMutation.isPending} />
+                    <ProfileForm isPending={updateProfileMutation.isPending} setIsDirty={setIsDirty} />
                 </form>
             </div>
         </div>
@@ -154,7 +170,7 @@ export const ProfileEdit = ({ show }) => {
 
         const url = URL.createObjectURL(data);
         setDp(url);
-
+        setIsDirty(true);
     }
 
     function handleSubmit(e) {
@@ -165,6 +181,7 @@ export const ProfileEdit = ({ show }) => {
         updateProfileMutation.mutate(fd, {
             onSuccess: () => {
                 User.reload();
+                setIsDirty(false);
                 showToast("Profile updated successfully");
             },
             onError: (err) => {
@@ -199,8 +216,9 @@ const DPBtn = ({ setProfile }) => {
 }
 
 
-const ProfileForm = ({ isPending }) => {
-    const { username, bio } = useContext(UserContext);
+const ProfileForm = ({ isPending, setIsDirty }) => {
+    const userInfo = useContext(UserContext);
+    const username = userInfo?.username, bio = userInfo?.bio;
     const nameRef = useRef(null), bioRef = useRef(null);
 
     useEffect(() => {
@@ -208,20 +226,6 @@ const ProfileForm = ({ isPending }) => {
         bioRef.current.value = bio;
 
     }, [bio, username])
-
-    useEffect(() => {
-        let f;
-
-        on('beforeunload', f = e => {
-            const leaveMsg = "Changes you made may not be saved."
-            e.returnValue = leaveMsg;
-
-            return leaveMsg
-        })
-
-        return () => window.removeEventListener('beforeunload', f)
-    })
-
 
     return (
         <div className="form-body">
@@ -244,7 +248,7 @@ const ProfileForm = ({ isPending }) => {
                                 <span> bio </span>
                                 <span> 100 characters </span>
                             </small>
-                            <textarea className="fw" name="bio" ref={bioRef} maxLength="100" placeholder="Enter a short bio ..."></textarea>
+                            <textarea className="fw" name="bio" ref={bioRef} maxLength="100" placeholder="Enter a short bio ..." onChange={() => setIsDirty(true)}></textarea>
                         </div>
                     </div>
                 </label>

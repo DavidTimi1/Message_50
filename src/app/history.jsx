@@ -49,8 +49,11 @@ export const useStateNavigation = () => {
 
         if (currentState === newState) return
         
-        if (currentState !== 'base') 
+        if (currentState !== 'base') {
             replace = true;
+            // const popped = stateStack.current.pop();
+            // popped?.onPop?.();
+        }
 
         stateStack.current.push(toPush);
 
@@ -110,7 +113,6 @@ export const useStateNavigation = () => {
               entry.onPop?.();
             }
           }
-          return did
         // const index = stateStack.current.map(s => s.state).lastIndexOf(state);
       
         // if (index === -1) return;

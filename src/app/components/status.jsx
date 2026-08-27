@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function StatusIcon({statusChar}){
 
-    let statusIcon;
+    let statusIcon, color;
 
     switch (statusChar){
         case 'r': statusIcon = faEye;
+            color = "var(--btn-col)";
             break;
 
         case 's': statusIcon = faCheck;
@@ -17,12 +18,13 @@ export default function StatusIcon({statusChar}){
             break;
         
         case 'd': statusIcon = faCheckDouble;
+            color = "var(--btn-col)";
             break;
 
         default: 
             return <></>
     }
 
-    return <FontAwesomeIcon icon={statusIcon} size="sm" style={{margin: ".25rem"}} />
+    return <FontAwesomeIcon icon={statusIcon} size="sm" style={{margin: ".25rem", color}} />
     
 }
