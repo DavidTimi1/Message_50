@@ -31,6 +31,7 @@ export const Footer = ({previewFile}) => {
     const chatting = useContext(ChatContext).cur;
     const isOnline = useOnlineStatus();
     const offloadQueue = useOfflineActivities().sendMsg;
+    const typingTimeoutRef = useRef(null);
 
     useEffect(() => {
         let t_id = setTimeout(() => {
@@ -100,16 +101,18 @@ export const Footer = ({previewFile}) => {
     }
 
     // TYPING INDICATOR LOGIC
-    let typingTimeout;
     function handleInput(e) {
         resize(e);
         
         if (chatting && !(chatting instanceof Array)) {
             sendMsg("typing", { receiverID: chatting, isTyping: true });
             
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+            typingTimeoutRef.current = setTimeout(() => {
                 sendMsg("typing", { receiverID: chatting, isTyping: false });
+                typingTimeoutRef.current = null;
             }, 2000);
         }
     }
