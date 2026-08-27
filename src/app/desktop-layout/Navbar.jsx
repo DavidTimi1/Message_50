@@ -28,10 +28,10 @@ export function DesktopNavBar() {
                             <button className="no-btn flex gap-2 mid-align fw crop-excess" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
                                 
                                 <span style={{flexShrink: 0}}>
-                                <UserProfilePic dp={User.dp} handle={User.username} width="30px" />
+                                <UserProfilePic dp={User?.dp} handle={User?.username} width="30px" />
                                 </span>
                                 
-                                <div className="hover:hide"> Hi, {User.username} </div>
+                                <div className="hover:hide"> Hi, {User?.username} </div>
                             </button>
                         </div>
                         <div className="fw">

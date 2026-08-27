@@ -42,9 +42,9 @@ export function NavBar({ open }) {
                         <div className="fw p-1">
                             <button className="no-btn flex gap-2 mid-align fw" style={{ justifyContent: "center" }} onClick={viewMyProfile}>
                                 
-                                <UserProfilePic dp={User.dp} handle={User.username} width="30px" />
+                                <UserProfilePic dp={User.dp} handle={User?.username} width="30px" />
                                 
-                                <div> Hi, {User.username} </div>
+                                <div> Hi, {User?.username} </div>
                             </button>
                         </div>
                         <div className="fw">

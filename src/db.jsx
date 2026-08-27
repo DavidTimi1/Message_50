@@ -305,9 +305,10 @@ export const updateMessage = (id, property, args) => {
                 }
                 if (property === 'file' && msg.file){
                     msg.file.fileId = args.fileId;
-
-                    return IDBPromise(objectStore.put(msg));
+                } else {
+                    msg[property] = args;
                 }
+                return IDBPromise(objectStore.put(msg));
             })
             .then(_ => ({success: true}))
             .catch(err => {

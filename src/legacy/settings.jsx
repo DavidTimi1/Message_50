@@ -56,11 +56,11 @@ export default function Settings({ open }) {
                 <div className="settings-sec fw" style={{ margin: "20px 0" }}>
                     <button className="no-btn flex mid-align grow gap-2">
                         <div style={{ width: "70px", aspectRatio: "1/1", borderRadius: "50%" }}>
-                            <BgImg src={User.dp} />
+                            <BgImg src={User?.dp} />
                         </div>
                         <div className="grow flex-col mid-align">
-                            <div> {User.name} </div>
-                            <small className="fw crop-excess dets"> {User.handle} </small>
+                            <div> {User?.name} </div>
+                            <small className="fw crop-excess dets"> {User?.handle} </small>
                         </div>
                     </button>
 
@@ -153,7 +153,8 @@ function ProfileSettings({ show, hide }) {
 
 
 function ProfileForm() {
-    const { name, about } = useContext(UserContext);
+    const userInfo = useContext(UserContext);
+    const name = userInfo?.name, about = userInfo?.about;
     const nameRef = useRef(null), aboutRef = useRef(null);
 
     useEffect(() => {
@@ -298,8 +299,8 @@ function Blocked() {
             <div id="blocked-users-more" className="accordion-collapse collapse" data-bs-parent=".list">
                 <ul className="accordion-body">
                     {blocked.map(user =>
-                        <li key={user.handle}>
-                            <button className="fw">{user.name}</button>
+                        <li key={user?.handle}>
+                            <button className="fw">{user?.name}</button>
                         </li>
                     )}
                 </ul>

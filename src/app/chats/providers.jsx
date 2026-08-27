@@ -3,93 +3,73 @@ import React, { useEffect, useState, useContext } from "react";
 import { ChatContext, SendMsgContext } from '../contexts';
 
 import { MsgListContext } from './contexts';
-import { getMessages, loadMoreMessages } from './components/Messaging';
-import { getMsg } from "../../db";
-import { newMsgEvent } from "../components/Sockets";
-import { on } from "../../utils";
+import { loadMoreMessages } from './components/Messaging';
+import { getMsg, getContactDetailsFromDB, updateMessage } from "../../db";
 import { LoadingMessageList } from "./components/MsgListLoader";
-
-
+import { useMessages } from "@/api";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSocket } from "../contexts/SocketContext";
+import axiosInstance from "../../auth/axiosInstance";
+import { API_ROUTES } from "../../lib/routes";
 
 export const MsgListProvider = ({ children }) => {
     const [reply, setReply] = useState();
-    const [isLoading, setIsLoading] = useState(true);
-
-    const [msgList, setMsgList] = useState([]);
-    const [pendingList, setPendingList] = useState([]);
-
-    const firstId = msgList[0]?.id, lastId = msgList?.[msgList.length - 1]?.id;
+    const queryClient = useQueryClient();
+    const { sendMsg } = useSocket();
 
     const chatContext = useContext(ChatContext), chatting = chatContext.cur, viewMsg = chatContext.id;
+    const { data: messagesData, isLoading } = useMessages(chatting, viewMsg);
+
+    const msgList = messagesData?.data || [];
+    const pendingList = messagesData?.unsent || [];
+    const firstId = msgList[0]?.id;
 
     const { msgsStatus } = useContext(SendMsgContext);
 
 
-    useEffect(() => {
-        let t_id, ignore = false;
-
-        if (!chatting) return;
-
-        getMessages(chatting, viewMsg)
-            .then(res => {
-                setMsgList(res.data)
-                setPendingList(res.unsent)
-                setIsLoading(false)
-            })
-
-        // for realtime messages updates
-        const handleEvent = e => {
-            const data = e.detail;
-            if (data.handle !== chatting) return
-
-            if (data.notSent)
-                setPendingList(prev => [...prev, data]);
-            else
-                setMsgList(prev => [...prev, data]);
-        };
-        on(newMsgEvent, handleEvent)
-
-        return () => {
-            t_id && clearTimeout(t_id);
-            ignore = true;
-            removeEventListener(newMsgEvent, handleEvent)
-        }
-
-    }, [chatting]);
-
 
     useEffect(() => {
-        if (!chatting) return
+        if (isLoading || !messagesData || !chatting) return;
 
-        // to effect status changes
-        for (let status of msgsStatus) {
-            const index = pendingList.findIndex(val => val.id === status.id);
+        const unreadMsgs = msgList.filter(msg => !msg.sent && msg.status !== 'r');
+        if (unreadMsgs.length === 0) return;
 
-            if (index > -1 && status.status === true) {
-
-                // get message and add to list to be displayed
-                const newMsgID = status.args?.newID;
-                if (newMsgID) {
-                    getMsg(newMsgID)
-                        .then(msg => {
-                            if (msg) {
-                                setMsgList(prev => [...prev, msg])
-
-                                setPendingList(prev => {
-                                    const clone = [...prev];
-                                    clone.splice(index, 1);
-                                    return clone
-                                })
-                            }
-                        })
-                }
-
+        getContactDetailsFromDB(chatting).then(async (contact) => {
+            let senderUuid = contact?.id;
+            if (!senderUuid) {
+                const keys = await axiosInstance.get(API_ROUTES.PUBLIC_KEYS([chatting])).then(r => r.data).catch(() => ({}));
+                senderUuid = Object.keys(keys)[0];
             }
-        }
+            if (!senderUuid) return;
 
-    }, [chatting, msgsStatus]);
+            unreadMsgs.forEach(msg => {
+                sendMsg("status-ack", {
+                    receiverID: senderUuid,
+                    id: msg.id,
+                    status: "r"
+                });
+                updateMessage(msg.id, 'status', 'r');
+            });
 
+            // Update cache locally
+            queryClient.setQueryData(["messages", chatting, viewMsg], (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    data: old.data.map(msg => (!msg.sent && msg.status !== 'r') ? { ...msg, status: 'r' } : msg)
+                };
+            });
 
+            // Also update the chats list cache unread indicator
+            queryClient.setQueryData(["chats"], (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    data: old.data.map(c => (c.handle === chatting && !c.sent && c.status !== 'r') ? { ...c, status: 'r' } : c)
+                };
+            });
+        });
+    }, [messagesData, isLoading, chatting, sendMsg, queryClient, viewMsg, msgList]);
 
     return (
         <MsgListContext.Provider value={{
@@ -119,13 +99,39 @@ export const MsgListProvider = ({ children }) => {
     function loadPreviousMsgs() {
         loadMoreMessages(null, firstId)
             .then(msgs => {
-                setMsgList(prev => [...msgs, ...prev])
+                queryClient.setQueryData(["messages", chatting, viewMsg], (old) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        data: [...msgs, ...old.data]
+                    };
+                });
             })
     }
 
     function addNotSent(data) {
-        setPendingList(prev => [...prev, data]);
+        queryClient.setQueryData(["messages", chatting, viewMsg], (old) => {
+            if (!old) return old;
+            return {
+                ...old,
+                unsent: [...old.unsent, data]
+            };
+        });
+
+        // Bubble to top of chats list
+        queryClient.setQueryData(["chats"], (old) => {
+            if (!old) return old;
+            const newUnsent = [...old.unsent];
+            const index = newUnsent.findIndex(c => c.handle === chatting);
+            if (index > -1) {
+                newUnsent.splice(index, 1);
+            }
+            newUnsent.unshift(data); // Add as first unsent
+            return {
+                ...old,
+                unsent: newUnsent
+            };
+        });
     }
 
-
-}
+}

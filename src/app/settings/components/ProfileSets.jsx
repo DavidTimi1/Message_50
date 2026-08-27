@@ -7,9 +7,8 @@ import { on, once, transitionEnd } from "../../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const placeholderImg = '/user-icon.svg';
-import axiosInstance from "../../../auth/axiosInstance";
-import { API_ROUTES } from "../../../lib/routes";
 import { showToast } from "@/app/components/toaster";
+import { useUpdateProfile } from "../../../api";
 
 
 
@@ -72,17 +71,19 @@ export const ProfileEdit = ({ show }) => {
     const ref = useRef(null), navId = 'profile-edit';
 
     const toggleOverlay = useContext(ToggleOverlay);
-    const User = useContext(UserContext), userDp = User.dp;
+    const User = useContext(UserContext), userDp = User?.dp;
     const [error, setError] = useState();
 
     const { pushState, removeState } = useContext(StateNavigatorContext);
 
     const [dp, setDp] = useState(userDp);
+    const [isDirty, setIsDirty] = useState(false);
+    const updateProfileMutation = useUpdateProfile();
 
 
     // Close function with animation handling
     const close = () => {
-        if (!ref.current?.classList?.contains("close")) {
+        if (ref.current && !ref.current?.classList?.contains("close")) {
             once(transitionEnd, ref.current, handleTransitionEnd);
             ref.current.classList.add("close");
 
@@ -97,6 +98,7 @@ export const ProfileEdit = ({ show }) => {
 
     useEffect(() => {
         if (show) {
+            setIsDirty(false);
             let t_id = setTimeout(() => {
                 pushState(navId, close);
                 ref.current?.classList?.remove("close");
@@ -109,6 +111,20 @@ export const ProfileEdit = ({ show }) => {
         }
 
     }, [show]);
+
+    useEffect(() => {
+        if (!isDirty) return;
+
+        let f;
+        on('beforeunload', f = e => {
+            const leaveMsg = "Changes you made may not be saved."
+            e.returnValue = leaveMsg;
+
+            return leaveMsg
+        })
+
+        return () => window.removeEventListener('beforeunload', f)
+    }, [isDirty]);
 
 
     return (
@@ -123,9 +139,9 @@ export const ProfileEdit = ({ show }) => {
                 </div>
 
                 {
-                    error &&
+                    (error || updateProfileMutation.isError) &&
                     <div className="err-msg">
-                        {error}
+                        {error || updateProfileMutation.error?.message}
                     </div>
                 }
 
@@ -138,7 +154,7 @@ export const ProfileEdit = ({ show }) => {
                             <DPBtn setProfile={setProfile} />
                         </div>
                     </div>
-                    <ProfileForm />
+                    <ProfileForm isPending={updateProfileMutation.isPending} setIsDirty={setIsDirty} />
                 </form>
             </div>
         </div>
@@ -154,23 +170,26 @@ export const ProfileEdit = ({ show }) => {
 
         const url = URL.createObjectURL(data);
         setDp(url);
-
+        setIsDirty(true);
     }
 
     function handleSubmit(e) {
         e.preventDefault();
 
         const fd = new FormData(e.target);
-
-        axiosInstance.post(API_ROUTES.PROFILE_EDIT, fd)
-            .then(() => {
+        
+        updateProfileMutation.mutate(fd, {
+            onSuccess: () => {
                 User.reload();
-
-            }).catch(err => {
+                setIsDirty(false);
+                showToast("Profile updated successfully");
+            },
+            onError: (err) => {
                 setError(err.response?.data?.detail || err.message || "An error occurred. Please try again.");
-                showToast("Failed to update profile", { type: "error" });
+                showToast("Failed to update profile", "error");
                 console.error(err);
-            })
+            }
+        });
     }
 }
 
@@ -197,8 +216,9 @@ const DPBtn = ({ setProfile }) => {
 }
 
 
-const ProfileForm = () => {
-    const { username, bio } = useContext(UserContext);
+const ProfileForm = ({ isPending, setIsDirty }) => {
+    const userInfo = useContext(UserContext);
+    const username = userInfo?.username, bio = userInfo?.bio;
     const nameRef = useRef(null), bioRef = useRef(null);
 
     useEffect(() => {
@@ -206,20 +226,6 @@ const ProfileForm = () => {
         bioRef.current.value = bio;
 
     }, [bio, username])
-
-    useEffect(() => {
-        let f;
-
-        on('beforeunload', f = e => {
-            const leaveMsg = "Changes you made may not be saved."
-            e.returnValue = leaveMsg;
-
-            return leaveMsg
-        })
-
-        return () => window.removeEventListener('beforeunload', f)
-    })
-
 
     return (
         <div className="form-body">
@@ -242,13 +248,15 @@ const ProfileForm = () => {
                                 <span> bio </span>
                                 <span> 100 characters </span>
                             </small>
-                            <textarea className="fw" name="bio" ref={bioRef} maxLength="100" placeholder="Enter a short bio ..."></textarea>
+                            <textarea className="fw" name="bio" ref={bioRef} maxLength="100" placeholder="Enter a short bio ..." onChange={() => setIsDirty(true)}></textarea>
                         </div>
                     </div>
                 </label>
 
                 <div className='flex fw' style={{ position: "sticky", bottom: "10px", justifyContent: "right" }}>
-                    <Button type="submit"> Save </Button>
+                    <Button type="submit" disabled={isPending}> 
+                        {isPending ? "Saving..." : "Save"} 
+                    </Button>
                 </div>
             </div>
         </div>

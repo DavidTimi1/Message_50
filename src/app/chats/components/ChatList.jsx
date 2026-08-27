@@ -16,102 +16,24 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import LoadingChatList from './chatListLoader';
 
 
+import { useChats } from '../../../api';
+import { useQueryClient } from '@tanstack/react-query';
+
 export const ChatList = () => {
     const ref = useRef(null);
+    const queryClient = useQueryClient();
 
-    const [chats, setChats] = useState([]), initThreshold = 50;
-    const [pendingList, setPendingList] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: chatsData, isLoading } = useChats();
+    const chats = chatsData?.data || [];
+    const pendingList = chatsData?.unsent || [];
 
     const compound = [...pendingList, ...chats].sort((prev, next) => prev.time - next.time);
     compound.reverse();
 
     const toggleMessaging = useContext(ChatContext).set;
-
-    const firstId = chats[0]?.id, lastId = chats?.[chats.length - 1]?.id;
-
     const { msgsStatus } = useContext(SendMsgContext);
 
 
-    useEffect(() => {
-        getChats(initThreshold)
-        .then(res => {
-            setChats(res.data);
-            setPendingList(res.unsent);
-            setIsLoading(false);
-        })
-            
-        // for realtime chats updates
-        const handleEvent = e => {
-            const data = e.detail;
-            const pending = data.notSent;
-
-            //  regardless find the index and replace occurences
-            setChats( prev => {
-                const clone = [...prev];
-                const index = clone.findIndex( msg => msg.handle === data.handle);
-
-                if (index > -1 && !pending)
-                    clone.splice(index, 1, data) // replace message
-                else if (!pending)
-                    clone.push(data); // add message
-                else if (index > -1)
-                    clone.splice(index, 1) // remove it
-                    
-                return clone
-            })
-
-            // admission for only unsent
-            setPendingList( prev => {
-                const clone = [...prev];
-                const index = clone.findIndex( msg => msg.handle === data.handle);
-
-                if (pending && index > -1) // if pending and exists
-                    clone.splice(index, 1, data)
-                else if (pending) // if it doesnt exits
-                    clone.push(data);
-                else if (index > -1) // not pending - remove
-                    clone.splice(index, 1);
-                    
-                return clone
-            })
-        };
-        on(newMsgEvent, handleEvent)
-
-        return ()=> {
-            removeEventListener(newMsgEvent, handleEvent)
-        }
-
-    }, []);
-
-
-    useEffect(() => {
-        // to effect status changes
-        for (let statusObj of msgsStatus) {
-            const index = pendingList.findIndex(val => val.id === statusObj.id);
-
-            if (index > -1 && statusObj.status === true) {
-
-                setPendingList(prev => {
-                    const clone = [...prev];
-
-                    clone.splice(index, 1);
-
-                    return clone
-                })
-
-                // get message and add to list to be displayed
-                const newMsgID = statusObj.args?.newID;
-                if (newMsgID){
-                    getMsg(newMsgID)
-                    .then( msg => {
-                        msg && setChats( prev => [...prev, msg] )
-                    })
-                }
-            }
-        }
-
-    }, [msgsStatus]);
 
 
     return (
@@ -181,8 +103,11 @@ const ChatItem = ({ data, Message }) => {
                     <div className='grow crop-excess'>
                         <div className="flex chat-msg gap-1 mid-align">
                             {
-                                sent &&
+                                sent ?
                                 <StatusIcon statusChar={status} />
+                                : (!sent && status !== 'r') ?
+                                <span className="unread-badge"></span>
+                                : null
                             }
                             {
                                 file && <TextualFile fileInfo={file} hasText={Boolean(textContent)} />

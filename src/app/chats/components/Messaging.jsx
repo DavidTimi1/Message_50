@@ -17,6 +17,7 @@ import { IconBtn } from "../../../components/Button";
 import { useContactName } from '../../components/Hooks';
 import { MsgListProvider } from '../providers';
 import { Link, Route, Routes } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { UserProfilePic } from '../../contacts/components/ContactItem';
 import { useUserDetails } from '@/hooks/use-user-details';
 import { LoadingMessageList } from './MsgListLoader';
@@ -34,7 +35,7 @@ export default function MsgInterface() {
 
     const mainRef = useRef(null), navId = 'messaging', selectNavId = 'selecting';
     const { cur: chatting, set: setChatting } = useContext(ChatContext);
-    const { data: userDetails, isLoading, isError, error } = useUserDetails(chatting);
+    // const { data: userDetails, isLoading, isError, error } = useUserDetails(chatting);
 
     const select = state?.selected;
 
@@ -47,18 +48,18 @@ export default function MsgInterface() {
             })
 
             return () => clearTimeout(t_id);
-            
+
         } else {
             removeState(navId)
         }
     }, [chatting]);
 
-    useEffect(() => {
-        if (chatting && isError) {
-            showToast("Error loading user details", "error");
-            close();
-        }
-    }, [chatting, isError]);
+    // useEffect(() => {
+    //     if (chatting && isError) {
+    //         showToast("Error loading user details", "error");
+    //         close();
+    //     }
+    // }, [chatting, isError]);
 
     const isSelecting = Boolean(select?.length);
 
@@ -67,7 +68,7 @@ export default function MsgInterface() {
 
         if (isSelecting) {
             pushState(selectNavId, clearSelection);
-            navigator.vibrate(100);
+            navigator.vibrate?.(100);
 
         } else {
             removeState(selectNavId);
@@ -113,25 +114,19 @@ export default function MsgInterface() {
                     </div>
 
                     {
-                        true ? (
-                            <LoadingMessageList />
+                        <MsgListProvider viewMsg={viewMsg}>
+                            <MsgList
+                                toggleSelect={toggleSelection}
+                                selected={select ?? []}
+                                chatting={chatting}
+                            />
 
-                        ) : (
-                            <MsgListProvider viewMsg={viewMsg}>
-                                <MsgList
-                                    toggleSelect={toggleSelection}
-                                    selected={select ?? []}
-                                    chatting={chatting}
-                                />
+                            <div className='fw'>
+                                {preview.on && <PreviewFile data={preview.data} closePreview={() => previewFile(undefined, true)} />}
 
-                                <div className='fw'>
-                                    {preview.on && <PreviewFile data={preview.data} closePreview={() => previewFile(undefined, true)} />}
-
-                                    <Footer previewFile={previewFile} />
-                                </div>
-
-                            </MsgListProvider>
-                        )
+                                <Footer previewFile={previewFile} />
+                            </div>
+                        </MsgListProvider>
                     }
 
                 </div>
@@ -221,6 +216,7 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
     const name = useContactName(chatting);
 
     const toggleOverlay = useContext(ToggleOverlay);
+    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], queryFn: () => false, staleTime: Infinity, enabled: !!chatting });
 
     return (
         <div className="msging-heading">
@@ -241,7 +237,10 @@ const Heading = ({ selected, closeMsging, clearSelection }) => {
                             }
                         </div>
 
-                        <div className="fs-4 fw-800"> {chatting && title(name)} </div>
+                        <div className="fs-4 fw-800">
+                            {chatting && title(name)}
+                            {isTyping && <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--btn-col)', marginLeft: '8px' }}>typing...</span>}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -283,6 +282,9 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
     const { replyTo, cur, pending } = useContext(MsgListContext), msgList = cur, pendingList = pending;
 
     const selectOn = Boolean(selected.length);
+    const { data: isTyping } = useQuery({ queryKey: ["typing", chatting], queryFn: () => false, staleTime: Infinity, enabled: !!chatting });
+
+    const lastSentMsgId = [...msgList].reverse().find(msg => msg.sent)?.id;
 
     useEffect(handleScroll, []);
 
@@ -315,6 +317,7 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                             select={{ cur: select, toggle: toggleSelect, on: selectOn }}
                             details={msg}
                             replyTo={replyTo}
+                            isLastSent={msg.id === lastSentMsgId}
                         />
                     )
                 })
@@ -336,6 +339,12 @@ const MsgList = ({ selected, toggleSelect, chatting }) => {
                 })
 
             }
+
+            {isTyping && (
+                <div style={{ padding: "10px", margin: "10px", borderRadius: "10px", backgroundColor: "var(--light-bg)", width: "fit-content", color: "var(--grey)" }}>
+                    <small>typing...</small>
+                </div>
+            )}
 
             <div className='flex' ref={bottomBtn} style={{ position: "sticky", bottom: "-20px", justifyContent: "flex-end" }}>
                 <IconBtn icon={faArrowDown} onClick={scrollToBtm} bg="var(--body-col)" />

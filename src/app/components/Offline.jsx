@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { useOnlineStatus } from "./Hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { IDBPromise, openTrans, msgsTable, offlineMsgsTable, loadDB } from "../../db";
 
 import { SendMsgContext } from "../contexts";
 import { encryptMessage, encryptSymmetricKey, importServerPublicKey } from "../crypt.js";
 import axiosInstance from "../../auth/axiosInstance.js";
-import { socketSend } from "./Sockets.js";
+import { useSocket } from "../contexts/SocketContext.jsx";
 import { UserContext } from "../../contexts.jsx";
 import { API_ROUTES } from "../../lib/routes.js";
 
@@ -71,6 +72,7 @@ export const useOfflineActivities = () => {
     const [rerun, setReRun] = useState(null);
     const {updateMsgStatus} = useContext( SendMsgContext );
     const messageSender = useMessageSender();
+    const queryClient = useQueryClient();
     
     if (!singleInstance) {
         singleInstance = {
@@ -104,7 +106,7 @@ export const useOfflineActivities = () => {
             setRunning(true);
 
             processMessages()
-            .then( setRunning(false) )
+            .then( () => setRunning(false) )
         }
     }
 
@@ -118,19 +120,24 @@ export const useOfflineActivities = () => {
                 return {...msg, time: new Date().getTime()}
             })
 
-            msgs.reduce((promise, msg) => {
+            return msgs.reduce((promise, msg) => {
                 const offId = msg.id;
                 const msgId = crypto.randomUUID();
                 const newMsg = {...msg, id: msgId};
 
                 return promise
                 .then( () => {
-                    messageSender.send(newMsg);
+                    return messageSender.send(newMsg);
                 }) // send the message
-                .then( () => deleteMessageFromStore(offId) ) // delete after success
-                .then( () => saveMsgInDb(newMsg) ) // save message in db
+                .then( () => migrateOfflineMessageToPermanent(newMsg, offId, queryClient) ) // atomic save/delete + cache updates
                 .then( () => updateMsgStatus(offId, true, {newID: msgId}) ) // set status to sent
-                .catch(err => console.log("Back to DB", err))
+                .catch(err => {
+                    console.error("Offline send failed:", err);
+                    updateMsgStatus(offId, 'error');
+                    if (msg && msg.receivers) {
+                        queryClient.invalidateQueries({ queryKey: ["public-keys", [...msg.receivers].sort()] });
+                    }
+                })
 
             }, new Promise(res => res())) // start the chain of promises
         })
@@ -176,8 +183,10 @@ const deleteMessageFromStore = (id) => {
 
 const useMessageSender = () => {
     const {updateMsgStatus} = useContext( SendMsgContext );
-    const {username} = useContext(UserContext);
-
+    const userInfo = useContext(UserContext);
+    const username = userInfo?.username;
+    const { sendMsg } = useSocket();
+    const queryClient = useQueryClient();
 
     return {send: run}
 
@@ -185,12 +194,12 @@ const useMessageSender = () => {
         const {receivers, reply, textContent, time, file, rawFile, id} = data;
 
         // encrypt data
-        encryptMessage({reply, textContent, time, handle: username}, rawFile)
+        return encryptMessage({reply, textContent, time, handle: username}, rawFile)
     
         .then (async ({encryptedData, iv, encryptedFileData, key}) => {
             
             //  upload file(s)
-            new Promise( async res => {
+            return new Promise( async (res, rej) => {
                 // if only sending to self no need to upload
                 if (!rawFile || (receivers.length === 1 && receivers[0] === username)){
                     res(null);
@@ -225,21 +234,25 @@ const useMessageSender = () => {
                     updateMsgStatus(`upload_${data.id}`, true, undefined, "upload");
 
                     res( {...response.data, metadata: file.metadata} );
+                }).catch(err => {
+                    updateMsgStatus(`upload_${data.id}`, 'error', undefined, "upload");
+                    rej(err);
                 })
             })
     
             .then( async(fileObj) => {
                 // get public keys
-                const publicKeys = await getPubicKeys(receivers.filter( rec => rec !== username ));
-    
-                // for each receiver
-                for (let uuid in publicKeys) {
-                    let publicKey = publicKeys[uuid]
-                    if (!publicKey) return
-    
-                    // encrypt the key to encrypted data
-                    const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) )
-                    
+                const publicKeys = await getPubicKeys(receivers.filter( rec => rec !== username ), queryClient);
+                const recipientUuids = Object.keys(publicKeys);
+                
+                if (recipientUuids.length === 0) return data.id;
+
+                if (recipientUuids.length === 1) {
+                    // Single recipient
+                    const uuid = recipientUuids[0];
+                    const publicKey = publicKeys[uuid];
+                    const encryptedKey = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) );
+
                     const jsonData = {
                         id,
                         receiverID: uuid,
@@ -248,11 +261,31 @@ const useMessageSender = () => {
                             key: encryptedKey,
                             file: fileObj,
                         }
+                    };
+
+                    sendMsg("new-message", jsonData);
+                    return data.id;
+                } else {
+                    // Multi-recipient broadcast
+                    const keys = {};
+                    for (const uuid of recipientUuids) {
+                        const publicKey = publicKeys[uuid];
+                        if (publicKey) {
+                            keys[uuid] = await encryptSymmetricKey( key, await importServerPublicKey(publicKey) );
+                        }
                     }
-    
-                    // send all to server / each using websocket
-                    socketSend("new-message", jsonData)
-                    return data.id
+
+                    const jsonData = {
+                        id,
+                        data: {
+                            iv, encryptedData,
+                            file: fileObj,
+                        },
+                        keys
+                    };
+
+                    sendMsg("broadcast", jsonData);
+                    return data.id;
                 }
             })
         })
@@ -261,14 +294,15 @@ const useMessageSender = () => {
 }
 
 
-async function getPubicKeys(list){
-    if (!list) return {}
+async function getPubicKeys(list, queryClient){
+    if (!list || list.length === 0) return {}
     
-    const keysUrl = "/user/public-key/?username=";
-    const query = list.join("&username=");
-
-    return axiosInstance.get(keysUrl + query)
-    .then(({data}) => data)
+    const sortedList = [...list].sort();
+    return queryClient.fetchQuery({
+        queryKey: ["public-keys", sortedList],
+        queryFn: () => axiosInstance.get(API_ROUTES.PUBLIC_KEYS(sortedList)).then(({data}) => data),
+        staleTime: 1000 * 60 * 60, // 1 hour cache
+    });
 }
 
 
@@ -290,4 +324,74 @@ const saveMsgInDb = (msgData) => {
                 )
             )))
         ))
+}
+
+const moveMessageToPermanentDb = (msgData, offId) => {
+    return loadDB().then(DB => {
+        return new Promise((resolve, reject) => {
+            const trans = DB.transaction([msgsTable, offlineMsgsTable], 'readwrite');
+            
+            trans.oncomplete = () => resolve();
+            trans.onerror = (e) => reject(e.target.error);
+
+            const msgsStore = trans.objectStore(msgsTable);
+            const offlineStore = trans.objectStore(offlineMsgsTable);
+
+            // 1. Put in permanent msgsTable for each receiver
+            const receivers = msgData.receivers || [];
+            receivers.forEach(receiver => {
+                msgsStore.put({
+                    ...msgData,
+                    receivers: undefined,
+                    handle: receiver,
+                    sent: true,
+                    status: "s",
+                    rawFile: null
+                });
+            });
+
+            // 2. Delete from offlineMsgsTable
+            offlineStore.delete(offId);
+        });
+    });
+}
+
+const migrateOfflineMessageToPermanent = (newMsg, offId, queryClient) => {
+    return moveMessageToPermanentDb(newMsg, offId)
+        .then(() => {
+            const permanentMsg = {
+                ...newMsg,
+                sent: true,
+                status: "s",
+                rawFile: null
+            };
+
+            // Synchronously update messages cache to avoid race conditions
+            queryClient.setQueriesData({ queryKey: ["messages", permanentMsg.handle] }, (old) => {
+                if (!old) return old;
+                const newUnsent = old.unsent.filter(m => m.id !== offId);
+                if (old.data.some(m => m.id === permanentMsg.id)) return old;
+                return {
+                    data: [...old.data, permanentMsg],
+                    unsent: newUnsent
+                };
+            });
+
+            // Synchronously update chats list cache to avoid race conditions
+            queryClient.setQueryData(["chats"], (old) => {
+                if (!old) return old;
+                const newUnsent = old.unsent.filter(m => m.id !== offId);
+                const newData = [...old.data];
+                const index = newData.findIndex(c => c.handle === permanentMsg.handle);
+                if (index > -1) {
+                    newData.splice(index, 1, permanentMsg);
+                } else {
+                    newData.push(permanentMsg);
+                }
+                return {
+                    unsent: newUnsent,
+                    data: newData
+                };
+            });
+        });
 }

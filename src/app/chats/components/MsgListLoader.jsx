@@ -1,5 +1,5 @@
 import React from 'react';
-import Skeleton from '@/app/components/skeleton';
+import { Skeleton } from '../../../components/Skeleton';
 
 
 export const LoadingMessageList = () => {

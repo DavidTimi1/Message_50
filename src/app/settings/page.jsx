@@ -128,9 +128,9 @@ const Invite = () => {
 
     function handleClick(){
         const shareData = {
-            title: `${User.username}'s invite`,
+            title: `${User?.username}'s invite`,
             text: "Join me and let's chat on this quick and secure messaging platform",
-            url: `/user/${User.username}`
+            url: `/user/${User?.username}`
         }
 
         navigator.share(shareData)

@@ -95,28 +95,8 @@ export const MediaViewer = ({ show, args }) => {
 
     function handleCloseClick(e) {
         e.stopPropagation();
-
-        return new Promise(res => {
-            const el = mainRef.current;
-
-            if (!el) {
-                res(false);
-                return;
-            }
-
-            // If already closing, resolve immediately
-            if (el.classList.contains("close")) {
-                res(removeState(navId));
-                return;
-            }
-
-            once(transitionEnd, el, () => {
-                res(removeState(navId));
-            });
-
-            el.classList.add("close");
-        });
-
+        const closed = removeState(navId);
+        if (!closed) close();
     }
 
 }

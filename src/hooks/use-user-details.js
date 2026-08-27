@@ -7,7 +7,7 @@ export const useUserDetails = (handle) => {
         queryKey: ['user-details', handle],
         queryFn: () => fetchUserDetails(handle),
         enabled: !!handle,
-        staleTime: 1000 * 60 * 2, // 2 mins
+        staleTime: 1000 * 60 * 10, // 2 mins
         cacheTime: 1000 * 60 * 60 * 24 * 7, // 1 week
         retry: 1,
         refetchOnWindowFocus: false,

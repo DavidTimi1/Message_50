@@ -14,14 +14,15 @@ import { useOfflineActivities } from '../../components/Offline';
 import { useContactName, useOnlineStatus } from '../../components/Hooks';
 
 import { MsgListContext } from "../contexts";
-import { newMsgEvent } from "../../components/Sockets";
+import { useSocket } from "../../contexts/SocketContext";
 import { ALLOWED_MEDIA_TYPES } from "../../media/page";
 
 
 
 export const Footer = ({previewFile}) => {
 
-    const { reply, replyTo} = useContext( MsgListContext );
+    const { reply, replyTo, addNotSent } = useContext( MsgListContext );
+    const { sendMsg } = useSocket();
 
     const [UI, setUI] = useState({});
     const fileRef = useRef(null), inputRef = useRef(null), optsToggleRef = useRef(null);
@@ -30,6 +31,7 @@ export const Footer = ({previewFile}) => {
     const chatting = useContext(ChatContext).cur;
     const isOnline = useOnlineStatus();
     const offloadQueue = useOfflineActivities().sendMsg;
+    const typingTimeoutRef = useRef(null);
 
     useEffect(() => {
         let t_id = setTimeout(() => {
@@ -61,7 +63,7 @@ export const Footer = ({previewFile}) => {
                                 className='fw' rows="1" placeholder="Type a message..." id="msg-field"
                                 autoCorrect="on"
                                 ref={inputRef}
-                                onInput={resize}
+                                onInput={handleInput}
                             ></textarea>
                         </label>
                     </div>
@@ -96,6 +98,23 @@ export const Footer = ({previewFile}) => {
             ...UI,
             opts: !showOpts
         })
+    }
+
+    // TYPING INDICATOR LOGIC
+    function handleInput(e) {
+        resize(e);
+        
+        if (chatting && !(chatting instanceof Array)) {
+            sendMsg("typing", { receiverID: chatting, isTyping: true });
+            
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+            typingTimeoutRef.current = setTimeout(() => {
+                sendMsg("typing", { receiverID: chatting, isTyping: false });
+                typingTimeoutRef.current = null;
+            }, 2000);
+        }
     }
 
     function recordVN(e) {
@@ -136,9 +155,10 @@ export const Footer = ({previewFile}) => {
                     
             })
 
-        dispatchEvent( new CustomEvent(newMsgEvent, {detail: {
+        const fullMsgData = {
             ...data, id, file: fileObj , notSent: true, time: new Date().getTime()
-        }}) )
+        };
+        addNotSent(fullMsgData);
 
         isOnline && offloadQueue();
         resetUI();

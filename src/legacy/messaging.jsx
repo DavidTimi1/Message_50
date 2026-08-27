@@ -112,7 +112,7 @@ export default function MsgInterface({ viewMsg }) {
 
     function toggleSelection(id) {
         let curSelection = state?.selected?.slice() ?? [];
-        curSelection.length === 0 && navigator.vibrate(100);
+        curSelection.length === 0 && navigator.vibrate?.(100);
 
         if (curSelection.includes(id)) {
             let index = curSelection.indexOf(id);
@@ -433,7 +433,7 @@ function MsgItem(props) {
             blockUp(true);
 
             if (disp.x > 100 && !vibrated) {
-                navigator.vibrate(25);
+                navigator.vibrate?.(25);
                 vibrated = true;
             }
 

@@ -1,15 +1,14 @@
 
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { forwardRef, useContext, useEffect } from "react";
+import { forwardRef, useContext, useEffect, useState } from "react";
 import { SendMsgContext } from "../../contexts";
-import axiosInstance from "../../../auth/axiosInstance";
 import { decryptMediaFile } from "../../crypt";
 import { saveFile } from "../../../db";
 import { AudThmb, FileThmb, ImgThmb, VidThmb } from "../page";
-import { useState } from "react";
 import { standardUnit } from "../../../utils";
 import { API_ROUTES } from "../../../lib/routes";
+import { getMediaMetadata, downloadMediaFile } from "../../../api";
 
 
 
@@ -189,20 +188,14 @@ export function useFileDownload(){
         if (!src) return
 
         // get media metadata
-        const metadata = await axios.get( API_ROUTES.MEDIA_METADATA(src) , {
-            withCredentials: true,
-        }).then(response => response.data )
+        const metadata = await getMediaMetadata(src);
 
-        // get media metadata
-        await axios.get( API_ROUTES.MEDIA(src), {
-            responseType: 'arraybuffer',
-            withCredentials: true,
-            onDownloadProgress: (progressEvent) => {
-                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                updateMsgStatus(id, progress / 100, undefined, "download");
-            }
-            
-        }).then(async response => {
+        // download media file
+        await downloadMediaFile(src, (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            updateMsgStatus(id, progress / 100, undefined, "download");
+        })
+        .then(async response => {
             const arraybuffer = response.data;
             const {type, iv, name} = metadata;
             const fileData = await decryptMediaFile(arraybuffer, iv, key);
@@ -214,7 +207,6 @@ export function useFileDownload(){
             const fileObj = {fileId};
     
             updateMsgStatus(id, true, fileObj, "download");
-
         })
     }
     
